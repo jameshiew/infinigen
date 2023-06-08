@@ -1,0 +1,5 @@
+(
+    id: "infinigen:lava",
+    visibility: Translucent,
+    color: (255, 0, 0, 128),
+)

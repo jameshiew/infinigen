@@ -1,0 +1,11 @@
+(
+    id: "infinigen:sand",
+    textures: Some({
+        Top: "sand",
+        Bottom: "sand",
+        Left: "sand",
+        Right: "sand",
+        Front: "sand",
+        Back: "sand"
+    })
+)

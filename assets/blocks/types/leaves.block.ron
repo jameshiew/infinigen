@@ -1,0 +1,11 @@
+(
+    id: "infinigen:leaves",
+    textures: Some({
+        Top: "leaves",
+        Bottom: "leaves",
+        Left: "leaves",
+        Right: "leaves",
+        Front: "leaves",
+        Back: "leaves"
+    })
+)

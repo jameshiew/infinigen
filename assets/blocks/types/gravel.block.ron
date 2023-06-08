@@ -1,0 +1,11 @@
+(
+    id: "infinigen:gravel",
+    textures: Some({
+        Top: "gravel",
+        Bottom: "gravel",
+        Left: "gravel",
+        Right: "gravel",
+        Front: "gravel",
+        Back: "gravel"
+    })
+)
