@@ -1,0 +1,5 @@
+(
+    id: "infinigen:water",
+    visibility: Translucent,
+    color: (25, 153, 230, 128),
+)
