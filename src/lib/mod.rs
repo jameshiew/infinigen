@@ -29,12 +29,14 @@ impl Plugin for ClientPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         tracing::info!("Settings: {:#?}", self.config);
         app.insert_resource(self.config.clone())
-            .insert_resource(Msaa::Sample8)
-            .add_plugin(scene::Plugin)
-            .add_plugin(chunks::ChunksPlugin)
-            .add_plugin(camera::CameraPlugin)
-            .add_plugin(cursor::CursorPlugin)
-            .add_plugin(fake_client::FakeClientPlugin)
-            .add_plugin(debug::UiPlugin);
+            .insert_resource(Msaa::Off)
+            .add_plugins((
+                scene::Plugin,
+                chunks::ChunksPlugin,
+                camera::CameraPlugin,
+                cursor::CursorPlugin,
+                fake_client::FakeClientPlugin,
+                debug::UiPlugin,
+            ));
     }
 }
