@@ -42,6 +42,7 @@ pub struct CursorPlugin;
 
 impl Plugin for CursorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(setup).add_system(handle_input);
+        app.add_systems(Startup, (setup,))
+            .add_systems(Update, (handle_input,));
     }
 }

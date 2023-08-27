@@ -1,6 +1,8 @@
 use crate::common::chunks::CHUNK_SIZE_F32;
 use crate::scene;
-use bevy::diagnostic::{Diagnostics, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin};
+use bevy::diagnostic::{
+    DiagnosticsStore, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
+};
 use bevy::prelude::*;
 use bevy_egui::{
     egui::{self, Slider},
@@ -9,7 +11,7 @@ use bevy_egui::{
 
 pub fn display_debug_info(
     mut egui: EguiContexts,
-    diagnostics: Res<Diagnostics>,
+    diagnostics: Res<DiagnosticsStore>,
     mut camera: Query<(&Transform, &mut crate::camera::settings::Settings)>,
     scene: ResMut<scene::Scene>,
     mut update_evs: EventWriter<scene::UpdateSettingsEvent>,

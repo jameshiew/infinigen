@@ -9,10 +9,9 @@ pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(settings::setup)
+        app.add_systems(Startup, (settings::setup,))
             .init_resource::<KeyBindings>()
             .init_resource::<InputState>()
-            .add_system(keyboard)
-            .add_system(mouse);
+            .add_systems(Update, (keyboard, mouse));
     }
 }
