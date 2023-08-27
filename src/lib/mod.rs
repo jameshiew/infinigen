@@ -29,7 +29,7 @@ impl Plugin for ClientPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         tracing::info!("Settings: {:#?}", self.config);
         app.insert_resource(self.config.clone())
-            .insert_resource(Msaa::Sample8)
+            .insert_resource(Msaa::Off)
             .add_plugins((
                 scene::Plugin,
                 chunks::ChunksPlugin,
