@@ -17,17 +17,24 @@ impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<UiState>()
             .init_resource::<chunk_borders::ChunkBordersState>()
-            .add_plugin(EguiPlugin)
-            .add_plugin(FrameTimeDiagnosticsPlugin)
-            .add_plugin(EntityCountDiagnosticsPlugin)
-            .add_plugin(WireframePlugin)
-            .add_plugin(MaterialPlugin::<LineMaterial>::default())
-            .add_plugin(WorldInspectorPlugin::new())
-            .add_system(display_debug_info.run_if(resource_equals(UiState {
-                show_debug_info: true,
-            })))
-            .add_system(toggle_debug_info)
-            .add_system(wireframe::toggle)
-            .add_system(chunk_borders::toggle);
+            .add_plugins((
+                EguiPlugin,
+                FrameTimeDiagnosticsPlugin,
+                EntityCountDiagnosticsPlugin,
+                WireframePlugin,
+                MaterialPlugin::<LineMaterial>::default(),
+                WorldInspectorPlugin::new(),
+            ))
+            .add_systems(
+                Update,
+                (
+                    display_debug_info.run_if(resource_equals(UiState {
+                        show_debug_info: true,
+                    })),
+                    toggle_debug_info,
+                    wireframe::toggle,
+                    chunk_borders::toggle,
+                ),
+            );
     }
 }

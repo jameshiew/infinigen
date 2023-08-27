@@ -3,7 +3,11 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use bevy::{asset::LoadState, prelude::*};
+use bevy::{
+    asset::LoadState,
+    prelude::{IntoSystemConfigs, *},
+    reflect::TypePath,
+};
 use serde::{Deserialize, Serialize};
 use strum::{EnumCount, IntoEnumIterator};
 
@@ -34,6 +38,7 @@ pub enum MaterialType {
     Deserialize,
     Ord,
     PartialOrd,
+    TypePath,
     bevy::reflect::TypeUuid,
 )]
 #[uuid = "125a8e86-14d2-4c46-9c45-06b0c80cae11"]
@@ -295,8 +300,8 @@ impl Plugin for RegistryPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Registry>()
             .add_state::<AppState>()
-            .add_system(load_assets.in_schedule(OnEnter(AppState::LoadAssets)))
-            .add_system(check_assets.in_set(OnUpdate(AppState::LoadAssets)))
-            .add_system(setup.in_schedule(OnEnter(AppState::RegisterAssets)));
+            .add_systems(OnEnter(AppState::LoadAssets), load_assets)
+            .add_systems(Update, check_assets.run_if(in_state(AppState::LoadAssets)))
+            .add_systems(OnEnter(AppState::RegisterAssets), setup);
     }
 }

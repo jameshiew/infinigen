@@ -63,7 +63,7 @@ fn main() -> ExitCode {
                     ..default()
                 }),
         )
-        .add_plugin(ClientPlugin::new(cfg))
+        .add_plugins((ClientPlugin::new(cfg),))
         .run();
     ExitCode::SUCCESS
 }

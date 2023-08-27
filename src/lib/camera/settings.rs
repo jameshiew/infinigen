@@ -1,4 +1,7 @@
-use bevy::{prelude::*, utils::default};
+use bevy::{
+    core_pipeline::experimental::taa::TemporalAntiAliasBundle,
+    pbr::ScreenSpaceAmbientOcclusionBundle, prelude::*, utils::default,
+};
 
 use crate::{scene::FAR, settings::Config};
 
@@ -25,15 +28,22 @@ pub fn setup(mut commands: Commands, config: Res<Config>) {
     transform.rotation.z = config.rotation_z;
     transform.rotation.w = config.rotation_w;
     dbg!(transform.rotation);
-    commands.spawn((
-        Camera3dBundle {
-            transform,
-            projection: bevy::render::camera::Projection::Perspective(PerspectiveProjection {
-                far: FAR,
-                ..Default::default()
-            }),
-            ..default()
-        },
-        Settings::default(),
-    ));
+    commands
+        .spawn((
+            Camera3dBundle {
+                transform,
+                camera: Camera {
+                    hdr: true,
+                    ..default()
+                },
+                projection: bevy::render::camera::Projection::Perspective(PerspectiveProjection {
+                    far: FAR,
+                    ..Default::default()
+                }),
+                ..default()
+            },
+            Settings::default(),
+        ))
+        .insert(ScreenSpaceAmbientOcclusionBundle::default())
+        .insert(TemporalAntiAliasBundle::default());
 }
