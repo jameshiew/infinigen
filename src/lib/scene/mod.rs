@@ -81,11 +81,13 @@ pub fn init_config(mut scene: ResMut<Scene>, config: Res<Config>) {
 
 use nalgebra::{Matrix4, Vector3};
 
+#[derive(Event)]
 pub enum ManageChunksEvent {
     RefreshChunkOpsQueue,
     ReloadAllChunks,
 }
 
+#[derive(Event)]
 pub enum UpdateSettingsEvent {
     HorizontalViewDistance(usize),
     VerticalViewDistance(usize),
@@ -189,7 +191,9 @@ pub fn check_should_update_chunks(
     scene.ops.clear();
     scene.is_processing_ops = true;
 
-    let Projection::Perspective(projection) = projection else { unimplemented!("only perspective projection is supported right now")};
+    let Projection::Perspective(projection) = projection else {
+        unimplemented!("only perspective projection is supported right now")
+    };
     let aspect_ratio = projection.aspect_ratio;
     let fov = projection.fov;
     let near = projection.near;
@@ -278,20 +282,24 @@ pub struct Plugin;
 impl bevy::prelude::Plugin for Plugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Scene>()
-            .add_plugin(RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]))
+            .add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
             .insert_resource(ClearColor(SKY_COLOR))
-            .add_startup_system(lights::setup)
-            .add_startup_system(init_config)
+            .add_systems(Startup, (lights::setup, init_config))
             .init_resource::<Registry>()
             .add_state::<AppState>()
             .add_event::<UpdateSettingsEvent>()
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ManageChunksEvent>()
-            .add_system(load_assets.in_schedule(OnEnter(AppState::LoadAssets)))
-            .add_system(check_assets.in_set(OnUpdate(AppState::LoadAssets)))
-            .add_system(setup.in_schedule(OnEnter(AppState::RegisterAssets)))
-            .add_system(check_should_update_chunks.in_set(OnUpdate(AppState::RegisterAssets)))
-            .add_system(handle::process_ops.in_set(OnUpdate(AppState::RegisterAssets)))
-            .add_system(handle_update_settings_ev.in_set(OnUpdate(AppState::RegisterAssets)));
+            .add_systems(OnEnter(AppState::LoadAssets), load_assets)
+            .add_systems(OnEnter(AppState::RegisterAssets), setup)
+            .add_systems(
+                Update,
+                (
+                    check_assets.run_if(in_state(AppState::LoadAssets)),
+                    check_should_update_chunks.run_if(in_state(AppState::RegisterAssets)),
+                    handle::process_ops.run_if(in_state(AppState::RegisterAssets)),
+                    handle_update_settings_ev.run_if(in_state(AppState::RegisterAssets)),
+                ),
+            );
     }
 }

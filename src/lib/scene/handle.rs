@@ -108,7 +108,12 @@ pub fn process_ops(
             }
         };
 
-        let Chunk::Unpacked(chunk) = chunks.get_mut(&scene.zoom_level, &cpos, client.as_ref(), &registry.block_mappings) else {
+        let Chunk::Unpacked(chunk) = chunks.get_mut(
+            &scene.zoom_level,
+            &cpos,
+            client.as_ref(),
+            &registry.block_mappings,
+        ) else {
             tracing::debug!(?cpos, "Empty chunk");
             continue;
         };

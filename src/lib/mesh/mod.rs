@@ -121,7 +121,9 @@ pub fn mesh_chunk_visible_block_faces(
             let block = padded[i as usize];
 
             let texture_uvs = face.tex_coords(face.permutation().axes()[0], flip_v, &uq);
-            let VoxelBlock::Opaque(chunk_block_id) = block else {panic!()};
+            let VoxelBlock::Opaque(chunk_block_id) = block else {
+                panic!()
+            };
 
             match block_textures.get(&chunk_block_id, block_face, texture_uvs) {
                 Some(appearance) => match appearance {
@@ -204,7 +206,9 @@ pub fn mesh_chunk_greedy_quads(
 
             let i = PaddedChunkShape::linearize(padded_chunk_coord);
             let block = padded[i as usize];
-            let VoxelBlock::Translucent(chunk_block_id) = block else {panic!()};
+            let VoxelBlock::Translucent(chunk_block_id) = block else {
+                panic!()
+            };
 
             // front face on south (+Z) by default
             let mut block_face = if normal == [0., 0., 1.] {
