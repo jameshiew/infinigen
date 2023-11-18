@@ -86,7 +86,7 @@ pub fn display_debug_info(
         };
 
         let mut zoom_level = scene.zoom_level;
-        ui.label(format!("Zoom level"));
+        ui.label("Zoom level");
         if ui.add(Slider::new(&mut zoom_level, -5..=5)).changed() && scene.zoom_level != zoom_level
         {
             update_evs.send(scene::UpdateSettingsEvent::ZoomLevel(zoom_level));
