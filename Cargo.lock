@@ -245,7 +245,7 @@ dependencies = [
  "async-task",
  "concurrent-queue",
  "fastrand 2.0.1",
- "futures-lite",
+ "futures-lite 1.13.0",
  "slab",
 ]
 
@@ -874,7 +874,7 @@ dependencies = [
  "codespan-reporting",
  "downcast-rs",
  "encase",
- "futures-lite",
+ "futures-lite 1.13.0",
  "hexasphere",
  "image",
  "js-sys",
@@ -963,7 +963,7 @@ dependencies = [
  "async-executor",
  "async-task",
  "concurrent-queue",
- "futures-lite",
+ "futures-lite 1.13.0",
  "wasm-bindgen-futures",
 ]
 
@@ -1810,6 +1810,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "futures-lite"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3831c2651acb5177cbd83943f3d9c8912c5ad03c76afcc0e9511ba568ec5ebb"
+dependencies = [
+ "fastrand 2.0.1",
+ "futures-core",
+ "futures-io",
+ "memchr",
+ "parking",
+ "pin-project-lite",
+]
+
+[[package]]
 name = "gethostname"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2167,7 +2181,7 @@ dependencies = [
  "bracket-noise",
  "config",
  "eyre",
- "futures-lite",
+ "futures-lite 2.0.1",
  "nalgebra",
  "ndarray",
  "noise",
