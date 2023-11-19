@@ -74,11 +74,11 @@ impl WorldGen for PersistentWorld {
             }
         };
         if exists {
-            match self.backend.read(pos) {
-                Ok(chunk) => return chunk.into(),
+            return match self.backend.read(pos) {
+                Ok(chunk) => chunk.into(),
                 Err(err) => {
                     tracing::warn!(?err, ?pos, "Failed to read chunk from disk");
-                    return Chunk::Empty;
+                    Chunk::Empty
                 }
             }
         }
