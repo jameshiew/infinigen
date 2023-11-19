@@ -100,7 +100,7 @@ pub fn handle_update_settings_ev(
     mut update_evs: EventReader<UpdateSettingsEvent>,
     mut manage_evs: EventWriter<ManageChunksEvent>,
 ) {
-    for ev in update_evs.iter() {
+    for ev in update_evs.read() {
         match ev {
             UpdateSettingsEvent::HorizontalViewDistance(hview_distance) => {
                 tracing::info!(
@@ -148,7 +148,7 @@ pub fn check_should_update_chunks(
     mut reload_evs: EventReader<ManageChunksEvent>,
 ) {
     let mut should_update = false;
-    for ev in reload_evs.iter() {
+    for ev in reload_evs.read() {
         if matches!(ev, ManageChunksEvent::ReloadAllChunks) {
             tracing::info!("Reloading all chunks");
             scene.ops.clear();
@@ -160,7 +160,7 @@ pub fn check_should_update_chunks(
         }
         should_update = true;
     }
-    if reload_evs.iter().next().is_some() {
+    if reload_evs.read().next().is_some() {
         tracing::info!("Reloading all chunks");
         scene.ops.clear();
         for (_, eids) in scene.loaded.drain() {

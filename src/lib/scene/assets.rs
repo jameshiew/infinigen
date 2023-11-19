@@ -150,6 +150,7 @@ pub fn check_assets(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn setup(
     mut registry: ResMut<Registry>,
     asset_server: Res<AssetServer>,
