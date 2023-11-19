@@ -1,4 +1,3 @@
-use crate::common::chunks::CHUNK_SIZE_F32;
 /// Adapted from lines example of Bevy
 use bevy::{
     pbr::{MaterialPipeline, MaterialPipelineKey},
@@ -12,6 +11,8 @@ use bevy::{
         },
     },
 };
+
+use crate::common::chunks::CHUNK_SIZE_F32;
 
 #[derive(Debug, Default, Eq, PartialEq, Resource)]
 pub struct ChunkBordersState {

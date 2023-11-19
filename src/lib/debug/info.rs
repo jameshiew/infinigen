@@ -1,5 +1,3 @@
-use crate::common::chunks::CHUNK_SIZE_F32;
-use crate::scene;
 use bevy::diagnostic::{
     DiagnosticsStore, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
 };
@@ -8,6 +6,9 @@ use bevy_egui::{
     egui::{self, Slider},
     EguiContexts,
 };
+
+use crate::common::chunks::CHUNK_SIZE_F32;
+use crate::scene;
 
 pub fn display_debug_info(
     mut egui: EguiContexts,

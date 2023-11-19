@@ -10,6 +10,6 @@ pub struct ChunksPlugin;
 impl Plugin for ChunksPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<ChunkRegistry>()
-            .add_systems(Update, (tasks::handle,));
+            .add_systems(Update, (tasks::handle, ));
     }
 }

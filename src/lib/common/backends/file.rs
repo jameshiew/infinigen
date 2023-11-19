@@ -1,8 +1,10 @@
-use crate::common::chunks::{Chunk, UnpackedChunk};
-use crate::common::world::{ChunkPosition, WorldGen};
-use eyre::Result;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
+
+use eyre::Result;
+
+use crate::common::chunks::{Chunk, UnpackedChunk};
+use crate::common::world::{ChunkPosition, WorldGen};
 
 /// Read/write chunks. A world is stored in a folder with chunks named like `x.y.z.chunk`. The chunks are simply stored using bincode.
 pub struct Backend {

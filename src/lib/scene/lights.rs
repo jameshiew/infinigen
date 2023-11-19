@@ -1,7 +1,8 @@
 use std::f32::consts::PI;
 
-use crate::common::chunks::CHUNK_SIZE_F32;
 use bevy::{pbr::CascadeShadowConfigBuilder, prelude::*};
+
+use crate::common::chunks::CHUNK_SIZE_F32;
 
 use super::FAR;
 
@@ -27,7 +28,7 @@ pub fn setup(mut commands: Commands) {
             maximum_distance: FAR,
             ..default()
         }
-        .into(),
+            .into(),
         ..default()
     });
 }

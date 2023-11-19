@@ -1,6 +1,7 @@
 //! This module is concerned with meshing chunks, and not with rendering.
-use crate::common::world::ChunkBlockId;
 use block_mesh::{MergeVoxel, Voxel, VoxelVisibility};
+
+use crate::common::world::ChunkBlockId;
 
 /// Wraps the common block type into something that we can implement block mesh traits for e.g. [`MergeVoxel`] and [`Voxel`].
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
