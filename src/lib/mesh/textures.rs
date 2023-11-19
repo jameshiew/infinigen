@@ -129,7 +129,7 @@ impl From<&TextureAtlas> for TextureMap {
 }
 
 #[derive(
-Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Ord, PartialOrd, EnumIter,
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Ord, PartialOrd, EnumIter,
 )]
 pub enum Face {
     Top = 0,

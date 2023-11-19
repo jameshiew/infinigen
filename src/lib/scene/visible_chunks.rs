@@ -8,7 +8,7 @@ pub fn in_distance(
     centre: &ChunkPosition,
     hview_distance: usize,
     vview_distance: usize,
-) -> impl Iterator<Item=ChunkPosition> {
+) -> impl Iterator<Item = ChunkPosition> {
     let mut chunks = Vec::new();
     let (hview_distance, vview_distance) = (hview_distance as i32, vview_distance as i32);
     let hview_distance_squared = hview_distance * hview_distance;
@@ -99,8 +99,8 @@ pub fn check_chunk_in_frustum(chunk: &ChunkPosition, frustum_planes: &[Plane; 6]
 
 #[cfg(test)]
 mod tests {
-    use crate::scene::*;
     use crate::scene::visible_chunks::in_distance;
+    use crate::scene::*;
 
     #[test]
     fn test_in_distance() {

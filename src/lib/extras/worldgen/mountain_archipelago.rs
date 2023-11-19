@@ -5,7 +5,7 @@ use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 use splines::{Interpolation, Key, Spline};
 
 use crate::common::{
-    chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE, UnpackedChunk},
+    chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE},
     world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition},
 };
 use crate::extras::block_ids::{
@@ -214,7 +214,7 @@ impl WorldGen for MountainIslands {
                     if chunk.get(&BlockPosition { x, y, z })
                         != Some(*self.block_mappings.get(GRASS_BLOCK_ID).unwrap())
                         && chunk.get(&BlockPosition { x, y, z })
-                        != Some(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap())
+                            != Some(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap())
                     {
                         break;
                     }

@@ -1,8 +1,8 @@
-use block_mesh::{OrientedBlockFace, RIGHT_HANDED_Y_UP_CONFIG};
 use block_mesh::ndshape::ConstShape;
+use block_mesh::{OrientedBlockFace, RIGHT_HANDED_Y_UP_CONFIG};
 use strum::IntoEnumIterator;
 
-use crate::common::chunks::{CHUNK_SIZE, CHUNK_SIZE_U32, UnpackedChunk};
+use crate::common::chunks::{UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_U32};
 use crate::common::world::BlockPosition;
 use crate::mesh::block::VoxelBlock;
 use crate::mesh::shapes;
@@ -313,13 +313,13 @@ pub fn prepare_padded_chunk(
 
 #[cfg(test)]
 mod tests {
-    use block_mesh::{UnitQuadBuffer, visible_block_faces};
+    use block_mesh::{visible_block_faces, UnitQuadBuffer};
 
     use crate::common::chunks::CHUNK_SIZE_U32;
     use crate::common::world::BlockVisibility;
     use crate::extras::chunks::filled_chunk;
     use crate::mesh::shapes::{
-        ChunkFace, ChunkFaceShape, empty_chunk_face, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
+        empty_chunk_face, ChunkFace, ChunkFaceShape, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
     };
     use crate::scene::assets::BlockDefinition;
 

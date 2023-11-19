@@ -28,7 +28,7 @@ pub fn setup(mut commands: Commands) {
             maximum_distance: FAR,
             ..default()
         }
-            .into(),
+        .into(),
         ..default()
     });
 }

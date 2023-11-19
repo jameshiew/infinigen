@@ -7,7 +7,7 @@ use crate::common::chunks::Chunk;
 use crate::common::world::ChunkPosition;
 use crate::fake_client::FakeClient;
 use crate::mesh::faces::extract_faces;
-use crate::mesh::shapes::{ChunkFace, empty_chunk_face};
+use crate::mesh::shapes::{empty_chunk_face, ChunkFace};
 use crate::scene::assets::BlockMappings;
 
 type ZoomLevel = i8;

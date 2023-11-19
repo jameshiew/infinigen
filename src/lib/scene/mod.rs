@@ -4,14 +4,14 @@ use std::f32::consts::PI;
 
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
-use nalgebra::{Perspective3, Quaternion, UnitQuaternion};
 use nalgebra::{Matrix4, Vector3};
+use nalgebra::{Perspective3, Quaternion, UnitQuaternion};
 
 use crate::common::chunks::CHUNK_SIZE_F32;
 use crate::common::world::{ChunkPosition, WorldPosition};
 use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
 
-use self::assets::{AppState, BlockDefinition, check_assets, load_assets, Registry, setup};
+use self::assets::{check_assets, load_assets, setup, AppState, BlockDefinition, Registry};
 
 pub mod assets;
 mod handle;
@@ -177,7 +177,7 @@ pub fn check_should_update_chunks(
         y: camera.translation.y,
         z: camera.translation.z,
     }
-        .into();
+    .into();
 
     if Some(current_cpos) != scene.camera_cpos {
         let previous_cpos = scene.camera_cpos.replace(current_cpos);
@@ -282,7 +282,7 @@ pub struct Plugin;
 impl bevy::prelude::Plugin for Plugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Scene>()
-            .add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]), ))
+            .add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
             .insert_resource(ClearColor(SKY_COLOR))
             .add_systems(Startup, (lights::setup, init_config))
             .init_resource::<Registry>()

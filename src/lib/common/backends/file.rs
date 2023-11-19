@@ -90,7 +90,7 @@ impl WorldGen for PersistentWorld {
                     tracing::warn!(?err, ?pos, "Failed to read chunk from disk");
                     Chunk::Empty
                 }
-            }
+            };
         }
 
         // no chunk found, so attempt to generate it and persist it
