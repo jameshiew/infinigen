@@ -1,9 +1,10 @@
 use std::sync::{Arc, RwLock};
 
+use bevy::prelude::*;
+
 use crate::common::chunks::Chunk;
 use crate::common::world::{ChunkPosition, WorldGen};
 use crate::extras::worldgen;
-use bevy::prelude::*;
 
 #[derive(Resource)]
 pub struct FakeClient {
@@ -13,8 +14,7 @@ pub struct FakeClient {
 #[allow(clippy::derivable_impls)] // https://github.com/rust-lang/rust-clippy/issues/10158
 impl Default for FakeClient {
     fn default() -> Self {
-        let x: Box<dyn crate::common::world::WorldGen + Send + Sync> =
-            Box::<worldgen::Flat>::default();
+        let x: Box<dyn WorldGen + Send + Sync> = Box::<worldgen::Flat>::default();
         Self {
             world: Arc::new(RwLock::new(x)),
         }
@@ -35,6 +35,7 @@ pub struct FakeClientPlugin;
 
 impl Plugin for FakeClientPlugin {
     fn build(&self, app: &mut App) {
+        tracing::info!("Initializing fake client plugin");
         app.init_resource::<FakeClient>();
     }
 }

@@ -1,14 +1,15 @@
 use bevy::prelude::*;
 
+use self::input::{keyboard, mouse, InputState, KeyBindings};
+
 pub mod input;
 pub mod settings;
-
-use self::input::{keyboard, mouse, InputState, KeyBindings};
 
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
+        tracing::info!("Initializing camera plugin");
         app.add_systems(Startup, (settings::setup,))
             .init_resource::<KeyBindings>()
             .init_resource::<InputState>()

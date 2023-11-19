@@ -1,8 +1,10 @@
-use crate::common::chunks::{Chunk, UnpackedChunk};
-use crate::common::world::{ChunkPosition, WorldGen};
-use eyre::Result;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
+
+use eyre::Result;
+
+use crate::common::chunks::{Chunk, UnpackedChunk};
+use crate::common::world::{ChunkPosition, WorldGen};
 
 /// Read/write chunks. A world is stored in a folder with chunks named like `x.y.z.chunk`. The chunks are simply stored using bincode.
 pub struct Backend {
@@ -62,6 +64,16 @@ impl PersistentWorld {
 }
 
 impl WorldGen for PersistentWorld {
+    fn initialize(
+        &mut self,
+        _mappings: std::collections::HashMap<
+            crate::common::world::BlockId,
+            crate::common::world::ChunkBlockId,
+        >,
+    ) {
+        todo!()
+    }
+
     /// Attempts to get the chunk from disk. Does not propagate errors, only logs warnings and returns None.
     fn get(&self, pos: &ChunkPosition, zoom: f64) -> Chunk {
         let exists = match self.backend.chunk_exists(pos) {
@@ -72,13 +84,13 @@ impl WorldGen for PersistentWorld {
             }
         };
         if exists {
-            match self.backend.read(pos) {
-                Ok(chunk) => return chunk.into(),
+            return match self.backend.read(pos) {
+                Ok(chunk) => chunk.into(),
                 Err(err) => {
                     tracing::warn!(?err, ?pos, "Failed to read chunk from disk");
-                    return Chunk::Empty;
+                    Chunk::Empty
                 }
-            }
+            };
         }
 
         // no chunk found, so attempt to generate it and persist it
@@ -104,15 +116,5 @@ impl WorldGen for PersistentWorld {
                 }
             },
         }
-    }
-
-    fn initialize(
-        &mut self,
-        _mappings: std::collections::HashMap<
-            crate::common::world::BlockId,
-            crate::common::world::ChunkBlockId,
-        >,
-    ) {
-        todo!()
     }
 }

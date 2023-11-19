@@ -3,8 +3,8 @@ use std::{
     sync::{Arc, RwLock},
 };
 
+use bevy::asset::{LoadedFolder, RecursiveDependencyLoadState};
 use bevy::{
-    asset::LoadState,
     prelude::{IntoSystemConfigs, *},
     reflect::TypePath,
 };
@@ -18,7 +18,7 @@ use crate::{
     },
     extras::worldgen,
     fake_client::FakeClient,
-    mesh::textures::{self, Face, FaceAppearance, TextureMap},
+    mesh::textures::{Face, FaceAppearance, TextureMap},
     settings::Config,
 };
 
@@ -40,6 +40,7 @@ pub enum MaterialType {
     PartialOrd,
     TypePath,
     bevy::reflect::TypeUuid,
+    Asset,
 )]
 #[uuid = "125a8e86-14d2-4c46-9c45-06b0c80cae11"]
 pub struct BlockDefinition {
@@ -48,7 +49,7 @@ pub struct BlockDefinition {
     pub visibility: BlockVisibility,
     #[serde(default = "default_block_color")]
     pub color: [u8; 4],
-    pub textures: Option<BTreeMap<textures::Face, String>>,
+    pub textures: Option<BTreeMap<Face, String>>,
 }
 
 fn default_block_color() -> [u8; 4] {
@@ -94,34 +95,26 @@ impl BlockMappings {
 #[derive(Default, Resource)]
 pub struct Registry {
     materials: [Handle<StandardMaterial>; MaterialType::COUNT],
-    block_texture_handles: Vec<HandleUntyped>,
-    block_definition_handles: Vec<HandleUntyped>,
+    block_texture_folder: Handle<LoadedFolder>,
+    block_definition_folder: Handle<LoadedFolder>,
     block_textures: TextureMap,
     pub block_mappings: BlockMappings,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+#[derive(States, Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub enum AppState {
     #[default]
     LoadAssets,
     RegisterAssets,
 }
 
-impl States for AppState {
-    type Iter = std::array::IntoIter<AppState, 2>;
-
-    fn variants() -> Self::Iter {
-        [AppState::LoadAssets, AppState::RegisterAssets].into_iter()
-    }
-}
-
 pub fn load_assets(mut registry: ResMut<Registry>, asset_server: Res<AssetServer>) {
-    registry.block_texture_handles = asset_server.load_folder("blocks/textures/").unwrap();
-    registry.block_definition_handles = asset_server.load_folder("blocks/types/").unwrap();
+    registry.block_texture_folder = asset_server.load_folder("blocks/textures/");
+    registry.block_definition_folder = asset_server.load_folder("blocks/types/");
     tracing::info!(
-        "Loading textures: {}, blockdefs: {}",
-        registry.block_texture_handles.len(),
-        registry.block_definition_handles.len()
+        "Loading assets: textures: {}, block definitions: {}",
+        registry.block_texture_folder.path().unwrap(),
+        registry.block_definition_folder.path().unwrap(),
     );
 }
 
@@ -131,36 +124,37 @@ pub fn check_assets(
     asset_server: Res<AssetServer>,
 ) {
     let mut block_definitions_loaded = false;
-    let blockdef_load_state = asset_server.get_group_load_state(
-        registry
-            .block_definition_handles
-            .iter()
-            .map(|handle| handle.id()),
-    );
-    if let LoadState::Loaded = blockdef_load_state {
+    let blockdef_load_state =
+        asset_server.get_recursive_dependency_load_state(&registry.block_definition_folder);
+    if let Some(RecursiveDependencyLoadState::Loaded) = blockdef_load_state {
         tracing::info!("Finished loading block definitions");
         block_definitions_loaded = true;
     }
 
     let mut block_textures_loaded = false;
-    if let LoadState::Loaded = asset_server.get_group_load_state(
-        registry
-            .block_texture_handles
-            .iter()
-            .map(|handle| handle.id()),
-    ) {
+    let blocktex_load_state =
+        asset_server.get_recursive_dependency_load_state(&registry.block_texture_folder);
+    if let Some(RecursiveDependencyLoadState::Loaded) = blocktex_load_state {
         tracing::info!("Finished loading block textures");
         block_textures_loaded = true;
     }
 
     if block_definitions_loaded && block_textures_loaded {
         next_state.set(AppState::RegisterAssets);
+    } else {
+        tracing::info!(
+            "Loading block definitions: {:?}, block textures: {:?}",
+            blockdef_load_state,
+            blocktex_load_state
+        );
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn setup(
     mut registry: ResMut<Registry>,
     asset_server: Res<AssetServer>,
+    loaded_folders: Res<Assets<LoadedFolder>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut textures: ResMut<Assets<Image>>,
     block_definitions: Res<Assets<BlockDefinition>>,
@@ -170,9 +164,14 @@ pub fn setup(
     // block textures
     let mut block_texture_handles_by_name = HashMap::new();
     let mut block_tatlas_builder = TextureAtlasBuilder::default();
-    for handle in &registry.block_texture_handles {
-        let handle = handle.typed_weak();
-        let path = asset_server.get_handle_path(handle.clone_weak());
+    for handle in loaded_folders
+        .get(&registry.block_texture_folder)
+        .unwrap()
+        .handles
+        .iter()
+    {
+        let handle = handle.clone_weak().typed();
+        let path = asset_server.get_path(handle.clone_weak());
         if let Some(texture) = textures.get(&handle) {
             tracing::info!(?path, "Texture found");
             let path = path.unwrap();
@@ -180,12 +179,9 @@ pub fn setup(
             let name = name.trim_end_matches(".png");
 
             block_texture_handles_by_name.insert(name.to_owned(), handle.clone_weak());
-            block_tatlas_builder.add_texture(handle, texture);
+            block_tatlas_builder.add_texture(handle.id(), texture);
         } else {
-            tracing::warn!(
-                "{:?} did not resolve to an `Image` asset.",
-                asset_server.get_handle_path(handle)
-            );
+            tracing::warn!("{:?} did not resolve to an `Image` asset.", path,);
             panic!();
         };
     }
@@ -207,7 +203,7 @@ pub fn setup(
 
     for block_definition in block_definitions {
         // fall back to color where texture isn't provided
-        tracing::info!(?block_definition, "Block found");
+        tracing::info!(?block_definition, "Block definition found");
         let mut faces = [FaceAppearance::Color {
             r: block_definition.color[0] as f32 / 256.,
             g: block_definition.color[1] as f32 / 256.,
@@ -298,6 +294,7 @@ pub struct RegistryPlugin;
 
 impl Plugin for RegistryPlugin {
     fn build(&self, app: &mut App) {
+        tracing::info!("Initializing registry plugin");
         app.init_resource::<Registry>()
             .add_state::<AppState>()
             .add_systems(OnEnter(AppState::LoadAssets), load_assets)

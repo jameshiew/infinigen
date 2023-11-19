@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
-use crate::common::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
+
+use crate::common::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
 
 pub type BlockId = String;
 pub type ChunkBlockId = u8;

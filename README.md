@@ -17,7 +17,7 @@ cargo run --release --no-default-features
 or
 
 ```shell
-cargo run  # dynamically linked, compiles faster and runs slower
+cargo run --release  # dynamically linked, compiles faster and runs slower
 ```
 
 ### Controls

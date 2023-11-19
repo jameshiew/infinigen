@@ -1,9 +1,10 @@
 use std::path::PathBuf;
 
-use crate::common::chunks::CHUNK_SIZE_F32;
-use crate::extras::worldgen::WorldGenTypes;
 use bevy::prelude::Resource;
 use serde::{Deserialize, Serialize};
+
+use crate::common::chunks::CHUNK_SIZE_F32;
+use crate::extras::worldgen::WorldGenTypes;
 
 pub const DEFAULT_HORIZONTAL_VIEW_DISTANCE: usize = 3;
 pub const DEFAULT_VERTICAL_VIEW_DISTANCE: usize = 3;

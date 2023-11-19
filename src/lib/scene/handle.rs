@@ -1,12 +1,5 @@
 use std::collections::HashSet;
 
-use crate::{
-    chunks::{registry::ChunkStatus, tasks::GenerateChunk},
-    common::{
-        chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F32},
-        world::{BlockPosition, BlockVisibility, ChunkBlockId, WorldPosition},
-    },
-};
 use bevy::{prelude::*, tasks::AsyncComputeTaskPool};
 
 use crate::{
@@ -14,11 +7,18 @@ use crate::{
     scene::{assets::MaterialType, ChunkOp},
 };
 use crate::{
+    chunks::{registry::ChunkStatus, tasks::GenerateChunk},
+    common::{
+        chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F32},
+        world::{BlockPosition, BlockVisibility, ChunkBlockId, WorldPosition},
+    },
+};
+use crate::{
     fake_client::FakeClient,
     render::mesh::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces},
 };
 
-use super::assets::{self, Registry};
+use super::assets::Registry;
 
 // bigger chunks means go slower to prevent lag/stutter
 const CHUNK_OP_RATE: usize = (16. * (32. / CHUNK_SIZE_F32)) as usize;
@@ -54,7 +54,7 @@ pub fn process_ops(
     mut commands: Commands,
     mut chunks: ResMut<ChunkRegistry>,
     client: Res<FakeClient>,
-    assets: Res<assets::Registry>,
+    assets: Res<Registry>,
     mut scene: ResMut<crate::scene::Scene>,
     mut meshes: ResMut<Assets<Mesh>>,
     registry: Res<Registry>,
