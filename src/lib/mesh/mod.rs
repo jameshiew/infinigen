@@ -3,13 +3,13 @@ use block_mesh::{
     greedy_quads, ndshape::ConstShape, visible_block_faces, GreedyQuadsBuffer, UnitQuadBuffer,
 };
 use block_mesh::{UnorientedQuad, Voxel, VoxelVisibility};
+use rand::Rng;
+
+use faces::RHS_FACES;
+use shapes::{PaddedChunk, PaddedChunkShape, PADDED_CHUNK_MAX_INDEX};
 
 use crate::common::chunks::{UnpackedChunk, CHUNK_SIZE};
 use crate::common::world::{BlockPosition, LocalPosition};
-
-use faces::RHS_FACES;
-use rand::Rng;
-use shapes::{PaddedChunk, PaddedChunkShape, PADDED_CHUNK_MAX_INDEX};
 
 use self::block::VoxelBlock;
 use self::textures::{Face, TextureMap};

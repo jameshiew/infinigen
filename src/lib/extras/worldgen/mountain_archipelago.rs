@@ -1,5 +1,9 @@
 use std::collections::HashMap;
 
+use bracket_noise::prelude::{FastNoise, NoiseType};
+use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
+use splines::{Interpolation, Key, Spline};
+
 use crate::common::{
     chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE},
     world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition},
@@ -8,9 +12,6 @@ use crate::extras::block_ids::{
     DIRT_BLOCK_ID, GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, LEAVES_BLOCK_ID, SAND_BLOCK_ID, SNOW_BLOCK_ID,
     STONE_BLOCK_ID, WATER_BLOCK_ID, WOOD_BLOCK_ID,
 };
-use bracket_noise::prelude::{FastNoise, NoiseType};
-use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
-use splines::{Interpolation, Key, Spline};
 
 pub struct MountainIslands {
     pub block_mappings: HashMap<BlockId, ChunkBlockId>,
@@ -81,6 +82,10 @@ const MIN_Y_HEIGHT: i32 = -6;
 
 /// Based on <https://www.youtube.com/watch?v=CSa5O6knuwI>
 impl WorldGen for MountainIslands {
+    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+        self.block_mappings = mappings;
+    }
+
     fn get(&self, pos: &ChunkPosition, zoom: f64) -> Chunk {
         if pos.y < MIN_Y_HEIGHT {
             return Chunk::Empty;
@@ -256,20 +261,17 @@ impl WorldGen for MountainIslands {
 
         chunk.into()
     }
-
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
-        self.block_mappings = mappings;
-    }
 }
 
 #[cfg(test)]
 mod tests {
     extern crate test;
 
+    use test::Bencher;
+
     use crate::extras::block_ids::default_block_ids;
 
     use super::*;
-    use test::Bencher;
 
     #[bench]
     fn bench_mountain_archipelago(b: &mut Bencher) {

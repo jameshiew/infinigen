@@ -7,6 +7,7 @@ use bevy::{
     DefaultPlugins,
 };
 use config::Config;
+
 use infinigen::{extras::worldgen::WorldGenTypes, ClientPlugin};
 
 const APP_NAME: &str = "infinigen";

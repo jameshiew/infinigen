@@ -1,5 +1,3 @@
-use crate::common::chunks::CHUNK_SIZE_F32;
-use crate::scene;
 use bevy::diagnostic::{
     DiagnosticsStore, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
 };
@@ -8,6 +6,9 @@ use bevy_egui::{
     egui::{self, Slider},
     EguiContexts,
 };
+
+use crate::common::chunks::CHUNK_SIZE_F32;
+use crate::scene;
 
 pub fn display_debug_info(
     mut egui: EguiContexts,
@@ -86,7 +87,7 @@ pub fn display_debug_info(
         };
 
         let mut zoom_level = scene.zoom_level;
-        ui.label(format!("Zoom level"));
+        ui.label("Zoom level");
         if ui.add(Slider::new(&mut zoom_level, -5..=5)).changed() && scene.zoom_level != zoom_level
         {
             update_evs.send(scene::UpdateSettingsEvent::ZoomLevel(zoom_level));

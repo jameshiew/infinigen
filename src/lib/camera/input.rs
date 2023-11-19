@@ -85,7 +85,7 @@ pub fn mouse(
 ) {
     let window = primary_window.get_single().unwrap();
     for mut transform in query.iter_mut() {
-        for ev in state.mouse_motion.iter(&motion) {
+        for ev in state.mouse_motion.read(&motion) {
             let (mut yaw, mut pitch, _) = transform.rotation.to_euler(EulerRot::YXZ);
             match window.cursor.grab_mode {
                 CursorGrabMode::None => (),

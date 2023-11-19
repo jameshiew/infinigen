@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 
+use noise::{NoiseFn, Perlin};
+use rand::Rng;
+use serde::{Deserialize, Serialize};
+
 use crate::common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_SIZE_I32};
 use crate::common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
 use crate::extras::block_ids::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID, WATER_BLOCK_ID};
 use crate::extras::chunks;
-use noise::{NoiseFn, Perlin};
-use rand::Rng;
-use serde::{Deserialize, Serialize};
 
 pub mod experiment1;
 pub mod mountain_archipelago;
@@ -30,6 +31,10 @@ pub struct SingleBlock {
 }
 
 impl WorldGen for SingleBlock {
+    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+        self.block_mappings = mappings;
+    }
+
     fn get(&self, _pos: &ChunkPosition, _zoom: f64) -> Chunk {
         // TODO: implement zoom?
         let mut chunk = UnpackedChunk::default();
@@ -42,10 +47,6 @@ impl WorldGen for SingleBlock {
             *self.block_mappings.get(GRASS_BLOCK_ID).unwrap(),
         );
         chunk.into()
-    }
-
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
-        self.block_mappings = mappings;
     }
 }
 
@@ -196,6 +197,7 @@ impl WorldGen for Bowl {
         chunk.into()
     }
 }
+
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct PerlinNoise {
     pub block_mappings: HashMap<BlockId, ChunkBlockId>,
@@ -344,9 +346,11 @@ impl WorldGen for Alternating {
 mod tests {
     extern crate test;
 
-    use super::*;
-    use crate::extras::{block_ids::default_block_ids, chunks::filled_chunk};
     use test::Bencher;
+
+    use crate::extras::{block_ids::default_block_ids, chunks::filled_chunk};
+
+    use super::*;
 
     #[bench]
     fn bench_filled_chunk(b: &mut Bencher) {

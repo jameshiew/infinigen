@@ -2,12 +2,14 @@ use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::f32::consts::PI;
 
+use bevy::prelude::*;
+use bevy_common_assets::ron::RonAssetPlugin;
+use nalgebra::{Matrix4, Vector3};
+use nalgebra::{Perspective3, Quaternion, UnitQuaternion};
+
 use crate::common::chunks::CHUNK_SIZE_F32;
 use crate::common::world::{ChunkPosition, WorldPosition};
 use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
-use bevy::prelude::*;
-use bevy_common_assets::ron::RonAssetPlugin;
-use nalgebra::{Perspective3, Quaternion, UnitQuaternion};
 
 use self::assets::{check_assets, load_assets, setup, AppState, BlockDefinition, Registry};
 
@@ -79,8 +81,6 @@ pub fn init_config(mut scene: ResMut<Scene>, config: Res<Config>) {
     scene.loaded = HashMap::with_capacity(initial_capacity);
 }
 
-use nalgebra::{Matrix4, Vector3};
-
 #[derive(Event)]
 pub enum ManageChunksEvent {
     RefreshChunkOpsQueue,
@@ -100,7 +100,7 @@ pub fn handle_update_settings_ev(
     mut update_evs: EventReader<UpdateSettingsEvent>,
     mut manage_evs: EventWriter<ManageChunksEvent>,
 ) {
-    for ev in update_evs.iter() {
+    for ev in update_evs.read() {
         match ev {
             UpdateSettingsEvent::HorizontalViewDistance(hview_distance) => {
                 tracing::info!(
@@ -148,7 +148,7 @@ pub fn check_should_update_chunks(
     mut reload_evs: EventReader<ManageChunksEvent>,
 ) {
     let mut should_update = false;
-    for ev in reload_evs.iter() {
+    for ev in reload_evs.read() {
         if matches!(ev, ManageChunksEvent::ReloadAllChunks) {
             tracing::info!("Reloading all chunks");
             scene.ops.clear();
@@ -160,7 +160,7 @@ pub fn check_should_update_chunks(
         }
         should_update = true;
     }
-    if reload_evs.iter().next().is_some() {
+    if reload_evs.read().next().is_some() {
         tracing::info!("Reloading all chunks");
         scene.ops.clear();
         for (_, eids) in scene.loaded.drain() {
@@ -281,6 +281,7 @@ pub struct Plugin;
 
 impl bevy::prelude::Plugin for Plugin {
     fn build(&self, app: &mut App) {
+        tracing::info!("Initializing scene plugin");
         app.init_resource::<Scene>()
             .add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
             .insert_resource(ClearColor(SKY_COLOR))

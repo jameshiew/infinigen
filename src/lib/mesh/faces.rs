@@ -1,12 +1,13 @@
+use block_mesh::ndshape::ConstShape;
+use block_mesh::{OrientedBlockFace, RIGHT_HANDED_Y_UP_CONFIG};
+use strum::IntoEnumIterator;
+
 use crate::common::chunks::{UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_U32};
 use crate::common::world::BlockPosition;
 use crate::mesh::block::VoxelBlock;
 use crate::mesh::shapes;
 use crate::mesh::shapes::{ChunkFace, ChunkFaceShape, PaddedChunk, PaddedChunkShape};
 use crate::scene::assets::BlockMappings;
-use block_mesh::ndshape::ConstShape;
-use block_mesh::{OrientedBlockFace, RIGHT_HANDED_Y_UP_CONFIG};
-use strum::IntoEnumIterator;
 
 pub const RHS_FACES: [OrientedBlockFace; 6] = RIGHT_HANDED_Y_UP_CONFIG.faces;
 

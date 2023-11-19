@@ -1,5 +1,8 @@
 #![feature(test)]
 
+use bevy::prelude::Msaa;
+use bevy::prelude::Plugin;
+
 pub mod camera;
 pub mod chunks;
 pub mod common;
@@ -11,9 +14,6 @@ pub mod mesh;
 pub mod render;
 pub mod scene;
 pub mod settings;
-
-use bevy::prelude::Msaa;
-use bevy::prelude::Plugin;
 
 pub struct ClientPlugin {
     config: settings::Config,
@@ -27,7 +27,7 @@ impl ClientPlugin {
 
 impl Plugin for ClientPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        tracing::info!("Settings: {:#?}", self.config);
+        tracing::info!("Initializing client plugin with config: {:#?}", self.config);
         app.insert_resource(self.config.clone())
             .insert_resource(Msaa::Off)
             .add_plugins((

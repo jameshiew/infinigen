@@ -1,16 +1,16 @@
 //! Converts from our native mesh types to Bevy meshes
 
-use crate::common::chunks::UnpackedChunk;
-use crate::scene::assets::BlockMappings;
 use bevy::prelude::*;
 use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::render::render_resource::PrimitiveTopology;
 
+use crate::common::chunks::UnpackedChunk;
 use crate::mesh::faces::prepare_padded_chunk;
 use crate::mesh::shapes::ChunkFace;
 use crate::mesh::{
     mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces, textures::TextureMap, MeshInfo,
 };
+use crate::scene::assets::BlockMappings;
 
 pub fn to_bevy_mesh(
     MeshInfo {

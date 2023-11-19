@@ -15,26 +15,28 @@ pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<UiState>()
-            .init_resource::<chunk_borders::ChunkBordersState>()
-            .add_plugins((
-                EguiPlugin,
-                FrameTimeDiagnosticsPlugin,
-                EntityCountDiagnosticsPlugin,
-                WireframePlugin,
-                MaterialPlugin::<LineMaterial>::default(),
-                WorldInspectorPlugin::new(),
-            ))
-            .add_systems(
-                Update,
-                (
-                    display_debug_info.run_if(resource_equals(UiState {
-                        show_debug_info: true,
-                    })),
-                    toggle_debug_info,
-                    wireframe::toggle,
-                    chunk_borders::toggle,
-                ),
-            );
+        tracing::info!("Initializing debug UI plugin");
+        let application = app.init_resource::<UiState>();
+        application.init_resource::<chunk_borders::ChunkBordersState>();
+
+        let plugins = (
+            EguiPlugin,
+            FrameTimeDiagnosticsPlugin,
+            EntityCountDiagnosticsPlugin,
+            WireframePlugin,
+            WorldInspectorPlugin::new(),
+            MaterialPlugin::<LineMaterial>::default(),
+        );
+        let systems = (
+            display_debug_info.run_if(resource_equals(UiState {
+                show_debug_info: true,
+            })),
+            toggle_debug_info,
+            wireframe::toggle,
+            chunk_borders::toggle,
+        );
+        application
+            .add_plugins(plugins)
+            .add_systems(Update, systems);
     }
 }
