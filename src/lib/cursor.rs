@@ -42,6 +42,7 @@ pub struct CursorPlugin;
 
 impl Plugin for CursorPlugin {
     fn build(&self, app: &mut App) {
+        tracing::info!("Initializing cursor plugin");
         app.add_systems(Startup, (setup,))
             .add_systems(Update, (handle_input,));
     }

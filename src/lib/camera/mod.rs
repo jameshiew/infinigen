@@ -9,6 +9,7 @@ pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
+        tracing::info!("Initializing camera plugin");
         app.add_systems(Startup, (settings::setup,))
             .init_resource::<KeyBindings>()
             .init_resource::<InputState>()

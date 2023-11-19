@@ -17,6 +17,7 @@ pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
+        tracing::info!("Initializing debug UI plugin");
         let application = app.init_resource::<UiState>();
         #[cfg(feature = "chunk-borders")]
         application.init_resource::<chunk_borders::ChunkBordersState>();
