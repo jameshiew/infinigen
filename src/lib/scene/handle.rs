@@ -1,14 +1,14 @@
 use std::collections::HashSet;
 
+use bevy::{prelude::*, tasks::AsyncComputeTaskPool};
+
 use crate::{
     chunks::{registry::ChunkStatus, tasks::GenerateChunk},
     common::{
-        chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F32},
+        chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, UnpackedChunk},
         world::{BlockPosition, BlockVisibility, ChunkBlockId, WorldPosition},
     },
 };
-use bevy::{prelude::*, tasks::AsyncComputeTaskPool};
-
 use crate::{
     chunks::registry::ChunkRegistry,
     scene::{assets::MaterialType, ChunkOp},
@@ -183,7 +183,7 @@ pub fn process_ops(
                     material,
                     transform,
                     ..default()
-                },))
+                }, ))
                 .id();
 
             eids.insert(eid);

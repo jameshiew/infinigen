@@ -1,13 +1,14 @@
 use std::process::ExitCode;
 
 use bevy::{
+    DefaultPlugins,
     log::LogPlugin,
     prelude::*,
     window::{Window, WindowPlugin, WindowResolution},
-    DefaultPlugins,
 };
 use config::Config;
-use infinigen::{extras::worldgen::WorldGenTypes, ClientPlugin};
+
+use infinigen::{ClientPlugin, extras::worldgen::WorldGenTypes};
 
 const APP_NAME: &str = "infinigen";
 const CONFIG_PREFIX: &str = "infinigen_";
@@ -63,7 +64,7 @@ fn main() -> ExitCode {
                     ..default()
                 }),
         )
-        .add_plugins((ClientPlugin::new(cfg),))
+        .add_plugins((ClientPlugin::new(cfg), ))
         .run();
     ExitCode::SUCCESS
 }

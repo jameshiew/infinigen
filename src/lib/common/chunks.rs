@@ -1,8 +1,9 @@
 use std::fmt;
 
-use crate::common::world::BlockPosition;
 use ndarray::Array3;
 use serde::{Deserialize, Serialize};
+
+use crate::common::world::BlockPosition;
 
 use super::world::ChunkBlockId;
 

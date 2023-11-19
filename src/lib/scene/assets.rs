@@ -5,7 +5,7 @@ use std::{
 
 use bevy::{
     asset::LoadState,
-    prelude::{IntoSystemConfigs, *},
+    prelude::{*, IntoSystemConfigs},
     reflect::TypePath,
 };
 use serde::{Deserialize, Serialize};
@@ -29,17 +29,17 @@ pub enum MaterialType {
 }
 
 #[derive(
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-    Serialize,
-    Deserialize,
-    Ord,
-    PartialOrd,
-    TypePath,
-    bevy::reflect::TypeUuid,
+Debug,
+Clone,
+PartialEq,
+Eq,
+Hash,
+Serialize,
+Deserialize,
+Ord,
+PartialOrd,
+TypePath,
+bevy::reflect::TypeUuid,
 )]
 #[uuid = "125a8e86-14d2-4c46-9c45-06b0c80cae11"]
 pub struct BlockDefinition {

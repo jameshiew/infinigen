@@ -1,9 +1,10 @@
 use std::sync::{Arc, RwLock};
 
+use bevy::prelude::*;
+
 use crate::common::chunks::Chunk;
 use crate::common::world::{ChunkPosition, WorldGen};
 use crate::extras::worldgen;
-use bevy::prelude::*;
 
 #[derive(Resource)]
 pub struct FakeClient {

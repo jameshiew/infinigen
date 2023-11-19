@@ -1,5 +1,5 @@
 //! Helpers for creating chunks.
-use crate::common::chunks::{UnpackedChunk, CHUNK_SIZE};
+use crate::common::chunks::{CHUNK_SIZE, UnpackedChunk};
 use crate::common::world::{BlockPosition, ChunkBlockId};
 
 pub fn filled_chunk(block: ChunkBlockId) -> UnpackedChunk {

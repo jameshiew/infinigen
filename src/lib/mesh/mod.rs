@@ -1,15 +1,15 @@
 //! This module is concerned with meshing chunks, and not with rendering.
 use block_mesh::{
-    greedy_quads, ndshape::ConstShape, visible_block_faces, GreedyQuadsBuffer, UnitQuadBuffer,
+    greedy_quads, GreedyQuadsBuffer, ndshape::ConstShape, UnitQuadBuffer, visible_block_faces,
 };
 use block_mesh::{UnorientedQuad, Voxel, VoxelVisibility};
-
-use crate::common::chunks::{UnpackedChunk, CHUNK_SIZE};
-use crate::common::world::{BlockPosition, LocalPosition};
+use rand::Rng;
 
 use faces::RHS_FACES;
-use rand::Rng;
-use shapes::{PaddedChunk, PaddedChunkShape, PADDED_CHUNK_MAX_INDEX};
+use shapes::{PADDED_CHUNK_MAX_INDEX, PaddedChunk, PaddedChunkShape};
+
+use crate::common::chunks::{CHUNK_SIZE, UnpackedChunk};
+use crate::common::world::{BlockPosition, LocalPosition};
 
 use self::block::VoxelBlock;
 use self::textures::{Face, TextureMap};
@@ -318,11 +318,11 @@ pub fn mesh_chunk_naive(chunk: UnpackedChunk) -> Vec<LocalPosition> {
                     && west.is_some()
                     && south.is_some()
                     && !(bx == 0
-                        || bx == CHUNK_SIZE - 1
-                        || by == 0
-                        || by == CHUNK_SIZE - 1
-                        || bz == 0
-                        || bz == CHUNK_SIZE - 1)
+                    || bx == CHUNK_SIZE - 1
+                    || by == 0
+                    || by == CHUNK_SIZE - 1
+                    || bz == 0
+                    || bz == CHUNK_SIZE - 1)
                 {
                     continue;
                 }
