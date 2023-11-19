@@ -2,7 +2,7 @@
 use bevy::{
     pbr::{MaterialPipeline, MaterialPipelineKey},
     prelude::*,
-    reflect::{TypePath, TypeUuid},
+    reflect::TypePath,
     render::{
         mesh::{MeshVertexBufferLayout, PrimitiveTopology},
         render_resource::{
@@ -38,8 +38,7 @@ impl From<LineList> for Mesh {
     }
 }
 
-#[derive(Default, AsBindGroup, TypeUuid, Debug, Clone, TypePath)]
-#[uuid = "050ce6ac-080a-4d8c-b6b5-b5bab7560d8f"]
+#[derive(Asset, TypePath, Default, AsBindGroup, Debug, Clone)]
 pub struct LineMaterial {
     #[uniform(0)]
     color: Color,

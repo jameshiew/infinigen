@@ -44,7 +44,6 @@ nalgebra = "0.32.2"
 [features]
 default = ["dynamic-linking"]
 dynamic-linking = ["bevy/dynamic_linking"]
-chunk-borders = []
 
 [profile.dev]
 opt-level = 1

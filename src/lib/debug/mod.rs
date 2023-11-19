@@ -4,11 +4,9 @@ use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-#[cfg(feature = "chunk-borders")]
 use self::chunk_borders::LineMaterial;
 use self::info::{display_debug_info, toggle_debug_info, UiState};
 
-#[cfg(feature = "chunk-borders")]
 mod chunk_borders;
 mod info;
 mod wireframe;
@@ -19,7 +17,6 @@ impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing debug UI plugin");
         let application = app.init_resource::<UiState>();
-        #[cfg(feature = "chunk-borders")]
         application.init_resource::<chunk_borders::ChunkBordersState>();
 
         let plugins = (
@@ -28,7 +25,6 @@ impl Plugin for UiPlugin {
             EntityCountDiagnosticsPlugin,
             WireframePlugin,
             WorldInspectorPlugin::new(),
-            #[cfg(feature = "chunk-borders")]
             MaterialPlugin::<LineMaterial>::default(),
         );
         let systems = (
@@ -37,7 +33,6 @@ impl Plugin for UiPlugin {
             })),
             toggle_debug_info,
             wireframe::toggle,
-            #[cfg(feature = "chunk-borders")]
             chunk_borders::toggle,
         );
         application
