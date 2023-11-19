@@ -27,7 +27,7 @@ impl ClientPlugin {
 
 impl Plugin for ClientPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        tracing::info!("Settings: {:#?}", self.config);
+        tracing::info!("Initializing client plugin with config: {:#?}", self.config);
         app.insert_resource(self.config.clone())
             .insert_resource(Msaa::Off)
             .add_plugins((

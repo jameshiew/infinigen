@@ -281,6 +281,7 @@ pub struct Plugin;
 
 impl bevy::prelude::Plugin for Plugin {
     fn build(&self, app: &mut App) {
+        tracing::info!("Initializing scene plugin");
         app.init_resource::<Scene>()
             .add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
             .insert_resource(ClearColor(SKY_COLOR))

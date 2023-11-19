@@ -35,6 +35,7 @@ pub struct FakeClientPlugin;
 
 impl Plugin for FakeClientPlugin {
     fn build(&self, app: &mut App) {
+        tracing::info!("Initializing fake client plugin");
         app.init_resource::<FakeClient>();
     }
 }
