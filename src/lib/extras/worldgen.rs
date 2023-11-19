@@ -4,7 +4,7 @@ use noise::{NoiseFn, Perlin};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
-use crate::common::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_SIZE_I32, UnpackedChunk};
+use crate::common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_SIZE_I32};
 use crate::common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
 use crate::extras::block_ids::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID, WATER_BLOCK_ID};
 use crate::extras::chunks;

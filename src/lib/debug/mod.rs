@@ -28,7 +28,7 @@ impl Plugin for UiPlugin {
             WireframePlugin,
             WorldInspectorPlugin::new(),
             #[cfg(feature = "chunk-borders")]
-                MaterialPlugin::<LineMaterial>::default(),
+            MaterialPlugin::<LineMaterial>::default(),
         );
         let systems = (
             display_debug_info.run_if(resource_equals(UiState {
@@ -37,13 +37,10 @@ impl Plugin for UiPlugin {
             toggle_debug_info,
             wireframe::toggle,
             #[cfg(feature = "chunk-borders")]
-                chunk_borders::toggle,
+            chunk_borders::toggle,
         );
         application
             .add_plugins(plugins)
-            .add_systems(
-                Update,
-                systems,
-            );
+            .add_systems(Update, systems);
     }
 }

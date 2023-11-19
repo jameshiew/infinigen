@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 
 use crate::common::{
-    chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE, UnpackedChunk},
+    chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE},
     world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition},
 };
 use crate::extras::block_ids::{GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, SAND_BLOCK_ID, WATER_BLOCK_ID};
