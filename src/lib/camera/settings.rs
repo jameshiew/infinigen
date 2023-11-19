@@ -36,7 +36,7 @@ pub fn setup(mut commands: Commands, config: Res<Config>) {
                     hdr: true,
                     ..default()
                 },
-                projection: bevy::render::camera::Projection::Perspective(PerspectiveProjection {
+                projection: Projection::Perspective(PerspectiveProjection {
                     far: FAR,
                     ..Default::default()
                 }),

@@ -18,7 +18,7 @@ use crate::{
     },
     extras::worldgen,
     fake_client::FakeClient,
-    mesh::textures::{self, Face, FaceAppearance, TextureMap},
+    mesh::textures::{Face, FaceAppearance, TextureMap},
     settings::Config,
 };
 
@@ -48,7 +48,7 @@ pub struct BlockDefinition {
     pub visibility: BlockVisibility,
     #[serde(default = "default_block_color")]
     pub color: [u8; 4],
-    pub textures: Option<BTreeMap<textures::Face, String>>,
+    pub textures: Option<BTreeMap<Face, String>>,
 }
 
 fn default_block_color() -> [u8; 4] {
