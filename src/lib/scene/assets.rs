@@ -100,19 +100,11 @@ pub struct Registry {
     pub block_mappings: BlockMappings,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+#[derive(States, Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub enum AppState {
     #[default]
     LoadAssets,
     RegisterAssets,
-}
-
-impl States for AppState {
-    type Iter = std::array::IntoIter<AppState, 2>;
-
-    fn variants() -> Self::Iter {
-        [AppState::LoadAssets, AppState::RegisterAssets].into_iter()
-    }
 }
 
 pub fn load_assets(mut registry: ResMut<Registry>, asset_server: Res<AssetServer>) {
