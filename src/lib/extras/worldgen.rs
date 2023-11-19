@@ -31,6 +31,10 @@ pub struct SingleBlock {
 }
 
 impl WorldGen for SingleBlock {
+    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+        self.block_mappings = mappings;
+    }
+
     fn get(&self, _pos: &ChunkPosition, _zoom: f64) -> Chunk {
         // TODO: implement zoom?
         let mut chunk = UnpackedChunk::default();
@@ -43,10 +47,6 @@ impl WorldGen for SingleBlock {
             *self.block_mappings.get(GRASS_BLOCK_ID).unwrap(),
         );
         chunk.into()
-    }
-
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
-        self.block_mappings = mappings;
     }
 }
 

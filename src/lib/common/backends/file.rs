@@ -64,6 +64,16 @@ impl PersistentWorld {
 }
 
 impl WorldGen for PersistentWorld {
+    fn initialize(
+        &mut self,
+        _mappings: std::collections::HashMap<
+            crate::common::world::BlockId,
+            crate::common::world::ChunkBlockId,
+        >,
+    ) {
+        todo!()
+    }
+
     /// Attempts to get the chunk from disk. Does not propagate errors, only logs warnings and returns None.
     fn get(&self, pos: &ChunkPosition, zoom: f64) -> Chunk {
         let exists = match self.backend.chunk_exists(pos) {
@@ -106,15 +116,5 @@ impl WorldGen for PersistentWorld {
                 }
             },
         }
-    }
-
-    fn initialize(
-        &mut self,
-        _mappings: std::collections::HashMap<
-            crate::common::world::BlockId,
-            crate::common::world::ChunkBlockId,
-        >,
-    ) {
-        todo!()
     }
 }

@@ -82,6 +82,10 @@ const MIN_Y_HEIGHT: i32 = -6;
 
 /// Based on <https://www.youtube.com/watch?v=CSa5O6knuwI>
 impl WorldGen for MountainIslands {
+    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+        self.block_mappings = mappings;
+    }
+
     fn get(&self, pos: &ChunkPosition, zoom: f64) -> Chunk {
         if pos.y < MIN_Y_HEIGHT {
             return Chunk::Empty;
@@ -256,10 +260,6 @@ impl WorldGen for MountainIslands {
         }
 
         chunk.into()
-    }
-
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
-        self.block_mappings = mappings;
     }
 }
 
