@@ -1,10 +1,9 @@
-use crate::common::chunks;
 use crate::common::chunks::CHUNK_SIZE_U32;
 use crate::mesh::block::VoxelBlock;
 use block_mesh::ndshape::{ConstShape, ConstShape2u32, ConstShape3u32};
 
 // 1-voxel boundary padding around the chunk is necessary
-pub const PADDED_CHUNK_SIZE: u32 = chunks::CHUNK_SIZE_U32 + 2;
+pub const PADDED_CHUNK_SIZE: u32 = CHUNK_SIZE_U32 + 2;
 pub const PADDED_CHUNK_MAX_INDEX: u32 = PADDED_CHUNK_SIZE - 1;
 
 pub type PaddedChunkShape = ConstShape3u32<PADDED_CHUNK_SIZE, PADDED_CHUNK_SIZE, PADDED_CHUNK_SIZE>;
