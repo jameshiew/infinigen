@@ -289,7 +289,6 @@ impl bevy::prelude::Plugin for Plugin {
             .init_resource::<Registry>()
             .add_state::<AppState>()
             .add_event::<UpdateSettingsEvent>()
-            .add_event::<UpdateSettingsEvent>()
             .add_event::<ManageChunksEvent>()
             .add_systems(OnEnter(AppState::LoadAssets), load_assets)
             .add_systems(OnEnter(AppState::RegisterAssets), setup)
