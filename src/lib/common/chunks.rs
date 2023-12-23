@@ -101,6 +101,6 @@ impl UnpackedChunk {
     }
 
     pub fn is_empty(&self) -> bool {
-        self.count_not_empty() >= 1
+        self.count_not_empty() == 0
     }
 }
