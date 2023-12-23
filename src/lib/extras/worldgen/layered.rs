@@ -13,6 +13,7 @@ use splines::{Interpolation, Key, Spline};
 use std::collections::HashMap;
 use std::num::NonZeroUsize;
 
+/// Layered attempts to generate a world using passes (see <https://www.youtube.com/watch?v=YyVAaJqYAfE>)
 #[derive(Debug)]
 pub struct Layered {
     terrain_cache: HashMap<ZoomLevel, LruCache<ChunkPosition, Chunk>>,
