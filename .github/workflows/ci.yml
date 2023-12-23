@@ -12,8 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install Rust toolchain
-        run: cargo
       - run: rustup component add rustfmt
       - run: cargo fmt --all -- --check
       - name: Install system packages needed by Bevy
