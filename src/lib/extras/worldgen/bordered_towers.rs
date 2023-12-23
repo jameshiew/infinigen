@@ -15,7 +15,7 @@ impl WorldGen for BorderedTowers {
         self.block_mappings = mappings;
     }
 
-    fn get(&self, pos: &ChunkPosition, _zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, _zoom: f64) -> Chunk {
         // TODO: implement zoom
         if pos.y < -1 {
             return Chunk::Empty;

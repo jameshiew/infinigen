@@ -25,7 +25,7 @@ impl Default for FakeClient {
 impl FakeClient {
     pub fn get_chunk(&self, zoom_level: i8, pos: &ChunkPosition) -> Chunk {
         self.world
-            .read()
+            .write()
             .unwrap()
             .get(pos, 2f64.powf(zoom_level as f64))
     }

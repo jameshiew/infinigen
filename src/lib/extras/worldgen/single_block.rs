@@ -13,7 +13,7 @@ impl WorldGen for SingleBlock {
         self.block_mappings = mappings;
     }
 
-    fn get(&self, _pos: &ChunkPosition, _zoom: f64) -> Chunk {
+    fn get(&mut self, _pos: &ChunkPosition, _zoom: f64) -> Chunk {
         // TODO: implement zoom?
         let mut chunk = UnpackedChunk::default();
         chunk.insert(

@@ -13,7 +13,7 @@ impl WorldGen for Alternating {
     fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
-    fn get(&self, pos: &ChunkPosition, _zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, _zoom: f64) -> Chunk {
         // TODO: implement zoom?
         if pos.y % 2 == 0 {
             if pos.x % 2 == 0 || pos.z % 2 == 0 {
