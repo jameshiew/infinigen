@@ -1,3 +1,4 @@
+/// Zero is no zoom. Negative zoom levels zoom out, positive zoom levels zoom in.
 #[derive(Debug, Default, Copy, Clone, Eq, Hash, PartialEq, Ord, PartialOrd)]
 pub struct ZoomLevel(pub i8);
 
