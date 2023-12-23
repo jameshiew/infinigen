@@ -62,9 +62,9 @@ pub fn display_debug_info(
         ui.label(format!("Chunk: {:?}", chunk_pos));
 
         let block_pos = [
-            (camera_wpos.translation.x).floor() as i32,
-            (camera_wpos.translation.y).floor() as i32,
-            (camera_wpos.translation.z).floor() as i32,
+            camera_wpos.translation.x.floor() as i32,
+            camera_wpos.translation.y.floor() as i32,
+            camera_wpos.translation.z.floor() as i32,
         ];
         ui.label(format!("Block: {:?}", block_pos));
 
