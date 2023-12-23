@@ -7,6 +7,7 @@ mod bordered_towers;
 mod bowl;
 pub mod experiment1;
 pub mod flat;
+mod layered;
 pub mod mountain_archipelago;
 mod perlin_noise;
 mod random;
@@ -26,6 +27,7 @@ pub enum WorldGenTypes {
     Alternating,
     SingleBlock,
     Experiment1,
+    Layered,
 }
 
 impl From<WorldGenTypes> for Box<dyn WorldGen + Send + Sync> {
@@ -43,6 +45,7 @@ impl From<WorldGenTypes> for Box<dyn WorldGen + Send + Sync> {
             WorldGenTypes::SingleBlock => Box::<single_block::SingleBlock>::default(),
             WorldGenTypes::Experiment1 => Box::<experiment1::Experiment1>::default(),
             WorldGenTypes::Bowl => Box::<bowl::Bowl>::default(),
+            WorldGenTypes::Layered => Box::<layered::Layered>::default(),
         }
     }
 }
