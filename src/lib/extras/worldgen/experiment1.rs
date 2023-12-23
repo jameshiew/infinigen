@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 
@@ -10,7 +10,7 @@ use crate::common::{
 use crate::extras::block_ids::{GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, SAND_BLOCK_ID, WATER_BLOCK_ID};
 
 pub struct Experiment1 {
-    pub block_mappings: HashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
     heightmap: Fbm<Perlin>,
     // bigger = higher
     vertical_scale: f64,
@@ -21,7 +21,7 @@ pub struct Experiment1 {
 impl Default for Experiment1 {
     fn default() -> Self {
         Self {
-            block_mappings: HashMap::new(),
+            block_mappings: FxHashMap::default(),
             heightmap: Fbm::new(0)
                 .set_octaves(6)
                 .set_frequency(1.)
@@ -35,7 +35,7 @@ impl Default for Experiment1 {
 }
 
 impl WorldGen for Experiment1 {
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
 

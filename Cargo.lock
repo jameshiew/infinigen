@@ -2471,6 +2471,7 @@ dependencies = [
  "ndarray",
  "noise",
  "rand 0.8.5",
+ "rustc-hash",
  "serde",
  "splines",
  "strum",

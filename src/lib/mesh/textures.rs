@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 use bevy::sprite::TextureAtlas;
 use serde::{Deserialize, Serialize};
@@ -47,7 +47,7 @@ pub struct TextureMap {
     /// Size of the texture atlas containing the textures.
     pub size: [usize; 2],
     /// Top left corner of texture in atlas, indexed by [`Face`].
-    appearance: HashMap<ChunkBlockId, [FaceAppearance; 6]>,
+    appearance: FxHashMap<ChunkBlockId, [FaceAppearance; 6]>,
 }
 
 #[derive(Debug, Clone, Copy)]

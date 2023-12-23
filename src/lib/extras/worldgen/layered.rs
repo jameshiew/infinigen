@@ -9,14 +9,14 @@ use crate::extras::block_ids::{
 };
 use lru::LruCache;
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
+use rustc_hash::FxHashMap;
 use splines::{Interpolation, Key, Spline};
-use std::collections::HashMap;
 use std::num::NonZeroUsize;
 
 /// Layered attempts to generate a world using passes (see <https://www.youtube.com/watch?v=YyVAaJqYAfE>)
 #[derive(Debug)]
 pub struct Layered {
-    terrain_cache: HashMap<ZoomLevel, LruCache<ChunkPosition, Chunk>>,
+    terrain_cache: FxHashMap<ZoomLevel, LruCache<ChunkPosition, Chunk>>,
     config: Config,
 }
 
@@ -55,7 +55,7 @@ impl Layered {
 
 #[derive(Debug, Clone)]
 pub struct Config {
-    pub block_mappings: HashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
     heightmap: Fbm<Perlin>,
     vertical_scale: f64,
     horizontal_smoothness: f64,
@@ -187,7 +187,7 @@ impl Config {
 }
 
 impl WorldGen for Layered {
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.config.block_mappings = mappings;
     }
 

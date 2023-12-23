@@ -3,16 +3,16 @@ use crate::common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, 
 use crate::common::zoom::ZoomLevel;
 use crate::extras::block_ids::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID};
 use crate::extras::chunks;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 /// Similar to Flat, but with a 1-block high border around each block, and a x+z tower of blocks in the middle. Chunks above the ground chunk have a block centred in the middle.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct BorderedTowers {
-    pub block_mappings: HashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
 }
 
 impl WorldGen for BorderedTowers {
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
 

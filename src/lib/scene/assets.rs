@@ -8,6 +8,7 @@ use bevy::{
     prelude::{IntoSystemConfigs, *},
     reflect::TypePath,
 };
+use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
 use strum::{EnumCount, IntoEnumIterator};
 
@@ -59,12 +60,12 @@ fn default_block_color() -> [u8; 4] {
 // TODO: overflow checking, safety
 #[derive(Debug, Default, Clone)]
 pub struct BlockMappings {
-    pub by_mapped_id: HashMap<ChunkBlockId, BlockDefinition>,
-    by_block_id: HashMap<BlockId, ChunkBlockId>,
+    pub by_mapped_id: FxHashMap<ChunkBlockId, BlockDefinition>,
+    by_block_id: FxHashMap<BlockId, ChunkBlockId>,
     next_free_mapped_id: ChunkBlockId,
 }
 
-impl From<&BlockMappings> for HashMap<BlockId, ChunkBlockId> {
+impl From<&BlockMappings> for FxHashMap<BlockId, ChunkBlockId> {
     fn from(value: &BlockMappings) -> Self {
         value.by_block_id.clone()
     }

@@ -1,6 +1,6 @@
 //! IDs of the default blocks provided in this repo.
 
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 use crate::common::world::{BlockId, ChunkBlockId};
 
@@ -15,8 +15,8 @@ pub const STONE_BLOCK_ID: &str = "infinigen:stone";
 pub const WATER_BLOCK_ID: &str = "infinigen:water";
 pub const WOOD_BLOCK_ID: &str = "infinigen:wood";
 
-pub fn default_block_ids() -> HashMap<BlockId, ChunkBlockId> {
-    HashMap::from([
+pub fn default_block_ids() -> FxHashMap<BlockId, ChunkBlockId> {
+    FxHashMap::from_iter(vec![
         (DIRT_BLOCK_ID.to_owned(), 1),
         (GRASS_BLOCK_ID.to_owned(), 2),
         (GRAVEL_BLOCK_ID.to_owned(), 3),

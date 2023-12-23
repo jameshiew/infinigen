@@ -2,15 +2,15 @@ use crate::common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE};
 use crate::common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
 use crate::common::zoom::ZoomLevel;
 use crate::extras::block_ids::GRASS_BLOCK_ID;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct SingleBlock {
-    pub block_mappings: HashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
 }
 
 impl WorldGen for SingleBlock {
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
 

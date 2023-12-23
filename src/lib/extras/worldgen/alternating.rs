@@ -3,15 +3,15 @@ use crate::common::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
 use crate::common::zoom::ZoomLevel;
 use crate::extras::block_ids::DIRT_BLOCK_ID;
 use crate::extras::chunks;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 #[derive(Debug, Default, Clone)]
 pub struct Alternating {
-    block_mappings: HashMap<BlockId, ChunkBlockId>,
+    block_mappings: FxHashMap<BlockId, ChunkBlockId>,
 }
 
 impl WorldGen for Alternating {
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
     fn get(&mut self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
