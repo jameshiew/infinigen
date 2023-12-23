@@ -59,7 +59,6 @@ pub fn process_ops(
     mut meshes: ResMut<Assets<Mesh>>,
     registry: Res<Registry>,
 ) {
-    let zoomf = 2f64.powf(scene.zoom_level as f64);
     let mut queued_generations = vec![];
     for _ in 0..CHUNK_OP_RATE {
         let Some(op) = scene.ops.pop_front() else {
@@ -71,7 +70,7 @@ pub fn process_ops(
         };
 
         let cpos = match op {
-            ChunkOp::Load(cpos) => match chunks.get_status(&scene.zoom_level, &cpos) {
+            ChunkOp::Load(cpos) => match chunks.get_status(scene.zoom_level.into(), &cpos) {
                 Some(status) => match status {
                     ChunkStatus::Present(_) => {
                         tracing::debug!(?cpos, "Will render chunk");
@@ -83,12 +82,16 @@ pub fn process_ops(
                     }
                 },
                 None => {
-                    chunks.set_status(&scene.zoom_level, &cpos, ChunkStatus::Generating);
+                    chunks.set_status(scene.zoom_level.into(), &cpos, ChunkStatus::Generating);
                     let thread_pool = AsyncComputeTaskPool::get();
                     let worldgen = client.world.clone();
-                    let zoom_level = scene.zoom_level;
+                    let zoom_level = scene.zoom_level.into();
                     let task = thread_pool.spawn(async move {
-                        (zoom_level, cpos, worldgen.write().unwrap().get(&cpos, zoomf))
+                        (
+                            zoom_level,
+                            cpos,
+                            worldgen.write().unwrap().get(&cpos, zoom_level),
+                        )
                     });
                     commands.spawn(GenerateChunk(task));
                     queued_generations.push(ChunkOp::Load(cpos));
@@ -109,7 +112,7 @@ pub fn process_ops(
         };
 
         let Chunk::Unpacked(chunk) = chunks.get_mut(
-            &scene.zoom_level,
+            scene.zoom_level.into(),
             &cpos,
             client.as_ref(),
             &registry.block_mappings,
@@ -120,7 +123,7 @@ pub fn process_ops(
         let opaque_mat = assets.get_material(MaterialType::DenseOpaque);
         let translucent_mat = assets.get_material(MaterialType::Translucent);
         let neighbor_faces = chunks.get_neighboring_faces_mut(
-            &scene.zoom_level,
+            scene.zoom_level.into(),
             &cpos,
             client.as_ref(),
             &registry.block_mappings,

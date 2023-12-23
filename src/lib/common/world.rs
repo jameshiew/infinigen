@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
 use crate::common::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
+use crate::common::zoom::ZoomLevel;
 
 pub type BlockId = String;
 pub type ChunkBlockId = u8;
@@ -11,7 +12,7 @@ pub type ChunkBlockId = u8;
 pub trait WorldGen {
     /// Must be called before getting any chunks. If a world gen depends on a [`BlockId`] for which there is no [`ChunkBlockId`] provided, it may panic!
     fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>);
-    fn get(&mut self, pos: &ChunkPosition, zoom: f64) -> Chunk;
+    fn get(&mut self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk;
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Ord, PartialOrd, Serialize, Deserialize)]
