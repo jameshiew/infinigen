@@ -16,13 +16,13 @@ pub mod water;
 
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum WorldGenTypes {
-    #[default]
     Flat,
     BorderedTowers,
     Bowl,
     Random,
     PerlinNoise,
     Water,
+    #[default]
     MountainIslands,
     Alternating,
     SingleBlock,
