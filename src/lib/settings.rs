@@ -43,7 +43,7 @@ impl Default for Config {
         Self {
             hview_distance: DEFAULT_HORIZONTAL_VIEW_DISTANCE,
             vview_distance: DEFAULT_VERTICAL_VIEW_DISTANCE,
-            world: WorldGenTypes::Flat,
+            world: WorldGenTypes::default(),
             save_dir: None,
             zoom_level: 0,
             wx: initial_x,
