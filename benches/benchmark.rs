@@ -3,7 +3,7 @@ use infinigen::common::world::{ChunkPosition, WorldGen};
 use infinigen::common::zoom::ZoomLevel;
 
 use infinigen::extras::worldgen::flat::Flat;
-use infinigen::extras::worldgen::mountain_archipelago::MountainIslands;
+use infinigen::extras::worldgen::mountain_islands::MountainIslands;
 use infinigen::extras::worldgen::perlin_noise::PerlinNoise;
 use infinigen::extras::{block_ids::default_block_ids, chunks::filled_chunk};
 
@@ -33,11 +33,11 @@ fn bench_perlin_noise(c: &mut Criterion) {
     });
 }
 
-fn bench_mountain_archipelago(c: &mut Criterion) {
+fn bench_mountain_islands(c: &mut Criterion) {
     // TODO: vary seed and chunk position?
     let mut wgen = MountainIslands::default();
     wgen.initialize(default_block_ids());
-    c.bench_function("mountain archipelago", |b| {
+    c.bench_function("mountain islands", |b| {
         b.iter(|| {
             wgen.get(
                 black_box(&ChunkPosition::default()),
@@ -52,6 +52,6 @@ criterion_group!(
     bench_filled_chunk,
     bench_flat,
     bench_perlin_noise,
-    bench_mountain_archipelago
+    bench_mountain_islands
 );
 criterion_main!(benches);
