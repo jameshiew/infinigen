@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -11,7 +11,7 @@ pub type ChunkBlockId = u8;
 
 pub trait WorldGen {
     /// Must be called before getting any chunks. If a world gen depends on a [`BlockId`] for which there is no [`ChunkBlockId`] provided, it may panic!
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>);
+    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>);
     fn get(&mut self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk;
 }
 

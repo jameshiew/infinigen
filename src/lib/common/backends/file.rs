@@ -67,7 +67,7 @@ impl PersistentWorld {
 impl WorldGen for PersistentWorld {
     fn initialize(
         &mut self,
-        _mappings: std::collections::HashMap<
+        _mappings: rustc_hash::FxHashMap<
             crate::common::world::BlockId,
             crate::common::world::ChunkBlockId,
         >,

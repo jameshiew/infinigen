@@ -42,6 +42,7 @@ bracket-noise = "0.8.7"
 splines = "4.3.1"
 ndarray = { version = "0.15.6", features = ["serde"] }
 nalgebra = "0.32.3"
+rustc-hash = "1.1.0"
 
 [dev-dependencies]
 criterion = "0.5.1"
@@ -67,12 +68,12 @@ debug = 0
 opt-level = 3
 
 [profile.release]
-codegen-units = 1   # for bevy_rapier3d
+codegen-units = 1
 strip = "debuginfo"
 
 [profile.profiling]
 inherits = "release"
 # for profiling
-debug = true
+debug = 2
 split-debuginfo = "packed"
 strip = "none"
