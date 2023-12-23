@@ -262,22 +262,3 @@ impl WorldGen for MountainIslands {
         chunk.into()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    extern crate test;
-
-    use test::Bencher;
-
-    use crate::extras::block_ids::default_block_ids;
-
-    use super::*;
-
-    #[bench]
-    fn bench_mountain_archipelago(b: &mut Bencher) {
-        // TODO: vary seed and chunk position?
-        let mut wgen = MountainIslands::default();
-        wgen.initialize(default_block_ids());
-        b.iter(|| wgen.get(&ChunkPosition::default(), 1.));
-    }
-}
