@@ -12,7 +12,6 @@ pub struct FakeClient {
     pub world: Arc<RwLock<Box<dyn WorldGen + Send + Sync>>>,
 }
 
-#[allow(clippy::derivable_impls)] // https://github.com/rust-lang/rust-clippy/issues/10158
 impl Default for FakeClient {
     fn default() -> Self {
         let x: Box<dyn WorldGen + Send + Sync> = Box::<worldgen::flat::Flat>::default();
