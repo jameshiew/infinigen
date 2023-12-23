@@ -7,12 +7,12 @@ use serde::{Deserialize, Serialize};
 use crate::common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_SIZE_I32};
 use crate::common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
 use crate::extras::block_ids::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID, WATER_BLOCK_ID};
-use crate::extras::chunks;
+use crate::extras::{chunks, worldgen};
 
 pub mod experiment1;
 pub mod mountain_archipelago;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum WorldGenTypes {
     Flat,
     BorderedTowers,
@@ -23,6 +23,26 @@ pub enum WorldGenTypes {
     Alternating,
     SingleBlock,
     Experiment1,
+}
+
+impl From<WorldGenTypes> for Box<dyn WorldGen + Send + Sync> {
+    fn from(value: WorldGenTypes) -> Self {
+        match value {
+            WorldGenTypes::Flat => Box::<Flat>::default(),
+            WorldGenTypes::BorderedTowers => Box::<BorderedTowers>::default(),
+            WorldGenTypes::Random => Box::<Random>::default(),
+            WorldGenTypes::PerlinNoise => Box::<PerlinNoise>::default(),
+            WorldGenTypes::Water => Box::<Water>::default(),
+            WorldGenTypes::MountainIslands => {
+                Box::<mountain_archipelago::MountainIslands>::default()
+            }
+            WorldGenTypes::Alternating => Box::<Alternating>::default(),
+            WorldGenTypes::SingleBlock => Box::<SingleBlock>::default(),
+            WorldGenTypes::Experiment1 => {
+                Box::<experiment1::Experiment1>::default()
+            }
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
