@@ -13,8 +13,9 @@ mod random;
 mod single_block;
 mod water;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum WorldGenTypes {
+    #[default]
     Flat,
     BorderedTowers,
     Bowl,
