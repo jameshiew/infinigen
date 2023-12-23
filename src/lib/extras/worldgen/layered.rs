@@ -9,14 +9,14 @@ use crate::extras::block_ids::{
 };
 use lru::LruCache;
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
+use rustc_hash::FxHashMap;
 use splines::{Interpolation, Key, Spline};
-use std::collections::HashMap;
 use std::num::NonZeroUsize;
 
 /// Layered attempts to generate a world using passes (see <https://www.youtube.com/watch?v=YyVAaJqYAfE>)
 #[derive(Debug)]
 pub struct Layered {
-    terrain_cache: HashMap<ZoomLevel, LruCache<ChunkPosition, Chunk>>,
+    terrain_cache: FxHashMap<ZoomLevel, LruCache<ChunkPosition, Chunk>>,
     config: Config,
 }
 
@@ -55,7 +55,7 @@ impl Layered {
 
 #[derive(Debug, Clone)]
 pub struct Config {
-    pub block_mappings: HashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
     heightmap: Fbm<Perlin>,
     vertical_scale: f64,
     horizontal_smoothness: f64,
@@ -97,8 +97,7 @@ impl Config {
         wheights
     }
 
-    fn generate_terrain(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
-        let zoom = zoom_level.as_f64();
+    fn generate_terrain(&self, pos: &ChunkPosition, zoom: f64) -> Chunk {
         let mut unpacked = UnpackedChunk::default();
         let mut is_empty = true;
         let offset: WorldBlockPosition = pos.into();
@@ -135,8 +134,7 @@ impl Config {
         }
     }
 
-    pub fn layer(&self, pos: &ChunkPosition, zoom_level: ZoomLevel, unpacked: &mut UnpackedChunk) {
-        let zoom = zoom_level.as_f64();
+    pub fn layer(&self, pos: &ChunkPosition, zoom: f64, unpacked: &mut UnpackedChunk) {
         let offset: WorldBlockPosition = pos.into();
         let zoomed_offset = [
             offset.x as f64 / zoom,
@@ -187,7 +185,7 @@ impl Config {
 }
 
 impl WorldGen for Layered {
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.config.block_mappings = mappings;
     }
 
@@ -197,18 +195,19 @@ impl WorldGen for Layered {
                 .insert(zoom_level, LruCache::new(NonZeroUsize::new(1024).unwrap()));
         }
         let zoom_cache = self.terrain_cache.get_mut(&zoom_level).unwrap();
+        let zoom = zoom_level.as_f64();
         let mut terrain = zoom_cache
-            .get_or_insert(*pos, || self.config.generate_terrain(pos, zoom_level))
+            .get_or_insert(*pos, || self.config.generate_terrain(pos, zoom))
             .clone();
         match terrain {
             Chunk::Empty => {
                 let mut unpacked = Box::<UnpackedChunk>::default();
-                self.config.layer(pos, zoom_level, &mut unpacked);
+                self.config.layer(pos, zoom, &mut unpacked);
                 Chunk::Unpacked(unpacked)
             }
             Chunk::Unpacked(ref mut unpacked) => {
-                self.config.layer(pos, zoom_level, unpacked);
-                Chunk::Unpacked(unpacked.clone())
+                self.config.layer(pos, zoom, unpacked);
+                terrain
             }
         }
     }

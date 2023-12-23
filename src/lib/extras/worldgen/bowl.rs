@@ -3,15 +3,15 @@ use crate::common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, 
 use crate::common::zoom::ZoomLevel;
 use crate::extras::block_ids::DIRT_BLOCK_ID;
 use crate::extras::chunks;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Bowl {
-    pub block_mappings: HashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
 }
 
 impl WorldGen for Bowl {
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
     fn get(&mut self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {

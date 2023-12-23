@@ -1,11 +1,12 @@
 use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::VecDeque;
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use nalgebra::{Matrix4, Vector3};
 use nalgebra::{Perspective3, Quaternion, UnitQuaternion};
+use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::common::chunks::CHUNK_SIZE_F32;
 use crate::common::world::{ChunkPosition, WorldPosition};
@@ -32,7 +33,7 @@ pub struct Scene {
     pub zoom_level: i8,
 
     /// Loaded chunks and their entities.
-    pub loaded: HashMap<ChunkPosition, HashSet<Entity>>,
+    pub loaded: FxHashMap<ChunkPosition, FxHashSet<Entity>>,
     pub ops: VecDeque<ChunkOp>,
     pub is_processing_ops: bool, // hacky for crude benchmarking of performance
 }
@@ -78,7 +79,7 @@ pub fn init_config(mut scene: ResMut<Scene>, config: Res<Config>) {
         "Setting initial capacity for loaded chunks"
     );
     // TODO: spawn load ops for each chunk that will be in the initial view, then camera_cpos needn't be an option
-    scene.loaded = HashMap::with_capacity(initial_capacity);
+    scene.loaded = FxHashMap::default();
 }
 
 #[derive(Event)]
@@ -222,11 +223,11 @@ pub fn check_should_update_chunks(
     let combined_matrix = projection_matrix * view_matrix;
     let frustum_planes = visible_chunks::compute_frustum_planes(&combined_matrix);
 
-    let chunks_within_render_distance: HashSet<_> =
+    let chunks_within_render_distance: FxHashSet<_> =
         visible_chunks::in_distance(&current_cpos, scene.hview_distance, scene.vview_distance)
             .collect();
 
-    let already_loaded_or_loading: HashSet<_> = scene.loaded.keys().cloned().collect();
+    let already_loaded_or_loading: FxHashSet<_> = scene.loaded.keys().cloned().collect();
 
     let mut to_load: Vec<_> = chunks_within_render_distance
         .difference(&already_loaded_or_loading)

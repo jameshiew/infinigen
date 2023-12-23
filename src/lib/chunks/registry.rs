@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 use bevy::prelude::Resource;
 use strum::IntoEnumIterator;
@@ -14,7 +14,7 @@ use crate::scene::assets::BlockMappings;
 // Responsible for keeping track of chunks which have been received by this local client.
 #[derive(Default, Resource)]
 pub struct ChunkRegistry {
-    cached: HashMap<ZoomLevel, HashMap<ChunkPosition, ChunkStatus>>,
+    cached: FxHashMap<ZoomLevel, FxHashMap<ChunkPosition, ChunkStatus>>,
 }
 
 #[derive(Debug, Clone)]
@@ -56,7 +56,7 @@ impl ChunkRegistry {
                 chunks.insert(*cpos, status);
             }
             None => {
-                let mut chunks = HashMap::new();
+                let mut chunks = FxHashMap::default();
                 chunks.insert(*cpos, status);
                 self.cached.insert(zoom_level, chunks);
             }

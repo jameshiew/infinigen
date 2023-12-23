@@ -3,16 +3,16 @@ use crate::common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, 
 use crate::common::zoom::ZoomLevel;
 use crate::extras::block_ids::{GRASS_BLOCK_ID, WATER_BLOCK_ID};
 use crate::extras::chunks;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 /// A flat water world with solid blocks in the corners of chunks.
 #[derive(Debug, Default)]
 pub struct Water {
-    block_mappings: HashMap<BlockId, ChunkBlockId>,
+    block_mappings: FxHashMap<BlockId, ChunkBlockId>,
 }
 
 impl WorldGen for Water {
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
     fn get(&mut self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {

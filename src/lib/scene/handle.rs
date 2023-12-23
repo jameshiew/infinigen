@@ -1,6 +1,5 @@
-use std::collections::HashSet;
-
 use bevy::{prelude::*, tasks::AsyncComputeTaskPool};
+use rustc_hash::FxHashSet;
 
 use crate::{
     chunks::registry::ChunkRegistry,
@@ -178,7 +177,7 @@ pub fn process_ops(
         let transform = Transform::from_xyz(wpos.x, wpos.y, wpos.z);
 
         // TODO: the above meshing stuff should be async also
-        let mut eids = HashSet::new();
+        let mut eids = FxHashSet::default();
         for (mesh, material) in loads {
             let eid = commands
                 .spawn((PbrBundle {
