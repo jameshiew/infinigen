@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 use bracket_noise::prelude::{FastNoise, NoiseType};
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
@@ -15,7 +15,7 @@ use crate::extras::block_ids::{
 };
 
 pub struct MountainIslands {
-    pub block_mappings: HashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
     /// The world height at any given (x, z)
     heightmap: Fbm<Perlin>,
     verticality: Perlin,
@@ -83,7 +83,7 @@ const MIN_Y_HEIGHT: i32 = -6;
 
 /// Based on <https://www.youtube.com/watch?v=CSa5O6knuwI>
 impl WorldGen for MountainIslands {
-    fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
 

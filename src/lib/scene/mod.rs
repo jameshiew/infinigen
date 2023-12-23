@@ -1,11 +1,12 @@
 use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashSet, VecDeque};
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use nalgebra::{Matrix4, Vector3};
 use nalgebra::{Perspective3, Quaternion, UnitQuaternion};
+use rustc_hash::FxHashMap;
 
 use crate::common::chunks::CHUNK_SIZE_F32;
 use crate::common::world::{ChunkPosition, WorldPosition};
@@ -32,7 +33,7 @@ pub struct Scene {
     pub zoom_level: i8,
 
     /// Loaded chunks and their entities.
-    pub loaded: HashMap<ChunkPosition, HashSet<Entity>>,
+    pub loaded: FxHashMap<ChunkPosition, HashSet<Entity>>,
     pub ops: VecDeque<ChunkOp>,
     pub is_processing_ops: bool, // hacky for crude benchmarking of performance
 }
@@ -78,7 +79,7 @@ pub fn init_config(mut scene: ResMut<Scene>, config: Res<Config>) {
         "Setting initial capacity for loaded chunks"
     );
     // TODO: spawn load ops for each chunk that will be in the initial view, then camera_cpos needn't be an option
-    scene.loaded = HashMap::with_capacity(initial_capacity);
+    scene.loaded = FxHashMap::default();
 }
 
 #[derive(Event)]
