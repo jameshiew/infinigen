@@ -208,7 +208,7 @@ impl WorldGen for Layered {
             }
             Chunk::Unpacked(ref mut unpacked) => {
                 self.config.layer(pos, zoom_level, unpacked);
-                Chunk::Unpacked(unpacked.clone())
+                terrain
             }
         }
     }
