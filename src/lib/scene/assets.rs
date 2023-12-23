@@ -16,7 +16,6 @@ use crate::{
         backends::file,
         world::{BlockId, BlockVisibility, ChunkBlockId},
     },
-    extras::worldgen,
     fake_client::FakeClient,
     mesh::textures::{Face, FaceAppearance, TextureMap},
     settings::Config,
