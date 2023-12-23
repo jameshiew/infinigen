@@ -4,6 +4,7 @@ use bevy::prelude::*;
 
 use crate::common::chunks::Chunk;
 use crate::common::world::{ChunkPosition, WorldGen};
+use crate::common::zoom::ZoomLevel;
 use crate::extras::worldgen;
 
 #[derive(Resource)]
@@ -23,11 +24,8 @@ impl Default for FakeClient {
 
 /// Eventually will become a trait.
 impl FakeClient {
-    pub fn get_chunk(&self, zoom_level: i8, pos: &ChunkPosition) -> Chunk {
-        self.world
-            .write()
-            .unwrap()
-            .get(pos, 2f64.powf(zoom_level as f64))
+    pub fn get_chunk(&self, zoom_level: ZoomLevel, pos: &ChunkPosition) -> Chunk {
+        self.world.write().unwrap().get(pos, zoom_level)
     }
 }
 

@@ -1,5 +1,6 @@
 use crate::common::chunks::Chunk;
 use crate::common::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
+use crate::common::zoom::ZoomLevel;
 use crate::extras::block_ids::DIRT_BLOCK_ID;
 use crate::extras::chunks;
 use std::collections::HashMap;
@@ -14,7 +15,7 @@ impl WorldGen for Flat {
         self.block_mappings = mappings;
     }
 
-    fn get(&mut self, pos: &ChunkPosition, _zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
         // zoom doesn't change anything
         if pos.y == -1 {
             chunks::top_chunk(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap()).into()

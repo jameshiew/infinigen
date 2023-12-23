@@ -1,5 +1,6 @@
 use crate::common::chunks::Chunk;
 use crate::common::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
+use crate::common::zoom::ZoomLevel;
 use crate::extras::block_ids::DIRT_BLOCK_ID;
 use crate::extras::chunks;
 use std::collections::HashMap;
@@ -13,7 +14,7 @@ impl WorldGen for Alternating {
     fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
-    fn get(&mut self, pos: &ChunkPosition, _zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
         // TODO: implement zoom?
         if pos.y % 2 == 0 {
             if pos.x % 2 == 0 || pos.z % 2 == 0 {

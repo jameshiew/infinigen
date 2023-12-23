@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 
+use crate::common::zoom::ZoomLevel;
 use crate::common::{
     chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE},
     world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition},
@@ -38,7 +39,8 @@ impl WorldGen for Experiment1 {
         self.block_mappings = mappings;
     }
 
-    fn get(&mut self, pos: &ChunkPosition, zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
+        let zoom = zoom_level.as_f64();
         let mut chunk = UnpackedChunk::default();
         let mut is_empty = true;
         let offset: WorldPosition = pos.into();

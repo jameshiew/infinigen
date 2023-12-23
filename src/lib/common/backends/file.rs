@@ -5,6 +5,7 @@ use eyre::Result;
 
 use crate::common::chunks::{Chunk, UnpackedChunk};
 use crate::common::world::{ChunkPosition, WorldGen};
+use crate::common::zoom::ZoomLevel;
 
 /// Read/write chunks. A world is stored in a folder with chunks named like `x.y.z.chunk`. The chunks are simply stored using bincode.
 pub struct Backend {
@@ -75,7 +76,7 @@ impl WorldGen for PersistentWorld {
     }
 
     /// Attempts to get the chunk from disk. Does not propagate errors, only logs warnings and returns None.
-    fn get(&mut self, pos: &ChunkPosition, zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, zoom: ZoomLevel) -> Chunk {
         let exists = match self.backend.chunk_exists(pos) {
             Ok(exists) => exists,
             Err(err) => {

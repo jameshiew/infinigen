@@ -2,6 +2,7 @@ use crate::common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CH
 use crate::common::world::{
     BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition,
 };
+use crate::common::zoom::ZoomLevel;
 use crate::extras::block_ids::{GRASS_BLOCK_ID, STONE_BLOCK_ID};
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 use splines::{Interpolation, Key, Spline};
@@ -77,7 +78,8 @@ impl Layered {
         wheights
     }
 
-    fn get_terrain(&self, pos: &ChunkPosition, zoom: f64) -> UnpackedChunk {
+    fn get_terrain(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> UnpackedChunk {
+        let zoom = zoom_level.as_f64();
         let mut chunk = UnpackedChunk::default();
         let offset: WorldPosition = pos.into();
         let zoomed_offset = [
@@ -130,7 +132,7 @@ impl WorldGen for Layered {
         self.block_mappings = mappings;
     }
 
-    fn get(&mut self, pos: &ChunkPosition, zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, zoom: ZoomLevel) -> Chunk {
         let mut chunk = self.get_terrain(pos, zoom);
         if chunk.is_empty() {
             return Chunk::Empty;

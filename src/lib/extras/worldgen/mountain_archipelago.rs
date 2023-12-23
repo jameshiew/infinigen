@@ -4,6 +4,7 @@ use bracket_noise::prelude::{FastNoise, NoiseType};
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 use splines::{Interpolation, Key, Spline};
 
+use crate::common::zoom::ZoomLevel;
 use crate::common::{
     chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE},
     world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition},
@@ -86,10 +87,11 @@ impl WorldGen for MountainIslands {
         self.block_mappings = mappings;
     }
 
-    fn get(&mut self, pos: &ChunkPosition, zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
         if pos.y < MIN_Y_HEIGHT {
             return Chunk::Empty;
         }
+        let zoom = zoom_level.as_f64();
         // let snow_level: f64 = (SEA_LEVEL + self.vertical_scale) * zoom;
 
         let mut chunk = UnpackedChunk::default();
@@ -188,7 +190,7 @@ impl WorldGen for MountainIslands {
         }
 
         // TODO: skipping decoration if zoomed as it doesn't scale properly right now
-        if zoom != 1. {
+        if zoom_level != ZoomLevel::default() {
             return chunk.into();
         }
 
