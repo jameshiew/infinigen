@@ -29,7 +29,6 @@ eyre = "0.6.11"
 futures-lite = "2.1.0"
 strum = { version = "0.25.0", features = ["derive"] }
 lru = "0.12.1"
-tikv-jemallocator = "0.5.4"
 
 # instrumentation
 tracing = "0.1.40"

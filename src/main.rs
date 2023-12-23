@@ -10,9 +10,6 @@ use config::Config;
 
 use infinigen::ClientPlugin;
 
-#[global_allocator]
-static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
-
 const APP_NAME: &str = "infinigen";
 const CONFIG_PREFIX: &str = "infinigen_";
 const LOG_FILTER: &str = "info,wgpu_core=warn,wgpu_hal=warn,naga=info";
