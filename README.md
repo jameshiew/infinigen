@@ -11,13 +11,13 @@ This is a demo for Minecraft-like procedural generation using the [Bevy game eng
 ## Quickstart
 
 ```shell
-cargo run --release --no-default-features
+cargo run  # dynamically linked, compiles faster and runs slower
 ```
 
 or
 
 ```shell
-cargo run --release  # dynamically linked, compiles faster and runs slower
+cargo run --release --no-default-features  # best performance
 ```
 
 ### Controls
@@ -33,7 +33,5 @@ cargo run --release  # dynamically linked, compiles faster and runs slower
 Copy `config.example.ron` to `config.ron` if you want to adjust settings beforehand (e.g. initial start position).
 
 ## Development
-
-A nightly Rust version is used only to make compilation faster and to be able to run benchmarks with `cargo bench`. It should remain possible though to build release binaries using Rust stable.
 
 All textures are derived from images generated with [Midjourney](https://midjourney.com).
