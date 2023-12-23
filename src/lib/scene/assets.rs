@@ -251,21 +251,7 @@ pub fn setup(
         ..default()
     });
 
-    let mut worldgen: Box<dyn crate::common::world::WorldGen + Send + Sync> = match config.world {
-        worldgen::WorldGenTypes::Flat => Box::<worldgen::Flat>::default(),
-        worldgen::WorldGenTypes::BorderedTowers => Box::<worldgen::BorderedTowers>::default(),
-        worldgen::WorldGenTypes::Random => Box::<worldgen::Random>::default(),
-        worldgen::WorldGenTypes::PerlinNoise => Box::<worldgen::PerlinNoise>::default(),
-        worldgen::WorldGenTypes::Water => Box::<worldgen::Water>::default(),
-        worldgen::WorldGenTypes::MountainIslands => {
-            Box::<worldgen::mountain_archipelago::MountainIslands>::default()
-        }
-        worldgen::WorldGenTypes::Alternating => Box::<worldgen::Alternating>::default(),
-        worldgen::WorldGenTypes::SingleBlock => Box::<worldgen::SingleBlock>::default(),
-        worldgen::WorldGenTypes::Experiment1 => {
-            Box::<worldgen::experiment1::Experiment1>::default()
-        }
-    };
+    let mut worldgen: Box<dyn crate::common::world::WorldGen + Send + Sync> = config.world.into();
     worldgen.initialize((&registry.block_mappings).into());
     let worldgen = Arc::new(RwLock::new(worldgen));
     client.world = match &config.save_dir {
