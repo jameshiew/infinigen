@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use bevy::prelude::{default, Resource};
+use bevy::prelude::Resource;
 use serde::{Deserialize, Serialize};
 
 use crate::extras::worldgen::WorldGenTypes;
