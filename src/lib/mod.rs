@@ -1,5 +1,3 @@
-#![feature(test)]
-
 use bevy::prelude::Msaa;
 use bevy::prelude::Plugin;
 

@@ -41,6 +41,13 @@ splines = "4.3.1"
 ndarray = { version = "0.15.6", features = ["serde"] }
 nalgebra = "0.32.3"
 
+[dev-dependencies]
+criterion = "0.5.1"
+
+[[bench]]
+name = "benchmark"
+harness = false
+
 [features]
 default = ["dynamic-linking"]
 dynamic-linking = ["bevy/dynamic_linking"]

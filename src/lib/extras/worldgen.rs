@@ -341,34 +341,3 @@ impl WorldGen for Alternating {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    extern crate test;
-
-    use test::Bencher;
-
-    use crate::extras::{block_ids::default_block_ids, chunks::filled_chunk};
-
-    use super::*;
-
-    #[bench]
-    fn bench_filled_chunk(b: &mut Bencher) {
-        b.iter(|| filled_chunk(0));
-    }
-
-    #[bench]
-    fn bench_flat(b: &mut Bencher) {
-        let mut wgen = Flat::default();
-        wgen.initialize(default_block_ids());
-        let underground = ChunkPosition { x: 0, y: -1, z: 0 };
-        b.iter(|| wgen.get(&underground, 1.));
-    }
-
-    #[bench]
-    fn bench_perlin_noise(b: &mut Bencher) {
-        let mut wgen = PerlinNoise::default();
-        wgen.initialize(default_block_ids());
-        b.iter(|| wgen.get(&ChunkPosition::default(), 1.));
-    }
-}
