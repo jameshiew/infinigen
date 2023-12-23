@@ -29,6 +29,7 @@ eyre = "0.6.11"
 futures-lite = "2.1.0"
 strum = { version = "0.25.0", features = ["derive"] }
 lru = "0.12.1"
+tikv-jemallocator = "0.5.4"
 
 # instrumentation
 tracing = "0.1.40"
@@ -67,12 +68,12 @@ debug = 0
 opt-level = 3
 
 [profile.release]
-codegen-units = 1   # for bevy_rapier3d
+codegen-units = 1
 strip = "debuginfo"
 
 [profile.profiling]
 inherits = "release"
 # for profiling
-debug = true
+debug = 2
 split-debuginfo = "packed"
 strip = "none"
