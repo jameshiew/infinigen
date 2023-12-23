@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
 use crate::common::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
+use crate::common::zoom::ZoomLevel;
 
 pub type BlockId = String;
 pub type ChunkBlockId = u8;
@@ -11,7 +12,7 @@ pub type ChunkBlockId = u8;
 pub trait WorldGen {
     /// Must be called before getting any chunks. If a world gen depends on a [`BlockId`] for which there is no [`ChunkBlockId`] provided, it may panic!
     fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>);
-    fn get(&self, pos: &ChunkPosition, zoom: f64) -> Chunk;
+    fn get(&mut self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk;
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Ord, PartialOrd, Serialize, Deserialize)]
@@ -50,6 +51,14 @@ pub struct WorldPosition {
     pub z: f32,
 }
 
+/// Absolute position of a block in the world.
+#[derive(Debug, Clone, Copy)]
+pub struct WorldBlockPosition {
+    pub x: i32,
+    pub y: i32,
+    pub z: i32,
+}
+
 // Position of something relative to its own space. i.e. not the entire world
 #[derive(Debug, Clone, Copy)]
 pub struct LocalPosition {
@@ -64,6 +73,16 @@ impl From<&ChunkPosition> for WorldPosition {
             x: (cpos.x * CHUNK_SIZE_I32) as f32,
             y: (cpos.y * CHUNK_SIZE_I32) as f32,
             z: (cpos.z * CHUNK_SIZE_I32) as f32,
+        }
+    }
+}
+
+impl From<&ChunkPosition> for WorldBlockPosition {
+    fn from(cpos: &ChunkPosition) -> Self {
+        Self {
+            x: cpos.x * CHUNK_SIZE_I32,
+            y: cpos.y * CHUNK_SIZE_I32,
+            z: cpos.z * CHUNK_SIZE_I32,
         }
     }
 }

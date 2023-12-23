@@ -5,12 +5,11 @@ use strum::IntoEnumIterator;
 
 use crate::common::chunks::Chunk;
 use crate::common::world::ChunkPosition;
+use crate::common::zoom::ZoomLevel;
 use crate::fake_client::FakeClient;
 use crate::mesh::faces::extract_faces;
 use crate::mesh::shapes::{empty_chunk_face, ChunkFace};
 use crate::scene::assets::BlockMappings;
-
-type ZoomLevel = i8;
 
 // Responsible for keeping track of chunks which have been received by this local client.
 #[derive(Default, Resource)]
@@ -44,45 +43,40 @@ impl ChunkRegistry {
         self.cached.clear();
     }
 
-    pub fn get_status(&self, zoom_level: &ZoomLevel, cpos: &ChunkPosition) -> Option<ChunkStatus> {
-        match self.cached.get(zoom_level) {
+    pub fn get_status(&self, zoom_level: ZoomLevel, cpos: &ChunkPosition) -> Option<ChunkStatus> {
+        match self.cached.get(&zoom_level) {
             Some(chunks) => chunks.get(cpos).map(|status| status.to_owned()),
             None => None,
         }
     }
 
-    pub fn set_status(
-        &mut self,
-        zoom_level: &ZoomLevel,
-        cpos: &ChunkPosition,
-        status: ChunkStatus,
-    ) {
-        match self.cached.get_mut(zoom_level) {
+    pub fn set_status(&mut self, zoom_level: ZoomLevel, cpos: &ChunkPosition, status: ChunkStatus) {
+        match self.cached.get_mut(&zoom_level) {
             Some(chunks) => {
                 chunks.insert(*cpos, status);
             }
             None => {
                 let mut chunks = HashMap::new();
                 chunks.insert(*cpos, status);
-                self.cached.insert(*zoom_level, chunks);
+                self.cached.insert(zoom_level, chunks);
             }
         }
     }
 
     pub fn fetch_and_insert(
         &mut self,
-        zoom_level: &ZoomLevel,
+        zoom_level: ZoomLevel,
         position: &ChunkPosition,
         client: &FakeClient,
         block_mappings: &BlockMappings,
     ) -> ChunkInfo {
-        let chunk = client.get_chunk(*zoom_level, position);
+        let chunk = client.get_chunk(zoom_level, position);
         self.insert(zoom_level, position, chunk, block_mappings)
     }
 
     pub fn insert(
         &mut self,
-        zoom_level: &ZoomLevel,
+        zoom_level: ZoomLevel,
         position: &ChunkPosition,
         chunk: Chunk,
         block_mappings: &BlockMappings,
@@ -105,7 +99,7 @@ impl ChunkRegistry {
 
     pub fn get_mut(
         &mut self,
-        zoom_level: &ZoomLevel,
+        zoom_level: ZoomLevel,
         position: &ChunkPosition,
         client: &FakeClient,
         block_mappings: &BlockMappings,
@@ -121,7 +115,7 @@ impl ChunkRegistry {
 
     pub fn get_faces_mut(
         &mut self,
-        zoom_level: &ZoomLevel,
+        zoom_level: ZoomLevel,
         position: &ChunkPosition,
         client: &FakeClient,
         block_mappings: &BlockMappings,
@@ -137,7 +131,7 @@ impl ChunkRegistry {
     /// Returns the faces of neighboring chunks, in direction order. The bottom face of the chunk above, then the top face of the chunk below, etc.
     pub fn get_neighboring_faces_mut(
         &mut self,
-        zoom_level: &ZoomLevel,
+        zoom_level: ZoomLevel,
         position: &ChunkPosition,
         client: &FakeClient,
         block_mappings: &BlockMappings,

@@ -8,7 +8,7 @@ use bevy::{
 };
 use config::Config;
 
-use infinigen::{extras::worldgen::WorldGenTypes, ClientPlugin};
+use infinigen::ClientPlugin;
 
 const APP_NAME: &str = "infinigen";
 const CONFIG_PREFIX: &str = "infinigen_";
@@ -32,19 +32,7 @@ fn main() -> ExitCode {
                 "Couldn't load settings, using default configuration: {:?}",
                 err
             );
-            infinigen::settings::Config {
-                hview_distance: 8,
-                vview_distance: 8,
-                world: WorldGenTypes::MountainIslands,
-                wx: -1283.,
-                wy: 140.,
-                wz: -1752.,
-                rotation_x: -0.08,
-                rotation_y: -0.9,
-                rotation_z: -0.4,
-                rotation_w: 0.18,
-                ..default()
-            }
+            infinigen::settings::Config::default()
         }
     };
     App::new()
