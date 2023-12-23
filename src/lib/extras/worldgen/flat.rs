@@ -14,7 +14,7 @@ impl WorldGen for Flat {
         self.block_mappings = mappings;
     }
 
-    fn get(&self, pos: &ChunkPosition, _zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, _zoom: f64) -> Chunk {
         // zoom doesn't change anything
         if pos.y == -1 {
             chunks::top_chunk(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap()).into()

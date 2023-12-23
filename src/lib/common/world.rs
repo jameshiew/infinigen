@@ -11,7 +11,7 @@ pub type ChunkBlockId = u8;
 pub trait WorldGen {
     /// Must be called before getting any chunks. If a world gen depends on a [`BlockId`] for which there is no [`ChunkBlockId`] provided, it may panic!
     fn initialize(&mut self, mappings: HashMap<BlockId, ChunkBlockId>);
-    fn get(&self, pos: &ChunkPosition, zoom: f64) -> Chunk;
+    fn get(&mut self, pos: &ChunkPosition, zoom: f64) -> Chunk;
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Ord, PartialOrd, Serialize, Deserialize)]

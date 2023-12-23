@@ -88,7 +88,7 @@ pub fn process_ops(
                     let worldgen = client.world.clone();
                     let zoom_level = scene.zoom_level;
                     let task = thread_pool.spawn(async move {
-                        (zoom_level, cpos, worldgen.read().unwrap().get(&cpos, zoomf))
+                        (zoom_level, cpos, worldgen.write().unwrap().get(&cpos, zoomf))
                     });
                     commands.spawn(GenerateChunk(task));
                     queued_generations.push(ChunkOp::Load(cpos));

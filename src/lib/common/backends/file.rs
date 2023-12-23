@@ -75,7 +75,7 @@ impl WorldGen for PersistentWorld {
     }
 
     /// Attempts to get the chunk from disk. Does not propagate errors, only logs warnings and returns None.
-    fn get(&self, pos: &ChunkPosition, zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, zoom: f64) -> Chunk {
         let exists = match self.backend.chunk_exists(pos) {
             Ok(exists) => exists,
             Err(err) => {
@@ -95,7 +95,7 @@ impl WorldGen for PersistentWorld {
 
         // no chunk found, so attempt to generate it and persist it
         tracing::info!(?pos, "Generating and persisting chunk");
-        let chunk = self.generator.read().unwrap().get(pos, zoom);
+        let chunk = self.generator.write().unwrap().get(pos, zoom);
         match chunk {
             Chunk::Unpacked(chunk) => match self.backend.write(pos, &chunk) {
                 Ok(()) => {

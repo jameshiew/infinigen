@@ -38,7 +38,7 @@ impl WorldGen for Experiment1 {
         self.block_mappings = mappings;
     }
 
-    fn get(&self, pos: &ChunkPosition, zoom: f64) -> Chunk {
+    fn get(&mut self, pos: &ChunkPosition, zoom: f64) -> Chunk {
         let mut chunk = UnpackedChunk::default();
         let mut is_empty = true;
         let offset: WorldPosition = pos.into();
