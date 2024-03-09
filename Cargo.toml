@@ -22,13 +22,13 @@ block-mesh = { git = "https://github.com/bonsairobo/block-mesh-rs", rev = "793c5
 
 # serialization
 bincode = "1.3.3"
-serde = { version = "1.0.193", features = ["derive"] }
+serde = { version = "1.0.197", features = ["derive"] }
 
 # utils
-eyre = "0.6.11"
-futures-lite = "2.1.0"
+eyre = "0.6.12"
+futures-lite = "2.2.0"
 strum = { version = "0.26.1", features = ["derive"] }
-lru = "0.12.1"
+lru = "0.12.3"
 
 # instrumentation
 tracing = "0.1.40"
@@ -41,7 +41,7 @@ noise = "0.8.2"
 bracket-noise = "0.8.7"
 splines = "4.3.1"
 ndarray = { version = "0.15.6", features = ["serde"] }
-nalgebra = "0.32.3"
+nalgebra = "0.32.4"
 rustc-hash = "1.1.0"
 
 [dev-dependencies]
