@@ -3,7 +3,7 @@ name = "infinigen"
 version = "0.0.0"
 edition = "2021"
 publish = false
-rust-version = "1.70.0"
+rust-version = "1.76.0"
 
 [lib]
 path = "src/lib/mod.rs"
