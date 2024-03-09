@@ -27,7 +27,7 @@ serde = { version = "1.0.193", features = ["derive"] }
 # utils
 eyre = "0.6.11"
 futures-lite = "2.1.0"
-strum = { version = "0.25.0", features = ["derive"] }
+strum = { version = "0.26.1", features = ["derive"] }
 lru = "0.12.1"
 
 # instrumentation
