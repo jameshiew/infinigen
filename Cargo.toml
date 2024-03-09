@@ -15,7 +15,7 @@ bevy_egui = { version = "0.23.0" }
 bevy-inspector-egui = { version = "0.21.0" }
 
 # config
-config = { version = "0.13.4", default-features = false, features = ["ron"] }
+config = { version = "0.14.0", default-features = false, features = ["ron"] }
 
 # voxels
 block-mesh = { git = "https://github.com/bonsairobo/block-mesh-rs", rev = "793c53e82c12b3f7e9502006664c6e81f8b1c78a" }
