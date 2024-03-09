@@ -23,7 +23,7 @@ pub fn display_debug_info(
         ui.label(format!(
             "FPS: {:.02}",
             diagnostics
-                .get(FrameTimeDiagnosticsPlugin::FPS)
+                .get(&FrameTimeDiagnosticsPlugin::FPS)
                 .unwrap()
                 .average()
                 .unwrap_or_default()
@@ -31,7 +31,7 @@ pub fn display_debug_info(
         ui.label(format!(
             "Entities: {}",
             diagnostics
-                .get(EntityCountDiagnosticsPlugin::ENTITY_COUNT)
+                .get(&EntityCountDiagnosticsPlugin::ENTITY_COUNT)
                 .unwrap()
                 .average()
                 .unwrap_or_default()
@@ -111,7 +111,7 @@ impl Default for UiState {
     }
 }
 
-pub fn toggle_debug_info(keys: Res<Input<KeyCode>>, mut ui_state: ResMut<UiState>) {
+pub fn toggle_debug_info(keys: Res<ButtonInput<KeyCode>>, mut ui_state: ResMut<UiState>) {
     for key in keys.get_just_pressed() {
         if key == &KeyCode::F7 {
             ui_state.show_debug_info = !ui_state.show_debug_info;

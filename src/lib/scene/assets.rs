@@ -29,20 +29,8 @@ pub enum MaterialType {
 }
 
 #[derive(
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-    Serialize,
-    Deserialize,
-    Ord,
-    PartialOrd,
-    TypePath,
-    bevy::reflect::TypeUuid,
-    Asset,
+    Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Ord, PartialOrd, TypePath, Asset,
 )]
-#[uuid = "125a8e86-14d2-4c46-9c45-06b0c80cae11"]
 pub struct BlockDefinition {
     pub id: BlockId,
     #[serde(default)]
@@ -179,15 +167,16 @@ pub fn setup(
             let name = name.trim_end_matches(".png");
 
             block_texture_handles_by_name.insert(name.to_owned(), handle.clone_weak());
-            block_tatlas_builder.add_texture(handle.id(), texture);
+            block_tatlas_builder.add_texture(Some(handle.id()), texture);
         } else {
             tracing::warn!("{:?} did not resolve to an `Image` asset.", path,);
             panic!();
         };
     }
-    let block_tatlas = block_tatlas_builder.finish(&mut textures).unwrap();
+    let (block_tatlas, texture) = block_tatlas_builder.finish().unwrap(); // TODO: rename block_tatlas -> atlas_layout, texture -> texture_atlas
     tracing::info!(?block_tatlas.size, ?block_tatlas.textures, "Stitched texture atlas");
-    let block_tatlas_texture = block_tatlas.texture.clone();
+    let block_tatlas_texture = textures.add(texture);
+    // let layout = layouts.add(atlas_layout);
 
     let mut block_textures = TextureMap::default();
     block_textures.size = [block_tatlas.size[0] as usize, block_tatlas.size[1] as usize];
@@ -282,7 +271,7 @@ impl Plugin for RegistryPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing registry plugin");
         app.init_resource::<Registry>()
-            .add_state::<AppState>()
+            .init_state::<AppState>()
             .add_systems(OnEnter(AppState::LoadAssets), load_assets)
             .add_systems(Update, check_assets.run_if(in_state(AppState::LoadAssets)))
             .add_systems(OnEnter(AppState::RegisterAssets), setup);

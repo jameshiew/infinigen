@@ -1,29 +1,12 @@
+use bevy::prelude::TextureAtlasLayout;
 use rustc_hash::FxHashMap;
 
-use bevy::sprite::TextureAtlas;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
 use crate::common::world::ChunkBlockId;
 
 const TEXTURE_SIZE: usize = 64;
-
-// translate UVs for a texture atlas
-pub fn to_tex_coords(
-    uvs: [[f32; 2]; 4],
-    texture_idx: usize,
-    texture_atlas: &TextureAtlas,
-) -> [[f32; 2]; 4] {
-    let texture_start = [
-        texture_atlas.textures[texture_idx].min[0] as usize,
-        texture_atlas.textures[texture_idx].min[1] as usize,
-    ];
-    let texture_atlas_size = [
-        texture_atlas.size[0] as usize,
-        texture_atlas.size[1] as usize,
-    ];
-    to_tex_coords_raw(uvs, texture_start, texture_atlas_size)
-}
 
 // translate UVs for a texture atlas given raw coordinates
 pub fn to_tex_coords_raw(
@@ -118,8 +101,8 @@ impl TextureMap {
     }
 }
 
-impl From<&TextureAtlas> for TextureMap {
-    fn from(tatlas: &TextureAtlas) -> Self {
+impl From<&TextureAtlasLayout> for TextureMap {
+    fn from(tatlas: &TextureAtlasLayout) -> Self {
         let size = [tatlas.size[0] as usize, tatlas.size[1] as usize];
         Self {
             size,
