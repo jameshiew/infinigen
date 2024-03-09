@@ -29,20 +29,8 @@ pub enum MaterialType {
 }
 
 #[derive(
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-    Serialize,
-    Deserialize,
-    Ord,
-    PartialOrd,
-    TypePath,
-    bevy::reflect::TypeUuid,
-    Asset,
+    Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Ord, PartialOrd, TypePath, Asset,
 )]
-#[uuid = "125a8e86-14d2-4c46-9c45-06b0c80cae11"]
 pub struct BlockDefinition {
     pub id: BlockId,
     #[serde(default)]
@@ -179,18 +167,18 @@ pub fn setup(
             let name = name.trim_end_matches(".png");
 
             block_texture_handles_by_name.insert(name.to_owned(), handle.clone_weak());
-            block_tatlas_builder.add_texture(handle.id(), texture);
+            block_tatlas_builder.add_texture(Some(handle.id()), texture);
         } else {
             tracing::warn!("{:?} did not resolve to an `Image` asset.", path,);
             panic!();
         };
     }
-    let block_tatlas = block_tatlas_builder.finish(&mut textures).unwrap();
-    tracing::info!(?block_tatlas.size, ?block_tatlas.textures, "Stitched texture atlas");
-    let block_tatlas_texture = block_tatlas.texture.clone();
+    let (atlas_layout, texture_atlas) = block_tatlas_builder.finish().unwrap();
+    tracing::info!(?atlas_layout.size, ?atlas_layout.textures, "Stitched texture atlas");
+    let texture_atlas = textures.add(texture_atlas);
 
     let mut block_textures = TextureMap::default();
-    block_textures.size = [block_tatlas.size[0] as usize, block_tatlas.size[1] as usize];
+    block_textures.size = [atlas_layout.size[0] as usize, atlas_layout.size[1] as usize];
 
     // map block definitions in alphabetical order by ID
     // so for the same set of block definitions, we should get the same mapping
@@ -217,11 +205,11 @@ pub fn setup(
                     .get(texture_file_names.get(&face).unwrap())
                     .unwrap();
                 tracing::info!(?face, ?block_definition.id, "Found specific texture");
-                let tidx = block_tatlas.get_texture_index(texture_handle).unwrap();
+                let tidx = atlas_layout.get_texture_index(texture_handle).unwrap();
                 let tidx = FaceAppearance::Texture {
                     coords: [
-                        block_tatlas.textures[tidx].min[0] as usize,
-                        block_tatlas.textures[tidx].min[1] as usize,
+                        atlas_layout.textures[tidx].min[0] as usize,
+                        atlas_layout.textures[tidx].min[1] as usize,
                     ],
                 };
                 faces[face as usize] = tidx;
@@ -242,7 +230,7 @@ pub fn setup(
         base_color: Color::WHITE,
         perceptual_roughness: 0.75,
         reflectance: 0.25,
-        base_color_texture: Some(block_tatlas_texture),
+        base_color_texture: Some(texture_atlas),
         ..default()
     });
     registry.materials[MaterialType::Translucent as usize] = materials.add(StandardMaterial {
@@ -282,7 +270,7 @@ impl Plugin for RegistryPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing registry plugin");
         app.init_resource::<Registry>()
-            .add_state::<AppState>()
+            .init_state::<AppState>()
             .add_systems(OnEnter(AppState::LoadAssets), load_assets)
             .add_systems(Update, check_assets.run_if(in_state(AppState::LoadAssets)))
             .add_systems(OnEnter(AppState::RegisterAssets), setup);

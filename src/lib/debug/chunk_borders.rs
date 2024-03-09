@@ -1,3 +1,4 @@
+use bevy::render::render_asset::RenderAssetUsages;
 /// Adapted from lines example of Bevy
 use bevy::{
     pbr::{MaterialPipeline, MaterialPipelineKey},
@@ -30,7 +31,7 @@ pub struct LineList {
 
 impl From<LineList> for Mesh {
     fn from(line: LineList) -> Self {
-        let mut mesh = Mesh::new(PrimitiveTopology::LineList);
+        let mut mesh = Mesh::new(PrimitiveTopology::LineList, RenderAssetUsages::default());
 
         let vertices: Vec<_> = line.lines.into_iter().flat_map(|(a, b)| [a, b]).collect();
         mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, vertices);
@@ -62,7 +63,7 @@ impl Material for LineMaterial {
 }
 
 pub fn toggle(
-    keys: Res<Input<KeyCode>>,
+    keys: Res<ButtonInput<KeyCode>>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<LineMaterial>>,

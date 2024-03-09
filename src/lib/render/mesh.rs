@@ -2,6 +2,7 @@
 
 use bevy::prelude::*;
 use bevy::render::mesh::{Indices, VertexAttributeValues};
+use bevy::render::render_asset::RenderAssetUsages;
 use bevy::render::render_resource::PrimitiveTopology;
 
 use crate::common::chunks::UnpackedChunk;
@@ -21,7 +22,10 @@ pub fn to_bevy_mesh(
         indices,
     }: MeshInfo,
 ) -> Mesh {
-    let mut render_mesh = Mesh::new(PrimitiveTopology::TriangleList);
+    let mut render_mesh = Mesh::new(
+        PrimitiveTopology::TriangleList,
+        RenderAssetUsages::default(),
+    );
     render_mesh.insert_attribute(
         Mesh::ATTRIBUTE_POSITION,
         VertexAttributeValues::Float32x3(positions),
@@ -35,7 +39,7 @@ pub fn to_bevy_mesh(
         VertexAttributeValues::Float32x4(colors),
     );
     render_mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, VertexAttributeValues::Float32x2(uvs));
-    render_mesh.set_indices(Some(Indices::U32(indices)));
+    render_mesh.insert_indices(Indices::U32(indices));
     render_mesh
 }
 
