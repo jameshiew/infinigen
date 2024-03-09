@@ -41,6 +41,7 @@ fn main() -> ExitCode {
                 .set(LogPlugin {
                     filter: LOG_FILTER.into(),
                     level: bevy::log::Level::DEBUG,
+                    update_subscriber: None,
                 })
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {

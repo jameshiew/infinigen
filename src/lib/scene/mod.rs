@@ -288,7 +288,7 @@ impl bevy::prelude::Plugin for Plugin {
             .insert_resource(ClearColor(SKY_COLOR))
             .add_systems(Startup, (lights::setup, init_config))
             .init_resource::<Registry>()
-            .add_state::<AppState>()
+            .init_state::<AppState>()
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ManageChunksEvent>()
             .add_systems(OnEnter(AppState::LoadAssets), load_assets)

@@ -26,7 +26,7 @@ pub fn setup(mut primary_window: Query<&mut Window, With<PrimaryWindow>>) {
 }
 
 pub fn handle_input(
-    keys: Res<Input<KeyCode>>,
+    keys: Res<ButtonInput<KeyCode>>,
     mut primary_window: Query<&mut Window, With<PrimaryWindow>>,
 ) {
     let mut window = primary_window.get_single_mut().unwrap();

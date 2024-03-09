@@ -18,10 +18,10 @@ pub struct KeyBindings {
 impl Default for KeyBindings {
     fn default() -> Self {
         Self {
-            move_forward: KeyCode::W,
-            move_backward: KeyCode::S,
-            move_left: KeyCode::A,
-            move_right: KeyCode::D,
+            move_forward: KeyCode::KeyW,
+            move_backward: KeyCode::KeyS,
+            move_left: KeyCode::KeyA,
+            move_right: KeyCode::KeyD,
             move_ascend: KeyCode::Space,
             move_descend: KeyCode::ShiftLeft,
         }
@@ -34,7 +34,7 @@ pub struct InputState {
 }
 
 pub fn keyboard(
-    keys: Res<Input<KeyCode>>,
+    keys: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
     primary_window: Query<&Window, With<PrimaryWindow>>,
     key_bindings: Res<KeyBindings>,
