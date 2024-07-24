@@ -56,9 +56,7 @@ impl TextureMap {
         face: Face,
         uvs: [[f32; 2]; 4],
     ) -> Option<FaceAppearanceTransformed> {
-        let Some(appearances) = self.appearance.get(id) else {
-            return None;
-        };
+        let appearances = self.appearance.get(id)?;
         match appearances[face as usize] {
             FaceAppearance::Texture { coords } => Some(FaceAppearanceTransformed::Texture {
                 coords: to_tex_coords_raw(uvs, coords, self.size),

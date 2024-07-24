@@ -173,7 +173,7 @@ pub fn setup(
             panic!();
         };
     }
-    let (atlas_layout, texture_atlas) = block_tatlas_builder.finish().unwrap();
+    let (atlas_layout, texture_atlas) = block_tatlas_builder.build().unwrap();
     tracing::info!(?atlas_layout.size, ?atlas_layout.textures, "Stitched texture atlas");
     let texture_atlas = textures.add(texture_atlas);
 
