@@ -1,3 +1,5 @@
+use crate::common::chunks::CHUNK_SIZE_F32;
+use bevy::render::mesh::MeshVertexBufferLayoutRef;
 use bevy::render::render_asset::RenderAssetUsages;
 /// Adapted from lines example of Bevy
 use bevy::{
@@ -5,15 +7,13 @@ use bevy::{
     prelude::*,
     reflect::TypePath,
     render::{
-        mesh::{MeshVertexBufferLayout, PrimitiveTopology},
+        mesh::PrimitiveTopology,
         render_resource::{
             AsBindGroup, PolygonMode, RenderPipelineDescriptor, ShaderRef,
             SpecializedMeshPipelineError,
         },
     },
 };
-
-use crate::common::chunks::CHUNK_SIZE_F32;
 
 #[derive(Debug, Default, Eq, PartialEq, Resource)]
 pub struct ChunkBordersState {
@@ -42,7 +42,7 @@ impl From<LineList> for Mesh {
 #[derive(Asset, TypePath, Default, AsBindGroup, Debug, Clone)]
 pub struct LineMaterial {
     #[uniform(0)]
-    color: Color,
+    color: LinearRgba,
 }
 
 impl Material for LineMaterial {
@@ -53,7 +53,7 @@ impl Material for LineMaterial {
     fn specialize(
         _pipeline: &MaterialPipeline<Self>,
         descriptor: &mut RenderPipelineDescriptor,
-        _layout: &MeshVertexBufferLayout,
+        _layout: &MeshVertexBufferLayoutRef,
         _key: MaterialPipelineKey<Self>,
     ) -> Result<(), SpecializedMeshPipelineError> {
         // This is the important part to tell bevy to render this material as a line between vertices
@@ -141,7 +141,7 @@ pub fn toggle(
                                     mesh: meshes.add(mesh),
                                     transform,
                                     material: materials.add(LineMaterial {
-                                        color: Color::WHITE,
+                                        color: LinearRgba::WHITE,
                                     }),
                                     ..default()
                                 },

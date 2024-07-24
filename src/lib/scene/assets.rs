@@ -159,7 +159,7 @@ pub fn setup(
         .iter()
     {
         let handle = handle.clone_weak().typed();
-        let path = asset_server.get_path(handle.clone_weak());
+        let path = asset_server.get_path(handle.id());
         if let Some(texture) = textures.get(&handle) {
             tracing::info!(?path, "Texture found");
             let path = path.unwrap();
