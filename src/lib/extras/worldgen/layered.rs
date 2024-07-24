@@ -190,10 +190,9 @@ impl WorldGen for Layered {
     }
 
     fn get(&mut self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
-        if self.terrain_cache.get(&zoom_level).is_none() {
-            self.terrain_cache
-                .insert(zoom_level, LruCache::new(NonZeroUsize::new(1024).unwrap()));
-        }
+        self.terrain_cache
+            .entry(zoom_level)
+            .or_insert_with(|| LruCache::new(NonZeroUsize::new(1024).unwrap()));
         let zoom_cache = self.terrain_cache.get_mut(&zoom_level).unwrap();
         let zoom = zoom_level.as_f64();
         let mut terrain = zoom_cache

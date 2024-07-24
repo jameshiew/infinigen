@@ -226,7 +226,7 @@ impl WorldGen for MountainIslands {
                         chunk.insert(
                             &BlockPosition {
                                 x,
-                                y: (y + y_offset).min(BlockPosition::MAX_IDX).max(0),
+                                y: (y + y_offset).clamp(0, BlockPosition::MAX_IDX),
                                 z,
                             },
                             *self.block_mappings.get(WOOD_BLOCK_ID).unwrap(),
@@ -248,9 +248,9 @@ impl WorldGen for MountainIslands {
                                 }
                                 chunk.insert_if_free(
                                     &BlockPosition {
-                                        x: (x + x_offset).min(BlockPosition::MAX_IDX).max(0),
-                                        y: (y + y_offset).min(BlockPosition::MAX_IDX).max(0),
-                                        z: (z + z_offset).min(BlockPosition::MAX_IDX).max(0),
+                                        x: (x + x_offset).clamp(0, BlockPosition::MAX_IDX),
+                                        y: (y + y_offset).clamp(0, BlockPosition::MAX_IDX),
+                                        z: (z + z_offset).clamp(0, BlockPosition::MAX_IDX),
                                     },
                                     *self.block_mappings.get(LEAVES_BLOCK_ID).unwrap(),
                                 );
