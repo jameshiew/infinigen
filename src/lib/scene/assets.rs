@@ -159,7 +159,7 @@ pub fn setup(
         .iter()
     {
         let handle = handle.clone_weak().typed();
-        let path = asset_server.get_path(handle.clone_weak());
+        let path = asset_server.get_path(handle.id());
         if let Some(texture) = textures.get(&handle) {
             tracing::info!(?path, "Texture found");
             let path = path.unwrap();
@@ -173,7 +173,7 @@ pub fn setup(
             panic!();
         };
     }
-    let (atlas_layout, texture_atlas) = block_tatlas_builder.finish().unwrap();
+    let (atlas_layout, texture_atlas) = block_tatlas_builder.build().unwrap();
     tracing::info!(?atlas_layout.size, ?atlas_layout.textures, "Stitched texture atlas");
     let texture_atlas = textures.add(texture_atlas);
 
