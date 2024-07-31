@@ -52,7 +52,7 @@ jobs:
       - run: cargo build --no-default-features
       - uses: actions/upload-artifact@v4
         with:
-          name: infinigen
+          name: infinigen-debug-${{ runner.os }}-${{ runner.arch }}
           path: target/debug/infinigen
   build-release:
     runs-on: ubuntu-latest
@@ -67,5 +67,5 @@ jobs:
       - run: cargo build --release --no-default-features
       - uses: actions/upload-artifact@v4
         with:
-          name: infinigen
+          name: infinigen-release-${{ runner.os }}-${{ runner.arch }}
           path: target/release/infinigen
