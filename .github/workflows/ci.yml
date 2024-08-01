@@ -64,7 +64,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: infinigen-debug-${{ runner.os }}-${{ runner.arch }}
-          path: target/debug/infinigen
+          path: ${{ matrix.os == 'windows-latest' && 'target/debug/infinigen.exe' || 'target/debug/infinigen' }}
   build-release:
     strategy:
       matrix:
@@ -88,4 +88,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: infinigen-release-${{ runner.os }}-${{ runner.arch }}
-          path: target/release/infinigen
+          path: ${{ matrix.os == 'windows-latest' && 'target/release/infinigen.exe' || 'target/release/infinigen' }}
