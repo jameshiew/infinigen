@@ -1,4 +1,4 @@
-# infinigen
+# infinigen [![CI](https://github.com/jameshiew/infinigen/actions/workflows/ci.yml/badge.svg)](https://github.com/jameshiew/infinigen/actions/workflows/ci.yml)
 
 This is a demo for Minecraft-like procedural generation using the [Bevy game engine](https://bevyengine.org/).
 
