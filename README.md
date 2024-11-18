@@ -10,14 +10,17 @@ This is a demo for Minecraft-like procedural generation using the [Bevy game eng
 
 ## Quickstart
 
+These commands must be run from within the root directory of the repo, in order to pick up assets.
+
 ```shell
-cargo run  # dynamically linked, compiles faster and runs slower
+cargo run --release # best performance
 ```
 
 or
 
 ```shell
-cargo run --release --no-default-features  # best performance
+# dynamically linked debug build, compiles faster and runs slower
+cargo run --features dynamic_linking
 ```
 
 ### Controls
