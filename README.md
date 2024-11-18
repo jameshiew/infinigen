@@ -11,13 +11,14 @@ This is a demo for Minecraft-like procedural generation using the [Bevy game eng
 ## Quickstart
 
 ```shell
-cargo run  # dynamically linked, compiles faster and runs slower
+cargo run --release # best performance
 ```
 
 or
 
 ```shell
-cargo run --release --no-default-features  # best performance
+# dynamically linked, compiles faster and runs slower
+cargo run --features dynamic_linking
 ```
 
 ### Controls

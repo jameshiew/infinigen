@@ -52,7 +52,7 @@ name = "benchmark"
 harness = false
 
 [features]
-default = ["dynamic-linking"]
+default = []
 dynamic-linking = ["bevy/dynamic_linking"]
 
 [profile.dev]
