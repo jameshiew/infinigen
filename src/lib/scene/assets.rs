@@ -4,10 +4,7 @@ use std::{
 };
 
 use bevy::asset::{LoadedFolder, RecursiveDependencyLoadState};
-use bevy::{
-    prelude::{IntoSystemConfigs, *},
-    reflect::TypePath,
-};
+use bevy::{prelude::*, reflect::TypePath};
 use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
 use strum::{EnumCount, IntoEnumIterator};
@@ -261,18 +258,5 @@ impl Registry {
     /// Returns a weak handle to the block texture atlas.
     pub fn get_block_textures(&self) -> &TextureMap {
         &self.block_textures
-    }
-}
-
-pub struct RegistryPlugin;
-
-impl Plugin for RegistryPlugin {
-    fn build(&self, app: &mut App) {
-        tracing::info!("Initializing registry plugin");
-        app.init_resource::<Registry>()
-            .init_state::<AppState>()
-            .add_systems(OnEnter(AppState::LoadAssets), load_assets)
-            .add_systems(Update, check_assets.run_if(in_state(AppState::LoadAssets)))
-            .add_systems(OnEnter(AppState::RegisterAssets), setup);
     }
 }
