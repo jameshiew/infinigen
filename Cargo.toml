@@ -5,9 +5,6 @@ edition = "2021"
 publish = false
 rust-version = "1.80.1"
 
-[lib]
-path = "src/lib/mod.rs"
-
 [dependencies]
 bevy = { version = "0.14.2" }
 bevy_common_assets = { version = "0.11.0", features = ["ron"] }
