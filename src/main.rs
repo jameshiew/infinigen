@@ -3,7 +3,7 @@ use std::process::ExitCode;
 use bevy::{
     log::LogPlugin,
     prelude::*,
-    window::{Window, WindowPlugin, WindowResolution},
+    window::{Window, WindowPlugin},
     DefaultPlugins,
 };
 use config::Config;
@@ -46,7 +46,6 @@ fn main() -> ExitCode {
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        resolution: WindowResolution::new(1920., 1080.),
                         title: APP_NAME.into(),
                         ..default()
                     }),
