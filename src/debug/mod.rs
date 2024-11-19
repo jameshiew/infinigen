@@ -3,11 +3,13 @@ use bevy::pbr::wireframe::WireframePlugin;
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use embedded_assets::EmbeddedAssetsPlugin;
 
 use self::chunk_borders::LineMaterial;
 use self::info::{display_debug_info, toggle_debug_info, UiState};
 
 mod chunk_borders;
+mod embedded_assets;
 mod info;
 mod wireframe;
 
@@ -26,6 +28,7 @@ impl Plugin for UiPlugin {
             WireframePlugin,
             WorldInspectorPlugin::new(),
             MaterialPlugin::<LineMaterial>::default(),
+            EmbeddedAssetsPlugin,
         );
         let systems = (
             display_debug_info.run_if(resource_equals(UiState {
