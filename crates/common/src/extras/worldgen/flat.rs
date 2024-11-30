@@ -1,8 +1,8 @@
-use infinigen_common::chunks::Chunk;
-use infinigen_common::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
-use infinigen_common::zoom::ZoomLevel;
+use crate::chunks::Chunk;
 use crate::extras::block_ids::DIRT_BLOCK_ID;
 use crate::extras::chunks;
+use crate::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
+use crate::zoom::ZoomLevel;
 use rustc_hash::FxHashMap;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]

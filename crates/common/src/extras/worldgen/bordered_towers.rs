@@ -1,8 +1,8 @@
-use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_I32};
-use infinigen_common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
-use infinigen_common::zoom::ZoomLevel;
+use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_I32};
 use crate::extras::block_ids::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID};
 use crate::extras::chunks;
+use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
+use crate::zoom::ZoomLevel;
 use rustc_hash::FxHashMap;
 
 /// Similar to Flat, but with a 1-block high border around each block, and a x+z tower of blocks in the middle. Chunks above the ground chunk have a block centred in the middle.

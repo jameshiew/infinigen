@@ -7,8 +7,8 @@ use bevy_egui::{
     EguiContexts,
 };
 
-use infinigen_common::chunks::CHUNK_SIZE_F32;
 use crate::scene;
+use infinigen_common::chunks::CHUNK_SIZE_F32;
 
 pub fn display_debug_info(
     mut egui: EguiContexts,

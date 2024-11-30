@@ -1,8 +1,8 @@
-use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64};
-use infinigen_common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
-use infinigen_common::zoom::ZoomLevel;
+use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64};
 use crate::extras::block_ids::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID, WATER_BLOCK_ID};
 use crate::extras::chunks;
+use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
+use crate::zoom::ZoomLevel;
 use noise::{NoiseFn, Perlin};
 use rustc_hash::FxHashMap;
 

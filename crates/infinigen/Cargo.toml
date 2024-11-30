@@ -25,16 +25,12 @@ serde = {workspace = true}
 # utils
 futures-lite = "2.5.0"
 strum = {workspace = true}
-lru = "0.12.5"
 
 # instrumentation
 tracing = {workspace = true}
 
 # randomness
-rand = "0.8.5"
-noise = "0.9.0"
-bracket-noise = "0.8.7"
-splines = "4.4.0"
+rand = {workspace = true}
 nalgebra = "0.33.2"
 rustc-hash = {workspace = true}
 

@@ -1,16 +1,17 @@
-use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE};
-use infinigen_common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
-use infinigen_common::zoom::ZoomLevel;
+use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE};
 use crate::extras::block_ids::DIRT_BLOCK_ID;
 use crate::extras::chunks;
+use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
+use crate::zoom::ZoomLevel;
+use rand::Rng;
 use rustc_hash::FxHashMap;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
-pub struct Bowl {
+pub struct Random {
     pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
 }
 
-impl WorldGen for Bowl {
+impl WorldGen for Random {
     fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
@@ -25,11 +26,11 @@ impl WorldGen for Bowl {
         if pos.y >= 1 {
             return Chunk::Empty;
         }
-
+        let mut rng = rand::thread_rng();
         let mut chunk = UnpackedChunk::default();
         for x in 0..CHUNK_SIZE {
             for z in 0..CHUNK_SIZE {
-                let height = ((pos.x.abs() + pos.z.abs()) as i8).min(CHUNK_SIZE - 1);
+                let height: i8 = rng.gen_range(0..=2);
                 for y in 0..height {
                     chunk.insert(
                         &BlockPosition { x, y, z },
