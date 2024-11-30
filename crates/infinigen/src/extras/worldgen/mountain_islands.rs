@@ -4,8 +4,8 @@ use bracket_noise::prelude::{FastNoise, NoiseType};
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 use splines::{Interpolation, Key, Spline};
 
-use crate::common::zoom::ZoomLevel;
-use crate::common::{
+use infinigen_common::zoom::ZoomLevel;
+use infinigen_common::{
     chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE},
     world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition},
 };

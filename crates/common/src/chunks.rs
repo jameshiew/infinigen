@@ -3,7 +3,7 @@ use std::fmt;
 use ndarray::Array3;
 use serde::{Deserialize, Serialize};
 
-use crate::common::world::BlockPosition;
+use crate::world::BlockPosition;
 
 use super::world::ChunkBlockId;
 

@@ -3,8 +3,8 @@ use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
-use crate::common::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
-use crate::common::zoom::ZoomLevel;
+use crate::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
+use crate::zoom::ZoomLevel;
 
 pub type BlockId = String;
 pub type ChunkBlockId = u8;

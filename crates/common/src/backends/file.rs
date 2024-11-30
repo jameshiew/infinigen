@@ -3,9 +3,9 @@ use std::sync::{Arc, RwLock};
 
 use eyre::Result;
 
-use crate::common::chunks::{Chunk, UnpackedChunk};
-use crate::common::world::{ChunkPosition, WorldGen};
-use crate::common::zoom::ZoomLevel;
+use crate::chunks::{Chunk, UnpackedChunk};
+use crate::world::{ChunkPosition, WorldGen};
+use crate::zoom::ZoomLevel;
 
 /// Read/write chunks. A world is stored in a folder with chunks named like `x.y.z.chunk`. The chunks are simply stored using bincode.
 pub struct Backend {
@@ -67,10 +67,7 @@ impl PersistentWorld {
 impl WorldGen for PersistentWorld {
     fn initialize(
         &mut self,
-        _mappings: rustc_hash::FxHashMap<
-            crate::common::world::BlockId,
-            crate::common::world::ChunkBlockId,
-        >,
+        _mappings: rustc_hash::FxHashMap<crate::world::BlockId, crate::world::ChunkBlockId>,
     ) {
         todo!()
     }

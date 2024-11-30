@@ -8,8 +8,8 @@ use nalgebra::{Matrix4, Vector3};
 use nalgebra::{Perspective3, Quaternion, UnitQuaternion};
 use rustc_hash::{FxHashMap, FxHashSet};
 
-use crate::common::chunks::CHUNK_SIZE_F32;
-use crate::common::world::{ChunkPosition, WorldPosition};
+use infinigen_common::chunks::CHUNK_SIZE_F32;
+use infinigen_common::world::{ChunkPosition, WorldPosition};
 use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
 
 use self::assets::{check_assets, load_assets, setup, AppState, BlockDefinition, Registry};

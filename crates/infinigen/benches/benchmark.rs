@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use infinigen::common::world::{ChunkPosition, WorldGen};
-use infinigen::common::zoom::ZoomLevel;
+use infinigen_common::world::{ChunkPosition, WorldGen};
+use infinigen_common::zoom::ZoomLevel;
 
 use infinigen::extras::block_ids::default_block_ids;
 use infinigen::extras::worldgen::layered::Layered;

@@ -2,7 +2,7 @@
 
 use rustc_hash::FxHashMap;
 
-use crate::common::world::{BlockId, ChunkBlockId};
+use infinigen_common::world::{BlockId, ChunkBlockId};
 
 pub const DIRT_BLOCK_ID: &str = "infinigen:dirt";
 pub const GRASS_BLOCK_ID: &str = "infinigen:grass";

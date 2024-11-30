@@ -2944,21 +2944,32 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_common_assets",
  "bevy_egui",
- "bincode",
  "block-mesh",
  "bracket-noise",
  "config",
  "criterion",
- "eyre",
  "futures-lite",
+ "infinigen-common",
  "lru",
  "nalgebra",
- "ndarray",
  "noise",
  "rand",
  "rustc-hash 2.1.0",
  "serde",
  "splines",
+ "strum",
+ "tracing",
+]
+
+[[package]]
+name = "infinigen-common"
+version = "0.0.0"
+dependencies = [
+ "bincode",
+ "eyre",
+ "ndarray",
+ "rustc-hash 2.1.0",
+ "serde",
  "strum",
  "tracing",
 ]
