@@ -49,11 +49,11 @@ pub fn process_ops(
     mut chunks: ResMut<ChunkRegistry>,
     world: Res<World>,
     mut scene: ResMut<crate::scene::Scene>,
-    scene_view: Res<crate::scene::SceneView>,
+    scene_zoom: Res<crate::scene::SceneZoom>,
     mut meshes: ResMut<Assets<Mesh>>,
     registry: Res<Registry>,
 ) {
-    let scene_zoom_level = scene_view.zoom_level.into();
+    let scene_zoom_level = scene_zoom.zoom_level.into();
     let mut queued_generations = vec![];
     for _ in 0..CHUNK_OP_RATE {
         let Some(op) = scene.ops.pop_front() else {
