@@ -6,11 +6,14 @@ use infinigen_common::chunks::CHUNK_SIZE_F32;
 
 use super::FAR;
 
+pub const SKY_COLOR: Color = Color::srgb(0.47, 0.66, 1.);
+
 pub fn setup(mut commands: Commands) {
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
         brightness: 0.5,
     });
+    commands.insert_resource(ClearColor(SKY_COLOR));
 
     commands.spawn((
         Name::new("Global lighting"),
