@@ -2,7 +2,8 @@ use bevy::{prelude::*, tasks::AsyncComputeTaskPool};
 use rustc_hash::FxHashSet;
 
 use crate::chunks::{registry::ChunkStatus, tasks::GenerateChunk};
-use crate::{assets::MaterialType, chunks::registry::ChunkRegistry, scene::ChunkOp};
+use crate::scene::LoadChunkOp;
+use crate::{assets::MaterialType, chunks::registry::ChunkRegistry};
 use crate::{
     render::mesh::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces},
     world::World,
@@ -13,6 +14,8 @@ use infinigen_common::{
 };
 
 use crate::assets::Registry;
+
+use super::UnloadChunkOpEvent;
 
 // bigger chunks means go slower to prevent lag/stutter
 const CHUNK_OP_RATE: usize = (16. * (32. / CHUNK_SIZE_F32)) as usize;
@@ -44,7 +47,29 @@ pub fn split(mut chunk: UnpackedChunk, chunk_block_id: ChunkBlockId) -> (Unpacke
     (chunk, split_out)
 }
 
-pub fn process_ops(
+pub fn process_unload_chunk_ops(
+    mut commands: Commands,
+    mut unload_evs: EventReader<crate::scene::UnloadChunkOpEvent>,
+    mut scene: ResMut<crate::scene::Scene>,
+) {
+    for _ in 0..CHUNK_OP_RATE {
+        let Some(op) = unload_evs.read().next() else {
+            return;
+        };
+        let UnloadChunkOpEvent(cpos) = op;
+
+        if let Some(eids) = scene.loaded.get(cpos) {
+            tracing::debug!(?cpos, "Unloading chunk");
+            eids.iter().for_each(|physical_eid| {
+                commands.entity(*physical_eid).despawn();
+            });
+            tracing::debug!(?cpos, "Chunk unloaded");
+            scene.loaded.remove(cpos);
+        }
+    }
+}
+
+pub fn process_load_chunk_ops(
     mut commands: Commands,
     mut chunks: ResMut<ChunkRegistry>,
     world: Res<World>,
@@ -56,50 +81,38 @@ pub fn process_ops(
     let scene_zoom_level = scene_zoom.zoom_level.into();
     let mut queued_generations = vec![];
     for _ in 0..CHUNK_OP_RATE {
-        let Some(op) = scene.ops.pop_front() else {
+        // loading
+        let Some(op) = scene.load_ops.pop_front() else {
             return;
         };
+        let LoadChunkOp(cpos) = op;
 
-        let cpos = match op {
-            ChunkOp::Load(cpos) => match chunks.get_status(scene_zoom_level, &cpos) {
-                Some(status) => match status {
-                    ChunkStatus::Present(_) => {
-                        tracing::debug!(?cpos, "Will render chunk");
-                        cpos
-                    }
-                    ChunkStatus::Generating => {
-                        queued_generations.push(ChunkOp::Load(cpos));
-                        continue;
-                    }
-                },
-                None => {
-                    chunks.set_status(scene_zoom_level, &cpos, ChunkStatus::Generating);
-                    let thread_pool = AsyncComputeTaskPool::get();
-                    let worldgen = world.generator.clone();
-                    let task = thread_pool.spawn(async move {
-                        (
-                            scene_zoom_level,
-                            cpos,
-                            worldgen.write().unwrap().get(&cpos, scene_zoom_level),
-                        )
-                    });
-                    commands.spawn((Name::new("Generate chunk task"), GenerateChunk(task)));
-                    queued_generations.push(ChunkOp::Load(cpos));
+        match chunks.get_status(scene_zoom_level, &cpos) {
+            Some(status) => match status {
+                ChunkStatus::Present(_) => {
+                    tracing::debug!(?cpos, "Will render chunk");
+                }
+                ChunkStatus::Generating => {
+                    queued_generations.push(LoadChunkOp(cpos));
                     continue;
                 }
             },
-            ChunkOp::Unload(cpos) => {
-                if let Some(eids) = scene.loaded.get(&cpos) {
-                    tracing::debug!(?cpos, "Unloading chunk");
-                    eids.iter().for_each(|physical_eid| {
-                        commands.entity(*physical_eid).despawn();
-                    });
-                    tracing::debug!(?cpos, "Chunk unloaded");
-                    scene.loaded.remove(&cpos);
-                }
+            None => {
+                chunks.set_status(scene_zoom_level, &cpos, ChunkStatus::Generating);
+                let thread_pool = AsyncComputeTaskPool::get();
+                let worldgen = world.generator.clone();
+                let task = thread_pool.spawn(async move {
+                    (
+                        scene_zoom_level,
+                        cpos,
+                        worldgen.write().unwrap().get(&cpos, scene_zoom_level),
+                    )
+                });
+                commands.spawn((Name::new("Generate chunk task"), GenerateChunk(task)));
+                queued_generations.push(LoadChunkOp(cpos));
                 continue;
             }
-        };
+        }
 
         let Chunk::Unpacked(chunk) = chunks.get_mut(
             scene_zoom_level,
@@ -187,6 +200,6 @@ pub fn process_ops(
     }
     for queued_generation in queued_generations.into_iter() {
         // prioritize rendering chunks we queued to generate this run
-        scene.ops.push_front(queued_generation);
+        scene.load_ops.push_front(queued_generation);
     }
 }
