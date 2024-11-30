@@ -8,7 +8,7 @@ use bevy::{
 };
 use config::Config;
 
-use infinigen::ClientPlugin;
+use infinigen::AppPlugin;
 
 const APP_NAME: &str = "infinigen";
 const CONFIG_PREFIX: &str = "infinigen_";
@@ -52,7 +52,7 @@ fn main() -> ExitCode {
                     ..default()
                 }),
         )
-        .add_plugins((ClientPlugin::new(cfg),))
+        .add_plugins((AppPlugin::new(cfg),))
         .run();
     ExitCode::SUCCESS
 }

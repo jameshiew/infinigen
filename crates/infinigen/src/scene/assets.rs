@@ -10,9 +10,9 @@ use serde::{Deserialize, Serialize};
 use strum::{EnumCount, IntoEnumIterator};
 
 use crate::{
-    fake_client::FakeClient,
     mesh::textures::{Face, FaceAppearance, TextureMap},
     settings::Config,
+    world::World,
 };
 use infinigen_common::world::{BlockId, BlockVisibility, ChunkBlockId};
 
@@ -140,7 +140,7 @@ pub fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut textures: ResMut<Assets<Image>>,
     block_definitions: Res<Assets<BlockDefinition>>,
-    mut client: ResMut<FakeClient>,
+    mut world: ResMut<World>,
     config: Res<Config>,
 ) {
     // block textures
@@ -236,7 +236,7 @@ pub fn setup(
     let mut worldgen: Box<dyn infinigen_common::world::WorldGen + Send + Sync> =
         config.world.into();
     worldgen.initialize((&registry.block_mappings).into());
-    client.world = Arc::new(RwLock::new(worldgen));
+    world.generator = Arc::new(RwLock::new(worldgen));
 }
 
 impl Registry {

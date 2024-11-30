@@ -4,31 +4,31 @@ pub mod camera;
 pub mod chunks;
 pub mod cursor;
 pub mod debug;
-pub mod fake_client;
 pub mod mesh;
 pub mod render;
 pub mod scene;
 pub mod settings;
+pub mod world;
 
-pub struct ClientPlugin {
+pub struct AppPlugin {
     config: settings::Config,
 }
 
-impl ClientPlugin {
+impl AppPlugin {
     pub fn new(config: settings::Config) -> Self {
         Self { config }
     }
 }
 
-impl Plugin for ClientPlugin {
+impl Plugin for AppPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        tracing::info!("Initializing client plugin with config: {:#?}", self.config);
+        tracing::info!("Initializing app plugin with config: {:#?}", self.config);
         app.insert_resource(self.config.clone()).add_plugins((
             scene::Plugin,
             chunks::ChunksPlugin,
             camera::CameraPlugin,
             cursor::CursorPlugin,
-            fake_client::FakeClientPlugin,
+            world::WorldPlugin,
             debug::UiPlugin,
         ));
     }

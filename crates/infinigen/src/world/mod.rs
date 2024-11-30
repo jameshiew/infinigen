@@ -8,31 +8,30 @@ use infinigen_common::world::{ChunkPosition, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
 
 #[derive(Resource)]
-pub struct FakeClient {
-    pub world: Arc<RwLock<Box<dyn WorldGen + Send + Sync>>>,
+pub struct World {
+    pub generator: Arc<RwLock<Box<dyn WorldGen + Send + Sync>>>,
 }
 
-impl Default for FakeClient {
+impl Default for World {
     fn default() -> Self {
         let x: Box<dyn WorldGen + Send + Sync> = Box::<worldgen::flat::Flat>::default();
         Self {
-            world: Arc::new(RwLock::new(x)),
+            generator: Arc::new(RwLock::new(x)),
         }
     }
 }
 
-/// Eventually will become a trait.
-impl FakeClient {
+impl World {
     pub fn get_chunk(&self, zoom_level: ZoomLevel, pos: &ChunkPosition) -> Chunk {
-        self.world.write().unwrap().get(pos, zoom_level)
+        self.generator.write().unwrap().get(pos, zoom_level)
     }
 }
 
-pub struct FakeClientPlugin;
+pub struct WorldPlugin;
 
-impl Plugin for FakeClientPlugin {
+impl Plugin for WorldPlugin {
     fn build(&self, app: &mut App) {
-        tracing::info!("Initializing fake client plugin");
-        app.init_resource::<FakeClient>();
+        tracing::info!("Initializing world plugin");
+        app.init_resource::<World>();
     }
 }
