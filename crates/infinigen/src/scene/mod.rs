@@ -80,10 +80,10 @@ pub fn init_scene_from_config(
 }
 
 #[derive(Event)]
-pub enum ManageChunksEvent {
-    RefreshChunkOpsQueue,
-    ReloadAllChunks,
-}
+pub struct RefreshChunkOpsQueueEvent;
+
+#[derive(Event)]
+pub struct ReloadAllChunksEvent;
 
 #[derive(Event)]
 pub enum UpdateSettingsEvent {
@@ -96,7 +96,8 @@ pub fn handle_update_scene_view(
     mut scene_view: ResMut<SceneView>,
     mut camera: Query<&mut Transform, With<Camera>>,
     mut update_evs: EventReader<UpdateSettingsEvent>,
-    mut manage_evs: EventWriter<ManageChunksEvent>,
+    mut refresh_evs: EventWriter<RefreshChunkOpsQueueEvent>,
+    mut reload_evs: EventWriter<ReloadAllChunksEvent>,
 ) {
     for ev in update_evs.read() {
         match ev {
@@ -107,7 +108,7 @@ pub fn handle_update_scene_view(
                     hview_distance
                 );
                 scene_view.hview_distance = *hview_distance;
-                manage_evs.send(ManageChunksEvent::RefreshChunkOpsQueue);
+                refresh_evs.send(RefreshChunkOpsQueueEvent);
             }
             UpdateSettingsEvent::VerticalViewDistance(vview_distance) => {
                 tracing::info!(
@@ -116,7 +117,7 @@ pub fn handle_update_scene_view(
                     vview_distance
                 );
                 scene_view.vview_distance = *vview_distance;
-                manage_evs.send(ManageChunksEvent::RefreshChunkOpsQueue);
+                refresh_evs.send(RefreshChunkOpsQueueEvent);
             }
             UpdateSettingsEvent::ZoomLevel(zoom_level) => {
                 tracing::info!(
@@ -132,7 +133,7 @@ pub fn handle_update_scene_view(
                 camera.translation.x *= 2f32.powf(dzoom);
                 camera.translation.y *= 2f32.powf(dzoom);
                 camera.translation.z *= 2f32.powf(dzoom);
-                manage_evs.send(ManageChunksEvent::ReloadAllChunks);
+                reload_evs.send(ReloadAllChunksEvent);
             }
         }
     }
@@ -144,21 +145,22 @@ pub fn check_should_update_chunks(
     scene_view: Res<SceneView>,
     mut scene: ResMut<Scene>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
-    mut reload_evs: EventReader<ManageChunksEvent>,
+    mut reload_evs: EventReader<ReloadAllChunksEvent>,
+    mut refresh_evs: EventReader<RefreshChunkOpsQueueEvent>,
 ) {
     let mut should_update = false;
-    if let Some(ev) = reload_evs.read().next() {
+    if refresh_evs.read().next().is_some() {
         should_update = true;
-        if matches!(ev, ManageChunksEvent::ReloadAllChunks) {
-            tracing::info!("Reloading all chunks");
-            scene.ops.clear();
-            for (_, eids) in scene.loaded.drain() {
-                eids.iter().for_each(|physical_eid| {
-                    commands.entity(*physical_eid).despawn();
-                });
-            }
-            should_update = true;
+    }
+    if reload_evs.read().next().is_some() {
+        tracing::info!("Reloading all chunks");
+        scene.ops.clear();
+        for (_, eids) in scene.loaded.drain() {
+            eids.iter().for_each(|physical_eid| {
+                commands.entity(*physical_eid).despawn();
+            });
         }
+        should_update = true;
     }
 
     let (camera, projection) = camera.single();
@@ -277,7 +279,8 @@ impl bevy::prelude::Plugin for Plugin {
             .init_resource::<SceneView>()
             .add_systems(Startup, (lights::setup, init_scene_from_config))
             .add_event::<UpdateSettingsEvent>()
-            .add_event::<ManageChunksEvent>()
+            .add_event::<ReloadAllChunksEvent>()
+            .add_event::<RefreshChunkOpsQueueEvent>()
             .add_systems(
                 Update,
                 (
