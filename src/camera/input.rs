@@ -68,10 +68,10 @@ pub fn keyboard(
                     }
                 }
             }
-
-            velocity = velocity.normalize_or_zero();
-            transform.translation += velocity * time.delta_secs() * camera.speed;
         }
+
+        velocity = velocity.normalize_or_zero();
+        transform.translation += velocity * time.delta_secs() * camera.speed;
     }
 }
 
