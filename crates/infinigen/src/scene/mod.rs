@@ -34,9 +34,6 @@ pub struct SceneCamera {
 pub struct SceneView {
     pub hview_distance: usize,
     pub vview_distance: usize,
-    // Zoom as a power of 2. e.g. if this is 0, then there will be no zoom.
-    pub prev_zoom_level: i8,
-    pub zoom_level: i8,
 }
 
 impl Default for SceneView {
@@ -44,10 +41,15 @@ impl Default for SceneView {
         Self {
             hview_distance: DEFAULT_HORIZONTAL_VIEW_DISTANCE,
             vview_distance: DEFAULT_VERTICAL_VIEW_DISTANCE,
-            prev_zoom_level: 0,
-            zoom_level: 0,
         }
     }
+}
+
+#[derive(Debug, Default, Resource)]
+pub struct SceneZoom {
+    // Zoom as a power of 2. e.g. if this is 0, then there will be no zoom.
+    pub prev_zoom_level: i8,
+    pub zoom_level: i8,
 }
 
 #[derive(Debug)]
@@ -61,12 +63,13 @@ pub const FAR: f32 = CHUNK_SIZE_F32 * 64.;
 pub fn init_scene_from_config(
     mut scene: ResMut<Scene>,
     mut scene_view: ResMut<SceneView>,
+    mut scene_zoom: ResMut<SceneZoom>,
     config: Res<Config>,
 ) {
     scene_view.hview_distance = config.hview_distance;
     scene_view.vview_distance = config.vview_distance;
-    scene_view.prev_zoom_level = config.zoom_level;
-    scene_view.zoom_level = config.zoom_level;
+    scene_zoom.prev_zoom_level = config.zoom_level;
+    scene_zoom.zoom_level = config.zoom_level;
 
     // we expect roughly this many chunks to be loaded initially (a cylinder centred around the player)
     let initial_capacity = (PI * scene_view.hview_distance.pow(2) as f32)
@@ -97,6 +100,7 @@ pub enum UpdateSettingsEvent {
 
 pub fn handle_update_scene_view(
     mut scene_view: ResMut<SceneView>,
+    mut scene_zoom: ResMut<SceneZoom>,
     mut camera: Query<&mut Transform, With<Camera>>,
     mut update_evs: EventReader<UpdateSettingsEvent>,
     mut refresh_evs: EventWriter<RefreshChunkOpsQueueEvent>,
@@ -125,14 +129,14 @@ pub fn handle_update_scene_view(
             UpdateSettingsEvent::ZoomLevel(zoom_level) => {
                 tracing::info!(
                     "Updating zoom level from {} to {}",
-                    scene_view.zoom_level,
+                    scene_zoom.zoom_level,
                     zoom_level
                 );
-                scene_view.prev_zoom_level = scene_view.zoom_level;
-                scene_view.zoom_level = *zoom_level;
+                scene_zoom.prev_zoom_level = scene_zoom.zoom_level;
+                scene_zoom.zoom_level = *zoom_level;
 
                 let mut camera = camera.single_mut();
-                let dzoom = (scene_view.zoom_level - scene_view.prev_zoom_level) as f32;
+                let dzoom = (scene_zoom.zoom_level - scene_zoom.prev_zoom_level) as f32;
                 camera.translation.x *= 2f32.powf(dzoom);
                 camera.translation.y *= 2f32.powf(dzoom);
                 camera.translation.z *= 2f32.powf(dzoom);
@@ -282,6 +286,7 @@ impl bevy::prelude::Plugin for Plugin {
         app.init_resource::<Scene>()
             .init_resource::<SceneView>()
             .init_resource::<SceneCamera>()
+            .init_resource::<SceneZoom>()
             .add_systems(Startup, (lights::setup, init_scene_from_config))
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ReloadAllChunksEvent>()

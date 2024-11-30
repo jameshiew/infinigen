@@ -10,12 +10,14 @@ use bevy_egui::{
 use crate::scene;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 
+#[allow(clippy::too_many_arguments)]
 pub fn display_debug_info(
     mut egui: EguiContexts,
     diagnostics: Res<DiagnosticsStore>,
     mut camera: Query<(&Transform, &mut crate::camera::settings::Settings)>,
     scene: Res<scene::Scene>,
     scene_view: Res<scene::SceneView>,
+    scene_zoom: Res<scene::SceneZoom>,
     mut update_evs: EventWriter<scene::UpdateSettingsEvent>,
     mut reload_evs: EventWriter<scene::ReloadAllChunksEvent>,
 ) {
@@ -88,10 +90,10 @@ pub fn display_debug_info(
             ));
         };
 
-        let mut zoom_level = scene_view.zoom_level;
+        let mut zoom_level = scene_zoom.zoom_level;
         ui.label("Zoom level");
         if ui.add(Slider::new(&mut zoom_level, -5..=5)).changed()
-            && scene_view.zoom_level != zoom_level
+            && scene_zoom.zoom_level != zoom_level
         {
             update_evs.send(scene::UpdateSettingsEvent::ZoomLevel(zoom_level));
         };
