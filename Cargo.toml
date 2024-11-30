@@ -29,8 +29,6 @@ lru = "0.12.5"
 
 # instrumentation
 tracing = "0.1.40"
-tracing-log = "0.2.0"
-tracing-subscriber = "0.3.18"
 
 # randomness
 rand = "0.8.5"
