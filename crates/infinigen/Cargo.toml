@@ -35,13 +35,6 @@ rand = {workspace = true}
 nalgebra = "0.33.2"
 rustc-hash = {workspace = true}
 
-[dev-dependencies]
-criterion = "0.5.1"
-
-[[bench]]
-name = "benchmark"
-harness = false
-
 [features]
 default = []
 dynamic-linking = ["bevy/dynamic_linking"]

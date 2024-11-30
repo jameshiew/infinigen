@@ -16,3 +16,10 @@ bracket-noise = "0.8.7"
 splines = "4.4.0"
 ndarray = { version = "0.16.1", features = ["serde"] }
 lru = "0.12.5"
+
+[dev-dependencies]
+criterion = "0.5.1"
+
+[[bench]]
+name = "benchmark"
+harness = false

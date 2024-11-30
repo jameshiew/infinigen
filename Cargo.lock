@@ -2922,7 +2922,6 @@ dependencies = [
  "bevy_egui",
  "block-mesh",
  "config",
- "criterion",
  "futures-lite",
  "infinigen-common",
  "nalgebra",
@@ -2938,6 +2937,7 @@ name = "infinigen-common"
 version = "0.0.0"
 dependencies = [
  "bracket-noise",
+ "criterion",
  "lru",
  "ndarray",
  "noise",
