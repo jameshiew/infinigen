@@ -44,16 +44,18 @@ pub fn split(mut chunk: UnpackedChunk, chunk_block_id: ChunkBlockId) -> (Unpacke
     (chunk, split_out)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn process_ops(
     mut commands: Commands,
     mut chunks: ResMut<ChunkRegistry>,
     world: Res<World>,
     assets: Res<Registry>,
     mut scene: ResMut<crate::scene::Scene>,
+    scene_view: Res<crate::scene::SceneView>,
     mut meshes: ResMut<Assets<Mesh>>,
     registry: Res<Registry>,
 ) {
-    let scene_zoom_level = scene.zoom_level.into();
+    let scene_zoom_level = scene_view.zoom_level.into();
     let mut queued_generations = vec![];
     for _ in 0..CHUNK_OP_RATE {
         let Some(op) = scene.ops.pop_front() else {
