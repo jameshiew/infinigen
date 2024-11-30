@@ -19,8 +19,6 @@ mod handle;
 pub mod lights;
 pub mod visible_chunks;
 
-pub const SKY_COLOR: Color = Color::srgb(0.47, 0.66, 1.);
-
 /// Holds details of the currently rendered scene.
 #[derive(Debug, Resource)]
 pub struct Scene {
@@ -276,7 +274,6 @@ impl bevy::prelude::Plugin for Plugin {
         tracing::info!("Initializing scene plugin");
         app.init_resource::<Scene>()
             .add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
-            .insert_resource(ClearColor(SKY_COLOR))
             .add_systems(Startup, (lights::setup, init_config))
             .init_resource::<Registry>()
             .init_state::<AppState>()
