@@ -19,12 +19,15 @@ pub mod visible_chunks;
 /// Holds details of the currently rendered scene.
 #[derive(Debug, Default, Resource)]
 pub struct Scene {
-    /// The current chunk the player is located in.
-    camera_cpos: Option<ChunkPosition>,
-
     /// Loaded chunks and their entities.
     pub loaded: FxHashMap<ChunkPosition, FxHashSet<Entity>>,
     pub ops: VecDeque<ChunkOp>,
+}
+
+#[derive(Debug, Default, Resource)]
+pub struct SceneCamera {
+    /// The current chunk the player is located in.
+    cpos: Option<ChunkPosition>,
 }
 
 #[derive(Debug, Resource)]
@@ -144,6 +147,7 @@ pub fn check_should_update_chunks(
     mut commands: Commands,
     scene_view: Res<SceneView>,
     mut scene: ResMut<Scene>,
+    mut scene_camera: ResMut<SceneCamera>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
     mut reload_evs: EventReader<ReloadAllChunksEvent>,
     mut refresh_evs: EventReader<RefreshChunkOpsQueueEvent>,
@@ -171,9 +175,9 @@ pub fn check_should_update_chunks(
     }
     .into();
 
-    if Some(current_cpos) != scene.camera_cpos {
-        let previous_cpos = scene.camera_cpos.replace(current_cpos);
-        tracing::debug!(?previous_cpos, current_cpos = ?scene.camera_cpos, "Camera moved to new chunk");
+    if Some(current_cpos) != scene_camera.cpos {
+        let previous_cpos = scene_camera.cpos.replace(current_cpos);
+        tracing::debug!(?previous_cpos, current_cpos = ?scene_camera.cpos, "Camera moved to new chunk");
         should_update = true;
     }
     if !should_update {
@@ -277,6 +281,7 @@ impl bevy::prelude::Plugin for Plugin {
         tracing::info!("Initializing scene plugin");
         app.init_resource::<Scene>()
             .init_resource::<SceneView>()
+            .init_resource::<SceneCamera>()
             .add_systems(Startup, (lights::setup, init_scene_from_config))
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ReloadAllChunksEvent>()
