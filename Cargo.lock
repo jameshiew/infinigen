@@ -2915,6 +2915,7 @@ dependencies = [
 name = "infinigen"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
  "bevy",
  "bevy-inspector-egui",
  "bevy_common_assets",
