@@ -162,7 +162,6 @@ pub fn check_should_update_chunks(
     }
     if reload_evs.read().next().is_some() {
         tracing::info!("Reloading all chunks");
-        scene.ops.clear();
         for (_, eids) in scene.loaded.drain() {
             eids.iter().for_each(|physical_eid| {
                 commands.entity(*physical_eid).despawn();
