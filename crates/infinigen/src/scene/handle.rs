@@ -1,20 +1,18 @@
 use bevy::{prelude::*, tasks::AsyncComputeTaskPool};
 use rustc_hash::FxHashSet;
 
+use crate::chunks::{registry::ChunkStatus, tasks::GenerateChunk};
 use crate::{
     chunks::registry::ChunkRegistry,
     scene::{assets::MaterialType, ChunkOp},
 };
 use crate::{
-    chunks::{registry::ChunkStatus, tasks::GenerateChunk},
-    common::{
-        chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F32},
-        world::{BlockPosition, BlockVisibility, ChunkBlockId, WorldPosition},
-    },
-};
-use crate::{
     fake_client::FakeClient,
     render::mesh::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces},
+};
+use infinigen_common::{
+    chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F32},
+    world::{BlockPosition, BlockVisibility, ChunkBlockId, WorldPosition},
 };
 
 use super::assets::Registry;

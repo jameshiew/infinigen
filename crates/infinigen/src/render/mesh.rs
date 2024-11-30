@@ -5,7 +5,7 @@ use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::render::render_asset::RenderAssetUsages;
 use bevy::render::render_resource::PrimitiveTopology;
 
-use crate::common::chunks::UnpackedChunk;
+use infinigen_common::chunks::UnpackedChunk;
 use crate::mesh::faces::prepare_padded_chunk;
 use crate::mesh::shapes::ChunkFace;
 use crate::mesh::{

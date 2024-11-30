@@ -1,6 +1,6 @@
 //! Helpers for creating chunks.
-use crate::common::chunks::{UnpackedChunk, CHUNK_SIZE};
-use crate::common::world::{BlockPosition, ChunkBlockId};
+use infinigen_common::chunks::{UnpackedChunk, CHUNK_SIZE};
+use infinigen_common::world::{BlockPosition, ChunkBlockId};
 
 pub fn filled_chunk(block: ChunkBlockId) -> UnpackedChunk {
     let mut chunk = UnpackedChunk::default();

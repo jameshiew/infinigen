@@ -8,8 +8,8 @@ use rand::Rng;
 use faces::RHS_FACES;
 use shapes::{PaddedChunk, PaddedChunkShape, PADDED_CHUNK_MAX_INDEX};
 
-use crate::common::chunks::{UnpackedChunk, CHUNK_SIZE};
-use crate::common::world::{BlockPosition, LocalPosition};
+use infinigen_common::chunks::{UnpackedChunk, CHUNK_SIZE};
+use infinigen_common::world::{BlockPosition, LocalPosition};
 
 use self::block::VoxelBlock;
 use self::textures::{Face, TextureMap};

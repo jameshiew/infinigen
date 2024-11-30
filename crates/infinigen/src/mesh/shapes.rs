@@ -1,6 +1,6 @@
 use block_mesh::ndshape::{ConstShape, ConstShape2u32, ConstShape3u32};
 
-use crate::common::chunks::CHUNK_SIZE_U32;
+use infinigen_common::chunks::CHUNK_SIZE_U32;
 use crate::mesh::block::VoxelBlock;
 
 // 1-voxel boundary padding around the chunk is necessary

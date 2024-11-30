@@ -10,13 +10,13 @@ use serde::{Deserialize, Serialize};
 use strum::{EnumCount, IntoEnumIterator};
 
 use crate::{
-    common::{
-        backends::file,
-        world::{BlockId, BlockVisibility, ChunkBlockId},
-    },
     fake_client::FakeClient,
     mesh::textures::{Face, FaceAppearance, TextureMap},
     settings::Config,
+};
+use infinigen_common::{
+    backends::file,
+    world::{BlockId, BlockVisibility, ChunkBlockId},
 };
 
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Hash, EnumCount)]
@@ -236,7 +236,8 @@ pub fn setup(
         ..default()
     });
 
-    let mut worldgen: Box<dyn crate::common::world::WorldGen + Send + Sync> = config.world.into();
+    let mut worldgen: Box<dyn infinigen_common::world::WorldGen + Send + Sync> =
+        config.world.into();
     worldgen.initialize((&registry.block_mappings).into());
     let worldgen = Arc::new(RwLock::new(worldgen));
     client.world = match &config.save_dir {

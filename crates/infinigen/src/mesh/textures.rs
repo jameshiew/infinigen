@@ -4,7 +4,7 @@ use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
-use crate::common::world::ChunkBlockId;
+use infinigen_common::world::ChunkBlockId;
 
 const TEXTURE_SIZE: usize = 64;
 

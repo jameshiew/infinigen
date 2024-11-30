@@ -3,13 +3,13 @@ use rustc_hash::FxHashMap;
 use bevy::prelude::Resource;
 use strum::IntoEnumIterator;
 
-use crate::common::chunks::Chunk;
-use crate::common::world::ChunkPosition;
-use crate::common::zoom::ZoomLevel;
 use crate::fake_client::FakeClient;
 use crate::mesh::faces::extract_faces;
 use crate::mesh::shapes::{empty_chunk_face, ChunkFace};
 use crate::scene::assets::BlockMappings;
+use infinigen_common::chunks::Chunk;
+use infinigen_common::world::ChunkPosition;
+use infinigen_common::zoom::ZoomLevel;
 
 // Responsible for keeping track of chunks which have been received by this local client.
 #[derive(Default, Resource)]
@@ -137,7 +137,7 @@ impl ChunkRegistry {
         block_mappings: &BlockMappings,
     ) -> [ChunkFace; 6] {
         let mut neighbor_faces = [empty_chunk_face(); 6];
-        for dir in crate::common::world::Direction::iter() {
+        for dir in infinigen_common::world::Direction::iter() {
             let normal: [i32; 3] = dir.into();
             let neighbor_cpos = ChunkPosition {
                 x: position.x + normal[0],
@@ -147,12 +147,12 @@ impl ChunkRegistry {
             let faces = self.get_faces_mut(zoom_level, &neighbor_cpos, client, block_mappings);
             let i = dir as usize;
             match dir.opposite() {
-                crate::common::world::Direction::Up => neighbor_faces[i] = faces[0],
-                crate::common::world::Direction::Down => neighbor_faces[i] = faces[1],
-                crate::common::world::Direction::North => neighbor_faces[i] = faces[2],
-                crate::common::world::Direction::South => neighbor_faces[i] = faces[3],
-                crate::common::world::Direction::East => neighbor_faces[i] = faces[4],
-                crate::common::world::Direction::West => neighbor_faces[i] = faces[5],
+                infinigen_common::world::Direction::Up => neighbor_faces[i] = faces[0],
+                infinigen_common::world::Direction::Down => neighbor_faces[i] = faces[1],
+                infinigen_common::world::Direction::North => neighbor_faces[i] = faces[2],
+                infinigen_common::world::Direction::South => neighbor_faces[i] = faces[3],
+                infinigen_common::world::Direction::East => neighbor_faces[i] = faces[4],
+                infinigen_common::world::Direction::West => neighbor_faces[i] = faces[5],
             }
         }
         neighbor_faces

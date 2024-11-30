@@ -1,11 +1,9 @@
 use bevy::{prelude::*, tasks::Task};
 use futures_lite::future;
 
-use crate::common::zoom::ZoomLevel;
-use crate::{
-    common::{chunks::Chunk, world::ChunkPosition},
-    scene::assets,
-};
+use crate::scene::assets;
+use infinigen_common::zoom::ZoomLevel;
+use infinigen_common::{chunks::Chunk, world::ChunkPosition};
 
 use super::registry::ChunkRegistry;
 

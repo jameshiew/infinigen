@@ -2,9 +2,9 @@ use std::sync::{Arc, RwLock};
 
 use bevy::prelude::*;
 
-use crate::common::chunks::Chunk;
-use crate::common::world::{ChunkPosition, WorldGen};
-use crate::common::zoom::ZoomLevel;
+use infinigen_common::chunks::Chunk;
+use infinigen_common::world::{ChunkPosition, WorldGen};
+use infinigen_common::zoom::ZoomLevel;
 use crate::extras::worldgen;
 
 #[derive(Resource)]

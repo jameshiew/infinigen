@@ -2,7 +2,6 @@ use bevy::prelude::Plugin;
 
 pub mod camera;
 pub mod chunks;
-pub mod common;
 pub mod cursor;
 pub mod debug;
 pub mod extras;
