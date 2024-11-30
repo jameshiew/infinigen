@@ -1,7 +1,7 @@
 use bevy::{prelude::*, tasks::Task};
 use futures_lite::future;
 
-use crate::scene::assets;
+use crate::assets;
 use infinigen_common::zoom::ZoomLevel;
 use infinigen_common::{chunks::Chunk, world::ChunkPosition};
 

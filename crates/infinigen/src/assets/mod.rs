@@ -1,20 +1,37 @@
+use bevy::asset::{LoadedFolder, RecursiveDependencyLoadState};
+use bevy::prelude::*;
+use bevy_common_assets::ron::RonAssetPlugin;
+use rustc_hash::FxHashMap;
+use serde::{Deserialize, Serialize};
 use std::{
     collections::{BTreeMap, HashMap},
     sync::{Arc, RwLock},
 };
-
-use bevy::asset::{LoadedFolder, RecursiveDependencyLoadState};
-use bevy::{prelude::*, reflect::TypePath};
-use rustc_hash::FxHashMap;
-use serde::{Deserialize, Serialize};
 use strum::{EnumCount, IntoEnumIterator};
 
 use crate::{
     mesh::textures::{Face, FaceAppearance, TextureMap},
     settings::Config,
     world::World,
+    AppState,
 };
 use infinigen_common::world::{BlockId, BlockVisibility, ChunkBlockId};
+
+pub struct Plugin;
+
+impl bevy::prelude::Plugin for Plugin {
+    fn build(&self, app: &mut App) {
+        tracing::info!("Initializing assets plugin");
+        app.add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
+            .init_resource::<Registry>()
+            .add_systems(OnEnter(AppState::LoadingAssets), load_assets)
+            .add_systems(
+                Update,
+                (check_assets.run_if(in_state(AppState::LoadingAssets)),),
+            )
+            .add_systems(OnEnter(AppState::InitializingRegistry), setup);
+    }
+}
 
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Hash, EnumCount)]
 pub enum MaterialType {
@@ -83,13 +100,6 @@ pub struct Registry {
     pub block_mappings: BlockMappings,
 }
 
-#[derive(States, Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
-pub enum AppState {
-    #[default]
-    LoadAssets,
-    RegisterAssets,
-}
-
 pub fn load_assets(mut registry: ResMut<Registry>, asset_server: Res<AssetServer>) {
     registry.block_texture_folder = asset_server.load_folder("blocks/textures/");
     registry.block_definition_folder = asset_server.load_folder("blocks/types/");
@@ -122,7 +132,7 @@ pub fn check_assets(
     }
 
     if block_definitions_loaded && block_textures_loaded {
-        next_state.set(AppState::RegisterAssets);
+        next_state.set(AppState::InitializingRegistry);
     } else {
         tracing::info!(
             "Loading block definitions: {:?}, block textures: {:?}",
@@ -134,6 +144,7 @@ pub fn check_assets(
 
 #[allow(clippy::too_many_arguments)]
 pub fn setup(
+    mut next_state: ResMut<NextState<AppState>>,
     mut registry: ResMut<Registry>,
     asset_server: Res<AssetServer>,
     loaded_folders: Res<Assets<LoadedFolder>>,
@@ -237,6 +248,7 @@ pub fn setup(
         config.world.into();
     worldgen.initialize((&registry.block_mappings).into());
     world.generator = Arc::new(RwLock::new(worldgen));
+    next_state.set(AppState::MainGame);
 }
 
 impl Registry {

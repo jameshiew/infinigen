@@ -3,18 +3,15 @@ use std::collections::VecDeque;
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
-use bevy_common_assets::ron::RonAssetPlugin;
 use nalgebra::{Matrix4, Vector3};
 use nalgebra::{Perspective3, Quaternion, UnitQuaternion};
 use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
+use crate::AppState;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 use infinigen_common::world::{ChunkPosition, WorldPosition};
 
-use self::assets::{check_assets, load_assets, setup, AppState, BlockDefinition, Registry};
-
-pub mod assets;
 mod handle;
 pub mod lights;
 pub mod visible_chunks;
@@ -273,21 +270,15 @@ impl bevy::prelude::Plugin for Plugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing scene plugin");
         app.init_resource::<Scene>()
-            .add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
             .add_systems(Startup, (lights::setup, init_config))
-            .init_resource::<Registry>()
-            .init_state::<AppState>()
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ManageChunksEvent>()
-            .add_systems(OnEnter(AppState::LoadAssets), load_assets)
-            .add_systems(OnEnter(AppState::RegisterAssets), setup)
             .add_systems(
                 Update,
                 (
-                    check_assets.run_if(in_state(AppState::LoadAssets)),
-                    check_should_update_chunks.run_if(in_state(AppState::RegisterAssets)),
-                    handle::process_ops.run_if(in_state(AppState::RegisterAssets)),
-                    handle_update_settings_ev.run_if(in_state(AppState::RegisterAssets)),
+                    check_should_update_chunks.run_if(in_state(AppState::MainGame)),
+                    handle::process_ops.run_if(in_state(AppState::MainGame)),
+                    handle_update_settings_ev.run_if(in_state(AppState::MainGame)),
                 ),
             );
     }

@@ -5,12 +5,12 @@ use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::render::render_asset::RenderAssetUsages;
 use bevy::render::render_resource::PrimitiveTopology;
 
+use crate::assets::BlockMappings;
 use crate::mesh::faces::prepare_padded_chunk;
 use crate::mesh::shapes::ChunkFace;
 use crate::mesh::{
     mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces, textures::TextureMap, MeshInfo,
 };
-use crate::scene::assets::BlockMappings;
 use infinigen_common::chunks::UnpackedChunk;
 
 pub fn to_bevy_mesh(
