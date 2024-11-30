@@ -4,17 +4,17 @@ use bevy::prelude::*;
 use bevy::window::{CursorGrabMode, PrimaryWindow, Window};
 
 pub fn grab(window: &mut Window) {
-    window.cursor.grab_mode = CursorGrabMode::Confined;
-    window.cursor.visible = false;
+    window.cursor_options.grab_mode = CursorGrabMode::Confined;
+    window.cursor_options.visible = false;
 }
 
 pub fn release(window: &mut Window) {
-    window.cursor.grab_mode = CursorGrabMode::None;
-    window.cursor.visible = true;
+    window.cursor_options.grab_mode = CursorGrabMode::None;
+    window.cursor_options.visible = true;
 }
 
 pub fn toggle_grab(window: &mut Window) {
-    match window.cursor.grab_mode {
+    match window.cursor_options.grab_mode {
         CursorGrabMode::None => grab(window),
         _ => release(window),
     }
