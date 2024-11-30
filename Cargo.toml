@@ -3,13 +3,13 @@ name = "infinigen"
 version = "0.0.0"
 edition = "2021"
 publish = false
-rust-version = "1.80.1"
+rust-version = "1.82.0"  # msrv should be at least the msrv of the bevy version used
 
 [dependencies]
-bevy = { version = "0.14.2" }
-bevy_common_assets = { version = "0.11.0", features = ["ron"] }
-bevy_egui = { version = "0.30.1" }
-bevy-inspector-egui = { version = "0.27.0" }
+bevy = { version = "0.15.0" }
+bevy_common_assets = { version = "0.12.0", features = ["ron"] }
+bevy_egui = { version = "0.31.1" }
+bevy-inspector-egui = "0.28.0"
 
 # config
 config = { version = "0.14.1", default-features = false, features = ["ron"] }

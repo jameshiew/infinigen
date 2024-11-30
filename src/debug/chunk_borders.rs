@@ -139,14 +139,11 @@ pub fn toggle(
                                 lines: chunk_cube_lines.clone(),
                             });
                             commands.spawn((
-                                MaterialMeshBundle {
-                                    mesh: meshes.add(mesh),
-                                    transform,
-                                    material: materials.add(LineMaterial {
-                                        color: LinearRgba::WHITE,
-                                    }),
-                                    ..default()
-                                },
+                                Mesh3d(meshes.add(mesh)),
+                                MeshMaterial3d(materials.add(LineMaterial {
+                                    color: LinearRgba::WHITE,
+                                })),
+                                transform,
                                 ChunkBorder,
                             ));
                         }
