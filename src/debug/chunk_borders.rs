@@ -139,6 +139,7 @@ pub fn toggle(
                                 lines: chunk_cube_lines.clone(),
                             });
                             commands.spawn((
+                                Name::new("Chunk border debug lines"),
                                 Mesh3d(meshes.add(mesh)),
                                 MeshMaterial3d(materials.add(LineMaterial {
                                     color: LinearRgba::WHITE,

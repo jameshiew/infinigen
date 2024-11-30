@@ -31,6 +31,7 @@ pub fn setup(mut commands: Commands, config: Res<Config>) {
     dbg!(transform.rotation);
     commands
         .spawn((
+            Name::new("Camera"),
             Projection::Perspective(PerspectiveProjection {
                 far: FAR,
                 ..Default::default()
