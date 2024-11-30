@@ -57,10 +57,6 @@ pub fn process_ops(
     let mut queued_generations = vec![];
     for _ in 0..CHUNK_OP_RATE {
         let Some(op) = scene.ops.pop_front() else {
-            if scene.is_processing_ops {
-                tracing::info!("Finished processing chunk ops");
-                scene.is_processing_ops = false;
-            }
             return;
         };
 
