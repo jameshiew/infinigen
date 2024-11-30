@@ -2961,8 +2961,6 @@ dependencies = [
  "splines",
  "strum",
  "tracing",
- "tracing-log",
- "tracing-subscriber",
 ]
 
 [[package]]
