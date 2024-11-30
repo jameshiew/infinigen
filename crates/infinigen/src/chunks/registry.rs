@@ -3,15 +3,15 @@ use rustc_hash::FxHashMap;
 use bevy::prelude::Resource;
 use strum::IntoEnumIterator;
 
-use crate::fake_client::FakeClient;
 use crate::mesh::faces::extract_faces;
 use crate::mesh::shapes::{empty_chunk_face, ChunkFace};
 use crate::scene::assets::BlockMappings;
+use crate::world::World;
 use infinigen_common::chunks::Chunk;
 use infinigen_common::world::ChunkPosition;
 use infinigen_common::zoom::ZoomLevel;
 
-// Responsible for keeping track of chunks which have been received by this local client.
+// Responsible for keeping track of chunks.
 #[derive(Default, Resource)]
 pub struct ChunkRegistry {
     cached: FxHashMap<ZoomLevel, FxHashMap<ChunkPosition, ChunkStatus>>,
@@ -67,10 +67,10 @@ impl ChunkRegistry {
         &mut self,
         zoom_level: ZoomLevel,
         position: &ChunkPosition,
-        client: &FakeClient,
+        world: &World,
         block_mappings: &BlockMappings,
     ) -> ChunkInfo {
-        let chunk = client.get_chunk(zoom_level, position);
+        let chunk = world.get_chunk(zoom_level, position);
         self.insert(zoom_level, position, chunk, block_mappings)
     }
 
@@ -101,7 +101,7 @@ impl ChunkRegistry {
         &mut self,
         zoom_level: ZoomLevel,
         position: &ChunkPosition,
-        client: &FakeClient,
+        world: &World,
         block_mappings: &BlockMappings,
     ) -> Chunk {
         if let Some(ChunkStatus::Present(chunk_info)) = self.get_status(zoom_level, position) {
@@ -109,7 +109,7 @@ impl ChunkRegistry {
             tracing::debug!(?position, "Got cached chunk");
             return chunk.to_owned();
         }
-        self.fetch_and_insert(zoom_level, position, client, block_mappings)
+        self.fetch_and_insert(zoom_level, position, world, block_mappings)
             .chunk
     }
 
@@ -117,14 +117,14 @@ impl ChunkRegistry {
         &mut self,
         zoom_level: ZoomLevel,
         position: &ChunkPosition,
-        client: &FakeClient,
+        world: &World,
         block_mappings: &BlockMappings,
     ) -> [ChunkFace; 6] {
         if let Some(ChunkStatus::Present(chunk_info)) = self.get_status(zoom_level, position) {
             let faces = chunk_info.faces;
             return faces;
         }
-        self.fetch_and_insert(zoom_level, position, client, block_mappings)
+        self.fetch_and_insert(zoom_level, position, world, block_mappings)
             .faces
     }
 
@@ -133,7 +133,7 @@ impl ChunkRegistry {
         &mut self,
         zoom_level: ZoomLevel,
         position: &ChunkPosition,
-        client: &FakeClient,
+        world: &World,
         block_mappings: &BlockMappings,
     ) -> [ChunkFace; 6] {
         let mut neighbor_faces = [empty_chunk_face(); 6];
@@ -144,7 +144,7 @@ impl ChunkRegistry {
                 y: position.y + normal[1],
                 z: position.z + normal[2],
             };
-            let faces = self.get_faces_mut(zoom_level, &neighbor_cpos, client, block_mappings);
+            let faces = self.get_faces_mut(zoom_level, &neighbor_cpos, world, block_mappings);
             let i = dir as usize;
             match dir.opposite() {
                 infinigen_common::world::Direction::Up => neighbor_faces[i] = faces[0],

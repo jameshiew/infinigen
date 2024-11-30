@@ -7,8 +7,8 @@ use crate::{
     scene::{assets::MaterialType, ChunkOp},
 };
 use crate::{
-    fake_client::FakeClient,
     render::mesh::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces},
+    world::World,
 };
 use infinigen_common::{
     chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F32},
@@ -50,7 +50,7 @@ pub fn split(mut chunk: UnpackedChunk, chunk_block_id: ChunkBlockId) -> (Unpacke
 pub fn process_ops(
     mut commands: Commands,
     mut chunks: ResMut<ChunkRegistry>,
-    client: Res<FakeClient>,
+    world: Res<World>,
     assets: Res<Registry>,
     mut scene: ResMut<crate::scene::Scene>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -82,7 +82,7 @@ pub fn process_ops(
                 None => {
                     chunks.set_status(scene_zoom_level, &cpos, ChunkStatus::Generating);
                     let thread_pool = AsyncComputeTaskPool::get();
-                    let worldgen = client.world.clone();
+                    let worldgen = world.generator.clone();
                     let task = thread_pool.spawn(async move {
                         (
                             scene_zoom_level,
@@ -111,7 +111,7 @@ pub fn process_ops(
         let Chunk::Unpacked(chunk) = chunks.get_mut(
             scene_zoom_level,
             &cpos,
-            client.as_ref(),
+            world.as_ref(),
             &registry.block_mappings,
         ) else {
             tracing::debug!(?cpos, "Empty chunk");
@@ -122,7 +122,7 @@ pub fn process_ops(
         let neighbor_faces = chunks.get_neighboring_faces_mut(
             scene_zoom_level,
             &cpos,
-            client.as_ref(),
+            world.as_ref(),
             &registry.block_mappings,
         );
 
