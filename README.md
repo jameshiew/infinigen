@@ -5,8 +5,8 @@ This is a demo for Minecraft-like procedural generation using the [Bevy game eng
 - chunks along all axes (X, Y and Z)
 - adjustable zoom level for viewing a world at different levels of detail
 
-![Main screenshot](screenshots/main.png "Screenshot")
-![Zoomed out screenshot](screenshots/zoomed_out.png "Zoomed out")
+![Main screenshot](screenshots/main.webp "Screenshot")
+![Zoomed out screenshot](screenshots/zoomed_out.webp "Zoomed out")
 
 ## Quickstart
 
