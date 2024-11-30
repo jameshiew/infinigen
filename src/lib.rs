@@ -1,4 +1,3 @@
-use bevy::prelude::Msaa;
 use bevy::prelude::Plugin;
 
 pub mod camera;
@@ -26,15 +25,13 @@ impl ClientPlugin {
 impl Plugin for ClientPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         tracing::info!("Initializing client plugin with config: {:#?}", self.config);
-        app.insert_resource(self.config.clone())
-            .insert_resource(Msaa::Off)
-            .add_plugins((
-                scene::Plugin,
-                chunks::ChunksPlugin,
-                camera::CameraPlugin,
-                cursor::CursorPlugin,
-                fake_client::FakeClientPlugin,
-                debug::UiPlugin,
-            ));
+        app.insert_resource(self.config.clone()).add_plugins((
+            scene::Plugin,
+            chunks::ChunksPlugin,
+            camera::CameraPlugin,
+            cursor::CursorPlugin,
+            fake_client::FakeClientPlugin,
+            debug::UiPlugin,
+        ));
     }
 }

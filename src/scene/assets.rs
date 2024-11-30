@@ -170,7 +170,7 @@ pub fn setup(
             panic!();
         };
     }
-    let (atlas_layout, texture_atlas) = block_tatlas_builder.build().unwrap();
+    let (atlas_layout, atlas_sources, texture_atlas) = block_tatlas_builder.build().unwrap();
     tracing::info!(?atlas_layout.size, ?atlas_layout.textures, "Stitched texture atlas");
     let texture_atlas = textures.add(texture_atlas);
 
@@ -202,7 +202,7 @@ pub fn setup(
                     .get(texture_file_names.get(&face).unwrap())
                     .unwrap();
                 tracing::info!(?face, ?block_definition.id, "Found specific texture");
-                let tidx = atlas_layout.get_texture_index(texture_handle).unwrap();
+                let tidx = atlas_sources.texture_index(texture_handle).unwrap();
                 let tidx = FaceAppearance::Texture {
                     coords: [
                         atlas_layout.textures[tidx].min[0] as usize,
