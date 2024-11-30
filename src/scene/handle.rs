@@ -92,7 +92,7 @@ pub fn process_ops(
                             worldgen.write().unwrap().get(&cpos, scene_zoom_level),
                         )
                     });
-                    commands.spawn(GenerateChunk(task));
+                    commands.spawn((Name::new("Generate chunk task"), GenerateChunk(task)));
                     queued_generations.push(ChunkOp::Load(cpos));
                     continue;
                 }
@@ -181,6 +181,7 @@ pub fn process_ops(
         for (mesh, material) in loads {
             let eid = commands
                 .spawn((
+                    Name::new("Chunk mesh"),
                     Mesh3d(meshes.add(mesh)),
                     MeshMaterial3d(material),
                     transform,

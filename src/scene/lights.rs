@@ -13,6 +13,7 @@ pub fn setup(mut commands: Commands) {
     });
 
     commands.spawn((
+        Name::new("Global lighting"),
         DirectionalLight {
             shadows_enabled: true,
             ..default()
