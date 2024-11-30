@@ -23,6 +23,7 @@ block-mesh = { git = "https://github.com/bonsairobo/block-mesh-rs", rev = "793c5
 serde = {workspace = true}
 
 # utils
+anyhow = "1.0.93"
 futures-lite = "2.5.0"
 strum = {workspace = true}
 

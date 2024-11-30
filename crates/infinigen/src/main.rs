@@ -1,5 +1,4 @@
-use std::process::ExitCode;
-
+use anyhow::{Context, Result};
 use bevy::{
     log::LogPlugin,
     prelude::*,
@@ -12,21 +11,17 @@ use infinigen::AppPlugin;
 
 const APP_NAME: &str = "infinigen";
 const CONFIG_PREFIX: &str = "infinigen_";
-const LOG_FILTER: &str = "info,wgpu_core=warn,wgpu_hal=warn,naga=info";
+const DEFAULT_LOG_FILTER: &str = "info,wgpu_core=warn,wgpu_hal=warn,naga=info";
 
-fn main() -> ExitCode {
+fn main() -> Result<()> {
     let cfg = Config::builder()
         .add_source(config::File::with_name("config"))
         .add_source(config::Environment::with_prefix(CONFIG_PREFIX))
         .build();
     let cfg: infinigen::settings::Config = match cfg {
-        Ok(settings) => match settings.try_deserialize() {
-            Ok(settings) => settings,
-            Err(err) => {
-                eprintln!("Couldn't deserialize settings, exiting: {}", err);
-                return ExitCode::FAILURE;
-            }
-        },
+        Ok(settings) => settings
+            .try_deserialize()
+            .context("failed to deserialize config file")?,
         Err(err) => {
             eprintln!(
                 "Couldn't load settings, using default configuration: {:?}",
@@ -39,7 +34,7 @@ fn main() -> ExitCode {
         .add_plugins(
             DefaultPlugins
                 .set(LogPlugin {
-                    filter: LOG_FILTER.into(),
+                    filter: DEFAULT_LOG_FILTER.into(),
                     level: bevy::log::Level::DEBUG,
                     custom_layer: |_| None,
                 })
@@ -54,5 +49,5 @@ fn main() -> ExitCode {
         )
         .add_plugins((AppPlugin::new(cfg),))
         .run();
-    ExitCode::SUCCESS
+    Ok(())
 }
