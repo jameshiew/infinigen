@@ -1,5 +1,3 @@
-/// Adapted from lines example of Bevy - https://github.com/bevyengine/bevy/blob/release-0.14.2/examples/3d/lines.rs
-use infinigen_common::chunks::CHUNK_SIZE_F32;
 use bevy::render::mesh::MeshVertexBufferLayoutRef;
 use bevy::render::render_asset::RenderAssetUsages;
 use bevy::{
@@ -14,6 +12,8 @@ use bevy::{
         },
     },
 };
+/// Adapted from lines example of Bevy - https://github.com/bevyengine/bevy/blob/release-0.14.2/examples/3d/lines.rs
+use infinigen_common::chunks::CHUNK_SIZE_F32;
 
 #[derive(Debug, Default, Eq, PartialEq, Resource)]
 pub struct ChunkBordersState {

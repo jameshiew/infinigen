@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use bevy::prelude::Resource;
 use serde::{Deserialize, Serialize};
 
-use crate::extras::worldgen::WorldGenTypes;
+use infinigen_common::extras::worldgen::WorldGenTypes;
 
 pub const DEFAULT_HORIZONTAL_VIEW_DISTANCE: usize = 8;
 pub const DEFAULT_VERTICAL_VIEW_DISTANCE: usize = 8;

@@ -2,8 +2,8 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use infinigen_common::world::{ChunkPosition, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
 
-use infinigen::extras::block_ids::default_block_ids;
-use infinigen::extras::worldgen::layered::Layered;
+use infinigen_common::extras::block_ids::default_block_ids;
+use infinigen_common::extras::worldgen::layered::Layered;
 
 fn bench_layered(c: &mut Criterion) {
     let mut wgen = Layered::default();

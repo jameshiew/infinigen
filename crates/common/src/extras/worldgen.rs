@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use infinigen_common::world::WorldGen;
+use crate::world::WorldGen;
 
 pub mod alternating;
 pub mod bordered_towers;

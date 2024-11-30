@@ -4,7 +4,6 @@ pub mod camera;
 pub mod chunks;
 pub mod cursor;
 pub mod debug;
-pub mod extras;
 pub mod fake_client;
 pub mod mesh;
 pub mod render;

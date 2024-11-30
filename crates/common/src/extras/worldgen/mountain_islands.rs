@@ -4,14 +4,14 @@ use bracket_noise::prelude::{FastNoise, NoiseType};
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 use splines::{Interpolation, Key, Spline};
 
-use infinigen_common::zoom::ZoomLevel;
-use infinigen_common::{
-    chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE},
-    world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition},
-};
 use crate::extras::block_ids::{
     DIRT_BLOCK_ID, GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, LEAVES_BLOCK_ID, SAND_BLOCK_ID, SNOW_BLOCK_ID,
     STONE_BLOCK_ID, WATER_BLOCK_ID, WOOD_BLOCK_ID,
+};
+use crate::zoom::ZoomLevel;
+use crate::{
+    chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE},
+    world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition},
 };
 
 pub struct MountainIslands {
