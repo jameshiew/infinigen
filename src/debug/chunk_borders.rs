@@ -1,6 +1,4 @@
 use crate::common::chunks::CHUNK_SIZE_F32;
-use bevy::asset::io::AssetSourceId;
-use bevy::asset::AssetPath;
 use bevy::render::mesh::MeshVertexBufferLayoutRef;
 use bevy::render::render_asset::RenderAssetUsages;
 /// Adapted from lines example of Bevy
@@ -49,10 +47,7 @@ pub struct LineMaterial {
 
 impl Material for LineMaterial {
     fn fragment_shader() -> ShaderRef {
-        ShaderRef::Path(
-            AssetPath::from("shaders/line_material.wgsl")
-                .with_source(AssetSourceId::from("embedded")),
-        )
+        "shaders/line_material.wgsl".into()
     }
 
     fn specialize(
