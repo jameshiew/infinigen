@@ -1,7 +1,7 @@
+/// Adapted from lines example of Bevy - https://github.com/bevyengine/bevy/blob/release-0.14.2/examples/3d/lines.rs
 use crate::common::chunks::CHUNK_SIZE_F32;
 use bevy::render::mesh::MeshVertexBufferLayoutRef;
 use bevy::render::render_asset::RenderAssetUsages;
-/// Adapted from lines example of Bevy
 use bevy::{
     pbr::{MaterialPipeline, MaterialPipelineKey},
     prelude::*,
@@ -31,11 +31,13 @@ pub struct LineList {
 
 impl From<LineList> for Mesh {
     fn from(line: LineList) -> Self {
-        let mut mesh = Mesh::new(PrimitiveTopology::LineList, RenderAssetUsages::default());
-
         let vertices: Vec<_> = line.lines.into_iter().flat_map(|(a, b)| [a, b]).collect();
-        mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, vertices);
-        mesh
+        let count = vertices.len();
+
+        Mesh::new(PrimitiveTopology::LineList, RenderAssetUsages::RENDER_WORLD)
+            .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vertices)
+            // arbitrary normal
+            .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, vec![Vec3::Y; count])
     }
 }
 
