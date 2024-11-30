@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use bevy::prelude::Resource;
 use serde::{Deserialize, Serialize};
 
@@ -13,7 +11,6 @@ pub struct Config {
     pub hview_distance: usize,
     pub vview_distance: usize,
     pub world: WorldGenTypes,
-    pub save_dir: Option<PathBuf>,
 
     #[serde(default)]
     pub zoom_level: i8,
@@ -40,7 +37,6 @@ impl Default for Config {
             hview_distance: DEFAULT_HORIZONTAL_VIEW_DISTANCE,
             vview_distance: DEFAULT_VERTICAL_VIEW_DISTANCE,
             world: WorldGenTypes::default(),
-            save_dir: None,
             zoom_level: 0,
             wx: -1283.,
             wy: 140.,
