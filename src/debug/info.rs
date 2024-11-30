@@ -21,7 +21,7 @@ pub fn display_debug_info(
     let (camera_wpos, mut camera) = camera.single_mut();
     egui::Window::new("Performance").show(egui.ctx_mut(), |ui| {
         ui.label(format!(
-            "FPS: {:.02}",
+            "FPS: {:.0}",
             diagnostics
                 .get(&FrameTimeDiagnosticsPlugin::FPS)
                 .unwrap()
@@ -29,7 +29,7 @@ pub fn display_debug_info(
                 .unwrap_or_default()
         ));
         ui.label(format!(
-            "Entities: {}",
+            "Entities: {:.0}",
             diagnostics
                 .get(&EntityCountDiagnosticsPlugin::ENTITY_COUNT)
                 .unwrap()
