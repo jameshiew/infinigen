@@ -57,7 +57,7 @@ impl Default for Scene {
 
 pub const FAR: f32 = CHUNK_SIZE_F32 * 64.;
 
-pub fn init_config(mut scene: ResMut<Scene>, config: Res<Config>) {
+pub fn init_scene_from_config(mut scene: ResMut<Scene>, config: Res<Config>) {
     scene.hview_distance = config.hview_distance;
     scene.vview_distance = config.vview_distance;
     scene.prev_zoom_level = config.zoom_level;
@@ -255,13 +255,12 @@ pub fn check_should_update_chunks(
         scene.ops.push_back(ChunkOp::Load(cpos))
     });
 
-    // we don't care so much about the order in which chunks are unloaded
+    // the order in which chunks are unloaded is not so important
     let to_unload = already_loaded_or_loading.difference(&chunks_within_render_distance);
     to_unload.for_each(|cpos| {
         let cpos = cpos.to_owned();
         scene.ops.push_front(ChunkOp::Unload(cpos))
     });
-    // log the first 20 chunks to be loaded
 }
 
 pub struct Plugin;
@@ -270,7 +269,7 @@ impl bevy::prelude::Plugin for Plugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing scene plugin");
         app.init_resource::<Scene>()
-            .add_systems(Startup, (lights::setup, init_config))
+            .add_systems(Startup, (lights::setup, init_scene_from_config))
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ManageChunksEvent>()
             .add_systems(
