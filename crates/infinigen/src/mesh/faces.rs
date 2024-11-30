@@ -2,10 +2,10 @@ use block_mesh::ndshape::ConstShape;
 use block_mesh::{OrientedBlockFace, RIGHT_HANDED_Y_UP_CONFIG};
 use strum::IntoEnumIterator;
 
+use crate::assets::BlockMappings;
 use crate::mesh::block::VoxelBlock;
 use crate::mesh::shapes;
 use crate::mesh::shapes::{ChunkFace, ChunkFaceShape, PaddedChunk, PaddedChunkShape};
-use crate::scene::assets::BlockMappings;
 use infinigen_common::chunks::{UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_U32};
 use infinigen_common::world::BlockPosition;
 
@@ -315,10 +315,10 @@ pub fn prepare_padded_chunk(
 mod tests {
     use block_mesh::{visible_block_faces, UnitQuadBuffer};
 
+    use crate::assets::BlockDefinition;
     use crate::mesh::shapes::{
         empty_chunk_face, ChunkFace, ChunkFaceShape, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
     };
-    use crate::scene::assets::BlockDefinition;
     use infinigen_common::chunks::CHUNK_SIZE_U32;
     use infinigen_common::extras::chunks::filled_chunk;
     use infinigen_common::world::BlockVisibility;

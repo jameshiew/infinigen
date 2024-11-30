@@ -3,9 +3,9 @@ use rustc_hash::FxHashMap;
 use bevy::prelude::Resource;
 use strum::IntoEnumIterator;
 
+use crate::assets::BlockMappings;
 use crate::mesh::faces::extract_faces;
 use crate::mesh::shapes::{empty_chunk_face, ChunkFace};
-use crate::scene::assets::BlockMappings;
 use crate::world::World;
 use infinigen_common::chunks::Chunk;
 use infinigen_common::world::ChunkPosition;
