@@ -29,6 +29,7 @@ cargo run --features dynamic_linking
 - <kbd>Space</kbd> - ascend
 - <kbd>Shift</kbd> - descend
 - <kbd>F3</kbd> - toggle wireframes
+- <kbd>F7</kbd> - toggle debug panels
 - <kbd>F9</kbd> - toggle chunk borders (only works near the origin)
 
 ### Configuration
