@@ -180,12 +180,11 @@ pub fn process_ops(
         let mut eids = FxHashSet::default();
         for (mesh, material) in loads {
             let eid = commands
-                .spawn((PbrBundle {
-                    mesh: meshes.add(mesh),
-                    material,
+                .spawn((
+                    Mesh3d(meshes.add(mesh)),
+                    MeshMaterial3d(material),
                     transform,
-                    ..default()
-                },))
+                ))
                 .id();
 
             eids.insert(eid);

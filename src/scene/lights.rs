@@ -12,23 +12,22 @@ pub fn setup(mut commands: Commands) {
         brightness: 0.5,
     });
 
-    commands.spawn(DirectionalLightBundle {
-        directional_light: DirectionalLight {
+    commands.spawn((
+        DirectionalLight {
             shadows_enabled: true,
             ..default()
         },
-        transform: Transform {
+        Transform {
             translation: Vec3::new(0.0, FAR / 8., 0.0),
             rotation: Quat::from_rotation_x(-PI / 4.),
             ..default()
         },
-        cascade_shadow_config: CascadeShadowConfigBuilder {
+        CascadeShadowConfigBuilder {
             num_cascades: 4,
             first_cascade_far_bound: CHUNK_SIZE_F32 * 8.,
             maximum_distance: FAR,
             ..default()
         }
-        .into(),
-        ..default()
-    });
+        .build(),
+    ));
 }
