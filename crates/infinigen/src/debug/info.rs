@@ -39,7 +39,7 @@ pub fn display_debug_info(
                 .average()
                 .unwrap_or_default()
         ));
-        ui.label(format!("# queued chunk ops: {}", scene.ops.len()));
+        ui.label(format!("# queued chunk ops: {}", scene.load_ops.len()));
         ui.label(format!("# non-empty chunks loaded: {}", scene.loaded.len()));
         if ui.button("Clear and reload all chunks").clicked() {
             reload_evs.send(scene::ReloadAllChunksEvent);
