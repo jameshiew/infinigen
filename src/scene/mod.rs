@@ -149,7 +149,8 @@ pub fn check_should_update_chunks(
     mut reload_evs: EventReader<ManageChunksEvent>,
 ) {
     let mut should_update = false;
-    for ev in reload_evs.read() {
+    if let Some(ev) = reload_evs.read().next() {
+        should_update = true;
         if matches!(ev, ManageChunksEvent::ReloadAllChunks) {
             tracing::info!("Reloading all chunks");
             scene.ops.clear();
@@ -158,18 +159,8 @@ pub fn check_should_update_chunks(
                     commands.entity(*physical_eid).despawn();
                 });
             }
+            should_update = true;
         }
-        should_update = true;
-    }
-    if reload_evs.read().next().is_some() {
-        tracing::info!("Reloading all chunks");
-        scene.ops.clear();
-        for (_, eids) in scene.loaded.drain() {
-            eids.iter().for_each(|physical_eid| {
-                commands.entity(*physical_eid).despawn();
-            });
-        }
-        should_update = true;
     }
 
     let (camera, projection) = camera.single();
