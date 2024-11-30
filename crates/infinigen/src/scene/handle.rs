@@ -44,12 +44,10 @@ pub fn split(mut chunk: UnpackedChunk, chunk_block_id: ChunkBlockId) -> (Unpacke
     (chunk, split_out)
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn process_ops(
     mut commands: Commands,
     mut chunks: ResMut<ChunkRegistry>,
     world: Res<World>,
-    assets: Res<Registry>,
     mut scene: ResMut<crate::scene::Scene>,
     scene_view: Res<crate::scene::SceneView>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -116,8 +114,8 @@ pub fn process_ops(
             tracing::debug!(?cpos, "Empty chunk");
             continue;
         };
-        let opaque_mat = assets.get_material(MaterialType::DenseOpaque);
-        let translucent_mat = assets.get_material(MaterialType::Translucent);
+        let opaque_mat = registry.get_material(MaterialType::DenseOpaque);
+        let translucent_mat = registry.get_material(MaterialType::Translucent);
         let neighbor_faces = chunks.get_neighboring_faces_mut(
             scene_zoom_level,
             &cpos,
