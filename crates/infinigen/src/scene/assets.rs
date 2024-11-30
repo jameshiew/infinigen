@@ -14,10 +14,7 @@ use crate::{
     mesh::textures::{Face, FaceAppearance, TextureMap},
     settings::Config,
 };
-use infinigen_common::{
-    backends::file,
-    world::{BlockId, BlockVisibility, ChunkBlockId},
-};
+use infinigen_common::world::{BlockId, BlockVisibility, ChunkBlockId};
 
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Hash, EnumCount)]
 pub enum MaterialType {
@@ -239,15 +236,7 @@ pub fn setup(
     let mut worldgen: Box<dyn infinigen_common::world::WorldGen + Send + Sync> =
         config.world.into();
     worldgen.initialize((&registry.block_mappings).into());
-    let worldgen = Arc::new(RwLock::new(worldgen));
-    client.world = match &config.save_dir {
-        Some(save_dir) => {
-            let backend = file::Backend::new(save_dir.into());
-            let worldgen = file::PersistentWorld::new(backend, worldgen);
-            Arc::new(RwLock::new(Box::new(worldgen)))
-        }
-        None => worldgen,
-    }
+    client.world = Arc::new(RwLock::new(worldgen));
 }
 
 impl Registry {

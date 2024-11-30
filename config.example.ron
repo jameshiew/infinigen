@@ -10,5 +10,4 @@
     rotation_y: -0.9,
     rotation_z: -0.4,
     rotation_w: 0.18,
-    save_dir: None,
 )
