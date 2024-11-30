@@ -14,7 +14,8 @@ pub fn display_debug_info(
     mut egui: EguiContexts,
     diagnostics: Res<DiagnosticsStore>,
     mut camera: Query<(&Transform, &mut crate::camera::settings::Settings)>,
-    scene: ResMut<scene::Scene>,
+    scene: Res<scene::Scene>,
+    scene_view: Res<scene::SceneView>,
     mut update_evs: EventWriter<scene::UpdateSettingsEvent>,
     mut reload_evs: EventWriter<scene::ManageChunksEvent>,
 ) {
@@ -68,10 +69,11 @@ pub fn display_debug_info(
         ];
         ui.label(format!("Block: {:?}", block_pos));
 
-        let (mut hview_distance, mut vview_distance) = (scene.hview_distance, scene.vview_distance);
+        let (mut hview_distance, mut vview_distance) =
+            (scene_view.hview_distance, scene_view.vview_distance);
         ui.label("Horizontal view distance");
         if ui.add(Slider::new(&mut hview_distance, 1..=64)).changed()
-            && hview_distance != scene.hview_distance
+            && hview_distance != scene_view.hview_distance
         {
             update_evs.send(scene::UpdateSettingsEvent::HorizontalViewDistance(
                 hview_distance,
@@ -79,16 +81,17 @@ pub fn display_debug_info(
         };
         ui.label("Vertical view distance");
         if ui.add(Slider::new(&mut vview_distance, 1..=64)).changed()
-            && vview_distance != scene.vview_distance
+            && vview_distance != scene_view.vview_distance
         {
             update_evs.send(scene::UpdateSettingsEvent::VerticalViewDistance(
                 vview_distance,
             ));
         };
 
-        let mut zoom_level = scene.zoom_level;
+        let mut zoom_level = scene_view.zoom_level;
         ui.label("Zoom level");
-        if ui.add(Slider::new(&mut zoom_level, -5..=5)).changed() && scene.zoom_level != zoom_level
+        if ui.add(Slider::new(&mut zoom_level, -5..=5)).changed()
+            && scene_view.zoom_level != zoom_level
         {
             update_evs.send(scene::UpdateSettingsEvent::ZoomLevel(zoom_level));
         };

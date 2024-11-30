@@ -17,20 +17,35 @@ pub mod lights;
 pub mod visible_chunks;
 
 /// Holds details of the currently rendered scene.
-#[derive(Debug, Resource)]
+#[derive(Debug, Default, Resource)]
 pub struct Scene {
     /// The current chunk the player is located in.
     camera_cpos: Option<ChunkPosition>,
-    pub hview_distance: usize,
-    pub vview_distance: usize,
-    // Zoom as a power of 2. e.g. if this is 0, then there will be no zoom.
-    pub prev_zoom_level: i8,
-    pub zoom_level: i8,
 
     /// Loaded chunks and their entities.
     pub loaded: FxHashMap<ChunkPosition, FxHashSet<Entity>>,
     pub ops: VecDeque<ChunkOp>,
     pub is_processing_ops: bool, // hacky for crude benchmarking of performance
+}
+
+#[derive(Debug, Resource)]
+pub struct SceneView {
+    pub hview_distance: usize,
+    pub vview_distance: usize,
+    // Zoom as a power of 2. e.g. if this is 0, then there will be no zoom.
+    pub prev_zoom_level: i8,
+    pub zoom_level: i8,
+}
+
+impl Default for SceneView {
+    fn default() -> Self {
+        Self {
+            hview_distance: DEFAULT_HORIZONTAL_VIEW_DISTANCE,
+            vview_distance: DEFAULT_VERTICAL_VIEW_DISTANCE,
+            prev_zoom_level: 0,
+            zoom_level: 0,
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -39,33 +54,21 @@ pub enum ChunkOp {
     Unload(ChunkPosition),
 }
 
-impl Default for Scene {
-    fn default() -> Self {
-        Self {
-            hview_distance: DEFAULT_HORIZONTAL_VIEW_DISTANCE,
-            vview_distance: DEFAULT_VERTICAL_VIEW_DISTANCE,
-            camera_cpos: Default::default(),
-            zoom_level: 0,
-            prev_zoom_level: 0,
-
-            loaded: Default::default(),
-            ops: Default::default(),
-            is_processing_ops: false,
-        }
-    }
-}
-
 pub const FAR: f32 = CHUNK_SIZE_F32 * 64.;
 
-pub fn init_scene_from_config(mut scene: ResMut<Scene>, config: Res<Config>) {
-    scene.hview_distance = config.hview_distance;
-    scene.vview_distance = config.vview_distance;
-    scene.prev_zoom_level = config.zoom_level;
-    scene.zoom_level = config.zoom_level;
+pub fn init_scene_from_config(
+    mut scene: ResMut<Scene>,
+    mut scene_view: ResMut<SceneView>,
+    config: Res<Config>,
+) {
+    scene_view.hview_distance = config.hview_distance;
+    scene_view.vview_distance = config.vview_distance;
+    scene_view.prev_zoom_level = config.zoom_level;
+    scene_view.zoom_level = config.zoom_level;
 
     // we expect roughly this many chunks to be loaded initially (a cylinder centred around the player)
-    let initial_capacity =
-        (PI * scene.hview_distance.pow(2) as f32) * (scene.vview_distance as f32 * 2. + 1.);
+    let initial_capacity = (PI * scene_view.hview_distance.pow(2) as f32)
+        * (scene_view.vview_distance as f32 * 2. + 1.);
     let initial_capacity = initial_capacity.floor() as usize;
     tracing::info!(
         ?config.hview_distance,
@@ -90,8 +93,8 @@ pub enum UpdateSettingsEvent {
     ZoomLevel(i8),
 }
 
-pub fn handle_update_settings_ev(
-    mut scene: ResMut<Scene>,
+pub fn handle_update_scene_view(
+    mut scene_view: ResMut<SceneView>,
     mut camera: Query<&mut Transform, With<Camera>>,
     mut update_evs: EventReader<UpdateSettingsEvent>,
     mut manage_evs: EventWriter<ManageChunksEvent>,
@@ -101,32 +104,32 @@ pub fn handle_update_settings_ev(
             UpdateSettingsEvent::HorizontalViewDistance(hview_distance) => {
                 tracing::info!(
                     "Updating horizontal view distance from {} to {}",
-                    scene.hview_distance,
+                    scene_view.hview_distance,
                     hview_distance
                 );
-                scene.hview_distance = *hview_distance;
+                scene_view.hview_distance = *hview_distance;
                 manage_evs.send(ManageChunksEvent::RefreshChunkOpsQueue);
             }
             UpdateSettingsEvent::VerticalViewDistance(vview_distance) => {
                 tracing::info!(
                     "Updating vertical view distance from {} to {}",
-                    scene.vview_distance,
+                    scene_view.vview_distance,
                     vview_distance
                 );
-                scene.vview_distance = *vview_distance;
+                scene_view.vview_distance = *vview_distance;
                 manage_evs.send(ManageChunksEvent::RefreshChunkOpsQueue);
             }
             UpdateSettingsEvent::ZoomLevel(zoom_level) => {
                 tracing::info!(
                     "Updating zoom level from {} to {}",
-                    scene.zoom_level,
+                    scene_view.zoom_level,
                     zoom_level
                 );
-                scene.prev_zoom_level = scene.zoom_level;
-                scene.zoom_level = *zoom_level;
+                scene_view.prev_zoom_level = scene_view.zoom_level;
+                scene_view.zoom_level = *zoom_level;
 
                 let mut camera = camera.single_mut();
-                let dzoom = (scene.zoom_level - scene.prev_zoom_level) as f32;
+                let dzoom = (scene_view.zoom_level - scene_view.prev_zoom_level) as f32;
                 camera.translation.x *= 2f32.powf(dzoom);
                 camera.translation.y *= 2f32.powf(dzoom);
                 camera.translation.z *= 2f32.powf(dzoom);
@@ -139,6 +142,7 @@ pub fn handle_update_settings_ev(
 // TODO: rename to handle_manage_chunks_ev and have something separate track the camera position
 pub fn check_should_update_chunks(
     mut commands: Commands,
+    scene_view: Res<SceneView>,
     mut scene: ResMut<Scene>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
     mut reload_evs: EventReader<ManageChunksEvent>,
@@ -209,9 +213,12 @@ pub fn check_should_update_chunks(
     let combined_matrix = projection_matrix * view_matrix;
     let frustum_planes = visible_chunks::compute_frustum_planes(&combined_matrix);
 
-    let chunks_within_render_distance: FxHashSet<_> =
-        visible_chunks::in_distance(&current_cpos, scene.hview_distance, scene.vview_distance)
-            .collect();
+    let chunks_within_render_distance: FxHashSet<_> = visible_chunks::in_distance(
+        &current_cpos,
+        scene_view.hview_distance,
+        scene_view.vview_distance,
+    )
+    .collect();
 
     let already_loaded_or_loading: FxHashSet<_> = scene.loaded.keys().cloned().collect();
 
@@ -269,6 +276,7 @@ impl bevy::prelude::Plugin for Plugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing scene plugin");
         app.init_resource::<Scene>()
+            .init_resource::<SceneView>()
             .add_systems(Startup, (lights::setup, init_scene_from_config))
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ManageChunksEvent>()
@@ -277,7 +285,7 @@ impl bevy::prelude::Plugin for Plugin {
                 (
                     check_should_update_chunks.run_if(in_state(AppState::MainGame)),
                     handle::process_ops.run_if(in_state(AppState::MainGame)),
-                    handle_update_settings_ev.run_if(in_state(AppState::MainGame)),
+                    handle_update_scene_view.run_if(in_state(AppState::MainGame)),
                 ),
             );
     }
