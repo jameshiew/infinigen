@@ -27,6 +27,7 @@ pub fn setup(mut commands: Commands, config: Res<Config>) {
     transform.rotation.y = config.rotation_y;
     transform.rotation.z = config.rotation_z;
     transform.rotation.w = config.rotation_w;
+    transform.rotation = transform.rotation.normalize();
     dbg!(transform.rotation);
     commands
         .spawn((
