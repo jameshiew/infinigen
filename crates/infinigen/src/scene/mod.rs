@@ -25,7 +25,6 @@ pub struct Scene {
     /// Loaded chunks and their entities.
     pub loaded: FxHashMap<ChunkPosition, FxHashSet<Entity>>,
     pub ops: VecDeque<ChunkOp>,
-    pub is_processing_ops: bool, // hacky for crude benchmarking of performance
 }
 
 #[derive(Debug, Resource)]
@@ -180,7 +179,6 @@ pub fn check_should_update_chunks(
     }
 
     scene.ops.clear();
-    scene.is_processing_ops = true;
 
     let Projection::Perspective(projection) = projection else {
         unimplemented!("only perspective projection is supported right now")
