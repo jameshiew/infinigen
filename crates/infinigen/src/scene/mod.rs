@@ -25,7 +25,7 @@ pub struct Scene {
 
 #[derive(Resource, Default)]
 pub struct LoadOps {
-    pub deque: VecDeque<LoadChunkOp>,
+    pub deque: VecDeque<RequestChunkOp>,
 }
 
 #[derive(Debug, Default, Resource)]
@@ -58,7 +58,7 @@ pub struct SceneZoom {
 
 // Prioritizing which chunks to load is important so we can't use events
 #[derive(Debug)]
-pub struct LoadChunkOp(ChunkPosition);
+pub struct RequestChunkOp(ChunkPosition);
 
 #[derive(Debug, Event)]
 pub struct UnloadChunkOpEvent(ChunkPosition);
@@ -274,7 +274,7 @@ pub fn check_should_update_chunks(
 
     to_load.iter().for_each(|&cpos| {
         let cpos = cpos.to_owned();
-        load_ops.deque.push_back(LoadChunkOp(cpos))
+        load_ops.deque.push_back(RequestChunkOp(cpos))
     });
 
     // the order in which chunks are unloaded is not so important
