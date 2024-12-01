@@ -5,7 +5,7 @@ pub mod camera;
 pub mod chunks;
 pub mod cursor;
 pub mod debug;
-pub mod render;
+pub mod mesh;
 pub mod scene;
 pub mod settings;
 pub mod world;
