@@ -107,7 +107,7 @@ pub fn process_load_chunk_ops(
                     (
                         scene_zoom_level,
                         cpos,
-                        worldgen.write().unwrap().get(&cpos, scene_zoom_level),
+                        worldgen.get(&cpos, scene_zoom_level),
                     )
                 });
                 commands.spawn((Name::new("Generate chunk task"), GenerateChunk(task)));
