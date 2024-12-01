@@ -39,7 +39,7 @@ impl WorldGen for Experiment1 {
         self.block_mappings = mappings;
     }
 
-    fn get(&mut self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
+    fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
         let zoom = zoom_level.as_f64();
         let mut chunk = UnpackedChunk::default();
         let mut is_empty = true;

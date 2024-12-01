@@ -7,16 +7,13 @@ use crate::world::{
     WorldPosition,
 };
 use crate::zoom::ZoomLevel;
-use lru::LruCache;
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 use rustc_hash::FxHashMap;
 use splines::{Interpolation, Key, Spline};
-use std::num::NonZeroUsize;
 
 /// Layered attempts to generate a world using passes (see <https://www.youtube.com/watch?v=YyVAaJqYAfE>)
 #[derive(Debug)]
 pub struct Layered {
-    terrain_cache: FxHashMap<ZoomLevel, LruCache<ChunkPosition, Chunk>>,
     config: Config,
 }
 
@@ -40,7 +37,6 @@ impl Layered {
             Key::new(1.1, 1.5, Interpolation::default()), // this last one must be strictly greater than 1 because sometime we may sample with exactly the value 1.
         ]);
         Layered {
-            terrain_cache: Default::default(),
             config: Config {
                 block_mappings: Default::default(),
                 vertical_scale: CHUNK_SIZE_F64 * 4.,
@@ -189,15 +185,9 @@ impl WorldGen for Layered {
         self.config.block_mappings = mappings;
     }
 
-    fn get(&mut self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
-        self.terrain_cache
-            .entry(zoom_level)
-            .or_insert_with(|| LruCache::new(NonZeroUsize::new(1024).unwrap()));
-        let zoom_cache = self.terrain_cache.get_mut(&zoom_level).unwrap();
+    fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
         let zoom = zoom_level.as_f64();
-        let mut terrain = zoom_cache
-            .get_or_insert(*pos, || self.config.generate_terrain(pos, zoom))
-            .clone();
+        let mut terrain = self.config.generate_terrain(pos, zoom);
         match terrain {
             Chunk::Empty => {
                 let mut unpacked = Box::<UnpackedChunk>::default();

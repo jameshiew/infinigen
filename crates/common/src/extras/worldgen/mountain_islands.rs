@@ -87,7 +87,7 @@ impl WorldGen for MountainIslands {
         self.block_mappings = mappings;
     }
 
-    fn get(&mut self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
+    fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
         if pos.y < MIN_Y_HEIGHT {
             return Chunk::Empty;
         }

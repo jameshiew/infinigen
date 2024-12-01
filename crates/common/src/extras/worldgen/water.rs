@@ -15,7 +15,7 @@ impl WorldGen for Water {
     fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
-    fn get(&mut self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
+    fn get(&self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
         // zoom doesn't change anything?
         if pos.y == -1 {
             let mut chunk = chunks::filled_chunk(*self.block_mappings.get(WATER_BLOCK_ID).unwrap());

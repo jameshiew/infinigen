@@ -14,7 +14,7 @@ impl WorldGen for Bowl {
     fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
-    fn get(&mut self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
+    fn get(&self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
         // TODO: implement zoom
         if pos.y < -1 {
             return Chunk::Empty;
