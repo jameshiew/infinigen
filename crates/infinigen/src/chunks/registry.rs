@@ -49,9 +49,9 @@ impl ChunkRegistry {
         self.cached.clear();
     }
 
-    pub fn get_status(&self, zoom_level: ZoomLevel, cpos: &ChunkPosition) -> Option<ChunkStatus> {
+    pub fn get_status(&self, zoom_level: ZoomLevel, cpos: &ChunkPosition) -> Option<&ChunkStatus> {
         match self.cached.get(&zoom_level) {
-            Some(chunks) => chunks.get(cpos).map(|status| status.to_owned()),
+            Some(chunks) => chunks.get(cpos),
             None => None,
         }
     }
