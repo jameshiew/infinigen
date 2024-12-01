@@ -2,7 +2,7 @@ use bevy::{prelude::*, tasks::AsyncComputeTaskPool};
 use rustc_hash::FxHashSet;
 
 use crate::chunks::{registry::ChunkStatus, tasks::GenerateChunk};
-use crate::scene::LoadChunkOp;
+use crate::scene::RequestChunkOp;
 use crate::{assets::MaterialType, chunks::registry::ChunkRegistry};
 use crate::{
     render::mesh::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces},
@@ -87,19 +87,19 @@ pub fn process_load_chunk_ops(
         let Some(op) = load_ops.deque.pop_front() else {
             return;
         };
-        let LoadChunkOp(cpos) = op;
+        let RequestChunkOp(cpos) = op;
 
         match chunks.get_status(scene_zoom_level, &cpos) {
-            Some(status) => match status {
-                ChunkStatus::Present(_) => {
-                    tracing::debug!(?cpos, "Will render chunk");
-                }
-                ChunkStatus::Generating => {
-                    queued_generations.push(LoadChunkOp(cpos));
-                    continue;
-                }
-            },
+            Some(ChunkStatus::Present(_)) => {
+                tracing::debug!(?cpos, "Will render chunk");
+            }
+            Some(ChunkStatus::Generating) => {
+                // not ready yet, check again later
+                queued_generations.push(RequestChunkOp(cpos));
+                continue;
+            }
             None => {
+                // not requested yet, do so then check again later
                 chunks.set_status(scene_zoom_level, &cpos, ChunkStatus::Generating);
                 let thread_pool = AsyncComputeTaskPool::get();
                 let worldgen = world.generator.clone();
@@ -111,7 +111,7 @@ pub fn process_load_chunk_ops(
                     )
                 });
                 commands.spawn((Name::new("Generate chunk task"), GenerateChunk(task)));
-                queued_generations.push(LoadChunkOp(cpos));
+                queued_generations.push(RequestChunkOp(cpos));
                 continue;
             }
         }
