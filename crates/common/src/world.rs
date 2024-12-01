@@ -15,7 +15,9 @@ pub trait WorldGen {
     fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk;
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Ord, PartialOrd, Serialize, Deserialize)]
+#[derive(
+    Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Serialize, Deserialize,
+)]
 pub enum BlockVisibility {
     #[default]
     Opaque,

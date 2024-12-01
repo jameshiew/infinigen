@@ -16,9 +16,6 @@ infinigen-common = { path = "../common" }
 # config
 config = { version = "0.14.1", default-features = false, features = ["ron"] }
 
-# voxels
-block-mesh = { git = "https://github.com/bonsairobo/block-mesh-rs", rev = "793c53e82c12b3f7e9502006664c6e81f8b1c78a" }
-
 # serialization
 serde = {workspace = true}
 
@@ -31,7 +28,6 @@ strum = {workspace = true}
 tracing = {workspace = true}
 
 # randomness
-rand = {workspace = true}
 nalgebra = "0.33.2"
 rustc-hash = {workspace = true}
 

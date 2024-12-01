@@ -1,7 +1,7 @@
 //! This module is concerned with meshing chunks, and not with rendering.
 use block_mesh::{MergeVoxel, Voxel, VoxelVisibility};
 
-use infinigen_common::world::ChunkBlockId;
+use crate::world::ChunkBlockId;
 
 /// Wraps the common block type into something that we can implement block mesh traits for e.g. [`MergeVoxel`] and [`Voxel`].
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]

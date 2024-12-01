@@ -4,10 +4,10 @@ use bevy::prelude::Resource;
 use strum::IntoEnumIterator;
 
 use crate::assets::BlockMappings;
-use crate::mesh::faces::extract_faces;
-use crate::mesh::shapes::{empty_chunk_face, ChunkFace};
 use crate::world::World;
 use infinigen_common::chunks::Chunk;
+use infinigen_common::mesh::faces::extract_faces;
+use infinigen_common::mesh::shapes::{empty_chunk_face, ChunkFace};
 use infinigen_common::world::ChunkPosition;
 use infinigen_common::zoom::ZoomLevel;
 

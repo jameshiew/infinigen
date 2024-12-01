@@ -1,6 +1,10 @@
+use crate::{settings::Config, world::World, AppState};
 use bevy::asset::{LoadedFolder, RecursiveDependencyLoadState};
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
+use infinigen_common::mesh::faces::BlockVisibilityChecker;
+use infinigen_common::mesh::textures::{Face, FaceAppearance, TextureMap};
+use infinigen_common::world::{BlockId, BlockVisibility, ChunkBlockId};
 use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
 use std::{
@@ -8,14 +12,6 @@ use std::{
     sync::Arc,
 };
 use strum::{EnumCount, IntoEnumIterator};
-
-use crate::{
-    mesh::textures::{Face, FaceAppearance, TextureMap},
-    settings::Config,
-    world::World,
-    AppState,
-};
-use infinigen_common::world::{BlockId, BlockVisibility, ChunkBlockId};
 
 pub struct Plugin;
 
@@ -88,6 +84,18 @@ impl BlockMappings {
             .insert(self.next_free_mapped_id, block_definition);
         self.next_free_mapped_id += 1;
         mapped_id
+    }
+}
+
+impl BlockVisibilityChecker for &BlockMappings {
+    fn get_visibility(&self, mapped_id: &ChunkBlockId) -> BlockVisibility {
+        self.get_by_mapped_id(mapped_id).visibility
+    }
+}
+
+impl BlockVisibilityChecker for BlockMappings {
+    fn get_visibility(&self, mapped_id: &ChunkBlockId) -> BlockVisibility {
+        (&self).get_visibility(mapped_id)
     }
 }
 

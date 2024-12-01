@@ -2,20 +2,26 @@ use block_mesh::ndshape::ConstShape;
 use block_mesh::{OrientedBlockFace, RIGHT_HANDED_Y_UP_CONFIG};
 use strum::IntoEnumIterator;
 
-use crate::assets::BlockMappings;
+use crate::chunks::{UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_U32};
 use crate::mesh::block::VoxelBlock;
 use crate::mesh::shapes;
 use crate::mesh::shapes::{ChunkFace, ChunkFaceShape, PaddedChunk, PaddedChunkShape};
-use infinigen_common::chunks::{UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_U32};
-use infinigen_common::world::BlockPosition;
+use crate::world::{BlockPosition, BlockVisibility, ChunkBlockId};
 
 pub const RHS_FACES: [OrientedBlockFace; 6] = RIGHT_HANDED_Y_UP_CONFIG.faces;
 
-pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [ChunkFace; 6] {
+pub trait BlockVisibilityChecker {
+    fn get_visibility(&self, mapped_id: &ChunkBlockId) -> BlockVisibility;
+}
+
+pub fn extract_faces(
+    chunk: &UnpackedChunk,
+    block_mappings: impl BlockVisibilityChecker,
+) -> [ChunkFace; 6] {
     let mut faces = [shapes::empty_chunk_face(); 6];
-    for dir in infinigen_common::world::Direction::iter() {
+    for dir in crate::world::Direction::iter() {
         match dir {
-            infinigen_common::world::Direction::Up => {
+            crate::world::Direction::Up => {
                 for x in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -26,11 +32,11 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                         let j = ChunkFaceShape::linearize([x as u32, z as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_by_mapped_id(&chunk_block_id).visibility {
-                                    infinigen_common::world::BlockVisibility::Opaque => {
+                                match block_mappings.get_visibility(&chunk_block_id) {
+                                    crate::world::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    infinigen_common::world::BlockVisibility::Translucent => {
+                                    crate::world::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -41,7 +47,7 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                     }
                 }
             }
-            infinigen_common::world::Direction::Down => {
+            crate::world::Direction::Down => {
                 for x in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -52,11 +58,11 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                         let j = ChunkFaceShape::linearize([x as u32, z as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_by_mapped_id(&chunk_block_id).visibility {
-                                    infinigen_common::world::BlockVisibility::Opaque => {
+                                match block_mappings.get_visibility(&chunk_block_id) {
+                                    crate::world::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    infinigen_common::world::BlockVisibility::Translucent => {
+                                    crate::world::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -67,7 +73,7 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                     }
                 }
             }
-            infinigen_common::world::Direction::North => {
+            crate::world::Direction::North => {
                 for x in 0..CHUNK_SIZE {
                     for y in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -78,11 +84,11 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                         let j = ChunkFaceShape::linearize([x as u32, y as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_by_mapped_id(&chunk_block_id).visibility {
-                                    infinigen_common::world::BlockVisibility::Opaque => {
+                                match block_mappings.get_visibility(&chunk_block_id) {
+                                    crate::world::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    infinigen_common::world::BlockVisibility::Translucent => {
+                                    crate::world::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -93,7 +99,7 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                     }
                 }
             }
-            infinigen_common::world::Direction::South => {
+            crate::world::Direction::South => {
                 for x in 0..CHUNK_SIZE {
                     for y in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -104,11 +110,11 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                         let j = ChunkFaceShape::linearize([x as u32, y as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_by_mapped_id(&chunk_block_id).visibility {
-                                    infinigen_common::world::BlockVisibility::Opaque => {
+                                match block_mappings.get_visibility(&chunk_block_id) {
+                                    crate::world::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    infinigen_common::world::BlockVisibility::Translucent => {
+                                    crate::world::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -119,7 +125,7 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                     }
                 }
             }
-            infinigen_common::world::Direction::East => {
+            crate::world::Direction::East => {
                 for y in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -130,11 +136,11 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                         let j = ChunkFaceShape::linearize([y as u32, z as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_by_mapped_id(&chunk_block_id).visibility {
-                                    infinigen_common::world::BlockVisibility::Opaque => {
+                                match block_mappings.get_visibility(&chunk_block_id) {
+                                    crate::world::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    infinigen_common::world::BlockVisibility::Translucent => {
+                                    crate::world::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -145,7 +151,7 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                     }
                 }
             }
-            infinigen_common::world::Direction::West => {
+            crate::world::Direction::West => {
                 for y in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -156,11 +162,11 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
                         let j = ChunkFaceShape::linearize([y as u32, z as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_by_mapped_id(&chunk_block_id).visibility {
-                                    infinigen_common::world::BlockVisibility::Opaque => {
+                                match block_mappings.get_visibility(&chunk_block_id) {
+                                    crate::world::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    infinigen_common::world::BlockVisibility::Translucent => {
+                                    crate::world::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -180,17 +186,17 @@ pub fn extract_faces(chunk: &UnpackedChunk, block_mappings: &BlockMappings) -> [
 pub fn prepare_padded_chunk(
     chunk: &UnpackedChunk,
     neighbor_faces: &[ChunkFace; 6],
-    block_mappings: &BlockMappings,
+    block_mappings: impl BlockVisibilityChecker,
 ) -> PaddedChunk {
     let mut padded = [VoxelBlock::Empty; PaddedChunkShape::SIZE as usize];
     const MIN_PADDED_IDX: u32 = 0;
     const MAX_PADDED_IDX: u32 = CHUNK_SIZE_U32 + 1;
 
-    for dir in infinigen_common::world::Direction::iter() {
+    for dir in crate::world::Direction::iter() {
         let neighboring_face = neighbor_faces[dir as usize];
         match dir {
             // bottom face of above chunk
-            infinigen_common::world::Direction::Up => {
+            crate::world::Direction::Up => {
                 for x in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -205,7 +211,7 @@ pub fn prepare_padded_chunk(
                 }
             }
             // top face of below chunk
-            infinigen_common::world::Direction::Down => {
+            crate::world::Direction::Down => {
                 for x in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -220,7 +226,7 @@ pub fn prepare_padded_chunk(
                 }
             }
             // south face of chunk to the north, etc.
-            infinigen_common::world::Direction::North => {
+            crate::world::Direction::North => {
                 for x in 0..CHUNK_SIZE {
                     for y in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -234,7 +240,7 @@ pub fn prepare_padded_chunk(
                     }
                 }
             }
-            infinigen_common::world::Direction::South => {
+            crate::world::Direction::South => {
                 for x in 0..CHUNK_SIZE {
                     for y in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -248,7 +254,7 @@ pub fn prepare_padded_chunk(
                     }
                 }
             }
-            infinigen_common::world::Direction::East => {
+            crate::world::Direction::East => {
                 for y in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -262,7 +268,7 @@ pub fn prepare_padded_chunk(
                     }
                 }
             }
-            infinigen_common::world::Direction::West => {
+            crate::world::Direction::West => {
                 for y in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -292,11 +298,11 @@ pub fn prepare_padded_chunk(
                         PaddedChunkShape::linearize([bx as u32 + 1, by as u32 + 1, bz as u32 + 1]);
                     let block = match block {
                         Some(chunk_block_id) => {
-                            match block_mappings.get_by_mapped_id(&chunk_block_id).visibility {
-                                infinigen_common::world::BlockVisibility::Opaque => {
+                            match block_mappings.get_visibility(&chunk_block_id) {
+                                crate::world::BlockVisibility::Opaque => {
                                     VoxelBlock::Opaque(chunk_block_id)
                                 }
-                                infinigen_common::world::BlockVisibility::Translucent => {
+                                crate::world::BlockVisibility::Translucent => {
                                     VoxelBlock::Translucent(chunk_block_id)
                                 }
                             }
@@ -315,13 +321,20 @@ pub fn prepare_padded_chunk(
 mod tests {
     use block_mesh::{visible_block_faces, UnitQuadBuffer};
 
-    use crate::assets::BlockDefinition;
+    use crate::chunks::CHUNK_SIZE_U32;
+    use crate::extras::chunks::filled_chunk;
     use crate::mesh::shapes::{
         empty_chunk_face, ChunkFace, ChunkFaceShape, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
     };
-    use infinigen_common::chunks::CHUNK_SIZE_U32;
-    use infinigen_common::extras::chunks::filled_chunk;
-    use infinigen_common::world::BlockVisibility;
+    use crate::world::BlockVisibility;
+
+    struct AllOpaque;
+
+    impl BlockVisibilityChecker for AllOpaque {
+        fn get_visibility(&self, _mapped_id: &ChunkBlockId) -> BlockVisibility {
+            BlockVisibility::Opaque
+        }
+    }
 
     use super::*;
 
@@ -331,22 +344,10 @@ mod tests {
         [VoxelBlock::Opaque(0); ChunkFaceShape::SIZE as usize]
     }
 
-    pub fn default_block_mappings() -> BlockMappings {
-        let mut bm = BlockMappings::default();
-        bm.add(BlockDefinition {
-            id: "debug_block".to_owned(),
-            visibility: BlockVisibility::Opaque,
-            color: [255, 255, 255, 255],
-            textures: None,
-        });
-        bm
-    }
-
     #[test]
     fn test_prepare_padded_chunk_with_empty_faces() {
-        let bm = default_block_mappings();
         let full = filled_chunk(0);
-        let padded = prepare_padded_chunk(&full, &[empty_chunk_face(); 6], &bm);
+        let padded = prepare_padded_chunk(&full, &[empty_chunk_face(); 6], AllOpaque);
         // faces of padded chunk remain empty
         for x in 0..CHUNK_SIZE_U32 + 2 {
             for y in 0..CHUNK_SIZE_U32 + 2 {
@@ -392,9 +393,8 @@ mod tests {
 
     #[test]
     fn test_prepare_padded_chunk_with_full_faces() {
-        let bm = default_block_mappings();
         let full = filled_chunk(0);
-        let padded = prepare_padded_chunk(&full, &[full_chunk_face(); 6], &bm);
+        let padded = prepare_padded_chunk(&full, &[full_chunk_face(); 6], AllOpaque);
 
         // faces of padded chunk are all full, except for corners
         let mut empty: u32 = 0;
