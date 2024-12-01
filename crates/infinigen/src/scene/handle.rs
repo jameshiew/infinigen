@@ -69,11 +69,13 @@ pub fn process_unload_chunk_ops(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn process_load_chunk_ops(
     mut commands: Commands,
     mut chunks: ResMut<ChunkRegistry>,
     world: Res<World>,
     mut scene: ResMut<crate::scene::Scene>,
+    mut load_ops: ResMut<crate::scene::LoadOps>,
     scene_zoom: Res<crate::scene::SceneZoom>,
     mut meshes: ResMut<Assets<Mesh>>,
     registry: Res<Registry>,
@@ -82,7 +84,7 @@ pub fn process_load_chunk_ops(
     let mut queued_generations = vec![];
     for _ in 0..CHUNK_OP_RATE {
         // loading
-        let Some(op) = scene.load_ops.pop_front() else {
+        let Some(op) = load_ops.deque.pop_front() else {
             return;
         };
         let LoadChunkOp(cpos) = op;
@@ -200,6 +202,6 @@ pub fn process_load_chunk_ops(
     }
     for queued_generation in queued_generations.into_iter() {
         // prioritize rendering chunks we queued to generate this run
-        scene.load_ops.push_front(queued_generation);
+        load_ops.deque.push_front(queued_generation);
     }
 }
