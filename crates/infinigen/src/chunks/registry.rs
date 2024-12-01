@@ -4,7 +4,7 @@ use rustc_hash::FxHashMap;
 use bevy::prelude::{Mesh, Resource};
 use strum::IntoEnumIterator;
 
-use crate::assets::BlockMappings;
+use crate::assets::blocks::BlockMappings;
 use crate::world::World;
 use infinigen_common::chunks::Chunk;
 use infinigen_common::mesh::faces::extract_faces;
