@@ -83,7 +83,8 @@ pub fn process_load_chunk_ops(
     mut request_chunk_evs: EventWriter<RequestChunkEvent>,
 ) {
     let scene_zoom_level = scene_zoom.zoom_level.into();
-    let mut queued_generations = vec![];
+    // if a chunk isn't ready yet, check again later
+    let mut requeued_requests = vec![];
     for _ in 0..CHUNK_OP_RATE {
         // loading
         let Some(op) = load_ops.deque.pop_front() else {
@@ -98,12 +99,12 @@ pub fn process_load_chunk_ops(
                     zoom_level: scene_zoom_level,
                     position: cpos,
                 });
-                queued_generations.push(RequestChunkOp(cpos));
+                requeued_requests.push(RequestChunkOp(cpos));
                 continue;
             }
             Some(ChunkStatus::Requested) => {
                 // not ready yet, check again later
-                queued_generations.push(RequestChunkOp(cpos));
+                requeued_requests.push(RequestChunkOp(cpos));
                 continue;
             }
             Some(ChunkStatus::Generated(chunk_info)) => {
@@ -192,8 +193,8 @@ pub fn process_load_chunk_ops(
             Some(ChunkStatus::Meshed { .. }) => todo!(),
         }
     }
-    for queued_generation in queued_generations.into_iter() {
+    for requeued in requeued_requests.into_iter() {
         // prioritize rendering chunks we queued to generate this run
-        load_ops.deque.push_front(queued_generation);
+        load_ops.deque.push_front(requeued);
     }
 }
