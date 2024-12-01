@@ -5,7 +5,7 @@ use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
 use std::{
     collections::{BTreeMap, HashMap},
-    sync::{Arc, RwLock},
+    sync::Arc,
 };
 use strum::{EnumCount, IntoEnumIterator};
 
@@ -247,7 +247,7 @@ pub fn setup(
     let mut worldgen: Box<dyn infinigen_common::world::WorldGen + Send + Sync> =
         config.world.into();
     worldgen.initialize((&registry.block_mappings).into());
-    world.generator = Arc::new(RwLock::new(worldgen));
+    world.generator = Arc::new(worldgen);
     next_state.set(AppState::MainGame);
 }
 
