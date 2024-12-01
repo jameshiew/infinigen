@@ -106,30 +106,30 @@ pub fn process_load_chunk_ops(
                 queued_generations.push(RequestChunkOp(cpos));
                 continue;
             }
-            Some(ChunkStatus::Generated(_)) => {
+            Some(ChunkStatus::Requested) => {
+                // not ready yet, check again later
+                queued_generations.push(RequestChunkOp(cpos));
+                continue;
+            }
+            Some(ChunkStatus::Generated(chunk_info)) => {
                 tracing::debug!(?cpos, "Will render chunk");
 
-                let Chunk::Unpacked(chunk) = chunks.get_mut(
-                    scene_zoom_level,
-                    &cpos,
-                    world.as_ref(),
-                    &registry.block_mappings,
-                ) else {
+                let Chunk::Unpacked(ref chunk) = chunk_info.chunk else {
                     tracing::debug!(?cpos, "Empty chunk");
                     continue;
                 };
+                let mut opaque_chunk = chunk.to_owned();
                 let opaque_mat = registry.get_material(MaterialType::DenseOpaque);
                 let translucent_mat = registry.get_material(MaterialType::Translucent);
                 let neighbor_faces = chunks.get_neighboring_faces_mut(
                     scene_zoom_level,
                     &cpos,
-                    world.as_ref(),
+                    world.as_ref(), // !!!!
                     &registry.block_mappings,
                 );
 
                 let mut loads = Vec::with_capacity(1); // most common case - only one mesh needed, for opaque blocks in chunk
 
-                let mut opaque_chunk = *chunk;
                 let block_textures = registry.get_block_textures();
 
                 let translucent_chunk_block_ids: Vec<_> = registry
@@ -144,8 +144,8 @@ pub fn process_load_chunk_ops(
 
                 for translucent_chunk_block_id in translucent_chunk_block_ids {
                     let (remaining, translucent_chunk) =
-                        split(opaque_chunk, translucent_chunk_block_id);
-                    opaque_chunk = remaining;
+                        split(*opaque_chunk, translucent_chunk_block_id);
+                    opaque_chunk = Box::new(remaining);
 
                     if let Chunk::Unpacked(translucent_chunk) = translucent_chunk {
                         if let Some(translucent_mesh) = bevy_mesh_greedy_quads(
@@ -193,11 +193,6 @@ pub fn process_load_chunk_ops(
 
                 tracing::debug!(?cpos, ?eids, "Chunk loaded");
                 scene.loaded.insert(cpos, eids);
-            }
-            Some(ChunkStatus::Requested) => {
-                // not ready yet, check again later
-                queued_generations.push(RequestChunkOp(cpos));
-                continue;
             }
             Some(ChunkStatus::Meshed { .. }) => todo!(),
         }
