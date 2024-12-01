@@ -21,7 +21,11 @@ pub mod visible_chunks;
 pub struct Scene {
     /// Loaded chunks and their entities.
     pub loaded: FxHashMap<ChunkPosition, FxHashSet<Entity>>,
-    pub load_ops: VecDeque<LoadChunkOp>,
+}
+
+#[derive(Resource, Default)]
+pub struct LoadOps {
+    pub deque: VecDeque<LoadChunkOp>,
 }
 
 #[derive(Debug, Default, Resource)]
@@ -155,6 +159,7 @@ pub fn check_should_update_chunks(
     mut scene: ResMut<Scene>,
     mut scene_camera: ResMut<SceneCamera>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
+    mut load_ops: ResMut<LoadOps>,
     mut reload_evs: EventReader<ReloadAllChunksEvent>,
     mut refresh_evs: EventReader<RefreshChunkOpsQueueEvent>,
     mut unload_evs: EventWriter<UnloadChunkOpEvent>,
@@ -190,7 +195,7 @@ pub fn check_should_update_chunks(
         return;
     }
 
-    scene.load_ops.clear();
+    load_ops.deque.clear();
 
     let Projection::Perspective(projection) = projection else {
         unimplemented!("only perspective projection is supported right now")
@@ -269,7 +274,7 @@ pub fn check_should_update_chunks(
 
     to_load.iter().for_each(|&cpos| {
         let cpos = cpos.to_owned();
-        scene.load_ops.push_back(LoadChunkOp(cpos))
+        load_ops.deque.push_back(LoadChunkOp(cpos))
     });
 
     // the order in which chunks are unloaded is not so important
@@ -289,6 +294,7 @@ impl bevy::prelude::Plugin for Plugin {
             .init_resource::<SceneView>()
             .init_resource::<SceneCamera>()
             .init_resource::<SceneZoom>()
+            .init_resource::<LoadOps>()
             .add_systems(Startup, (lights::setup, init_scene_from_config))
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ReloadAllChunksEvent>()
