@@ -7,7 +7,6 @@ rustc-hash = "2.0.0"
 strum = { version = "0.26.3", features = ["derive"] }
 serde = { version = "1.0.215", features = ["derive"] }
 tracing = "0.1.40"
-rand = "0.8.5"
 
 [profile.dev]
 opt-level = 1

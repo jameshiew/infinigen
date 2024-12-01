@@ -2689,8 +2689,6 @@ version = "0.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bf151400ff0baff5465007dd2f3e717f3fe502074ca563069ce3a6629d07b289"
 dependencies = [
- "allocator-api2",
- "equivalent",
  "foldhash",
 ]
 
@@ -2920,12 +2918,10 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_common_assets",
  "bevy_egui",
- "block-mesh",
  "config",
  "futures-lite",
  "infinigen-common",
  "nalgebra",
- "rand",
  "rustc-hash 2.1.0",
  "serde",
  "strum",
@@ -2936,9 +2932,9 @@ dependencies = [
 name = "infinigen-common"
 version = "0.0.0"
 dependencies = [
+ "block-mesh",
  "bracket-noise",
  "criterion",
- "lru",
  "ndarray",
  "noise",
  "rand",
@@ -3186,15 +3182,6 @@ name = "log"
 version = "0.4.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
-
-[[package]]
-name = "lru"
-version = "0.12.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "234cf4f4a04dc1f57e24b96cc0cd600cf2af460d4161ac5ecdd0af8e1f3b2a38"
-dependencies = [
- "hashbrown 0.15.2",
-]
 
 [[package]]
 name = "mach2"
