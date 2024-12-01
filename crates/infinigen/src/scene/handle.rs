@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 use rustc_hash::FxHashSet;
 
+use crate::chunks::registry::ChunkRegistry;
 use crate::chunks::registry::ChunkStatus;
 use crate::chunks::tasks::RequestChunkEvent;
 use crate::scene::RequestChunkOp;
-use crate::{assets::MaterialType, chunks::registry::ChunkRegistry};
 use crate::{
     render::mesh::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces},
     world::World,
@@ -14,9 +14,9 @@ use infinigen_common::{
     world::{BlockPosition, BlockVisibility, ChunkBlockId, WorldPosition},
 };
 
-use crate::assets::BlockRegistry;
-
 use super::UnloadChunkOpEvent;
+use crate::assets::blocks::BlockRegistry;
+use crate::assets::blocks::MaterialType;
 
 // bigger chunks means go slower to prevent lag/stutter
 const CHUNK_OP_RATE: usize = (16. * (32. / CHUNK_SIZE_F32)) as usize;
