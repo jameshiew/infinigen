@@ -151,18 +151,17 @@ pub fn handle_update_scene_view(
     }
 }
 
-// TODO: rename to handle_manage_chunks_ev and have something separate track the camera position
-#[allow(clippy::too_many_arguments)]
-pub fn check_should_update_chunks(
+#[derive(Event)]
+pub struct UpdateSceneEvent;
+
+pub fn check_if_should_update_scene(
     mut commands: Commands,
-    scene_view: Res<SceneView>,
     mut scene: ResMut<Scene>,
     mut scene_camera: ResMut<SceneCamera>,
-    camera: Query<(&Transform, &Projection), With<Camera>>,
-    mut load_ops: ResMut<LoadOps>,
+    camera: Query<&Transform, With<Camera>>,
     mut reload_evs: EventReader<ReloadAllChunksEvent>,
     mut refresh_evs: EventReader<RefreshChunkOpsQueueEvent>,
-    mut unload_evs: EventWriter<UnloadChunkOpEvent>,
+    mut update_scene_evs: EventWriter<UpdateSceneEvent>,
 ) {
     let mut should_update = false;
     if refresh_evs.read().next().is_some() {
@@ -178,7 +177,7 @@ pub fn check_should_update_chunks(
         should_update = true;
     }
 
-    let (camera, projection) = camera.single();
+    let camera = camera.single();
     let current_cpos: ChunkPosition = WorldPosition {
         x: camera.translation.x,
         y: camera.translation.y,
@@ -194,8 +193,29 @@ pub fn check_should_update_chunks(
     if !should_update {
         return;
     }
+    update_scene_evs.send(UpdateSceneEvent);
+}
 
+pub fn update_scene(
+    scene_view: Res<SceneView>,
+    scene: Res<Scene>,
+    camera: Query<(&Transform, &Projection), With<Camera>>,
+    mut load_ops: ResMut<LoadOps>,
+    mut unload_evs: EventWriter<UnloadChunkOpEvent>,
+    mut update_scene_evs: EventReader<UpdateSceneEvent>,
+) {
+    if update_scene_evs.read().next().is_none() {
+        return;
+    }
     load_ops.deque.clear();
+
+    let (camera, projection) = camera.single();
+    let current_cpos: ChunkPosition = WorldPosition {
+        x: camera.translation.x,
+        y: camera.translation.y,
+        z: camera.translation.z,
+    }
+    .into();
 
     let Projection::Perspective(projection) = projection else {
         unimplemented!("only perspective projection is supported right now")
@@ -276,7 +296,6 @@ pub fn check_should_update_chunks(
         let cpos = cpos.to_owned();
         load_ops.deque.push_back(RequestChunkOp(cpos))
     });
-
     // the order in which chunks are unloaded is not so important
     let to_unload = already_loaded_or_loading.difference(&chunks_within_render_distance);
     to_unload.for_each(|cpos| {
@@ -300,10 +319,14 @@ impl bevy::prelude::Plugin for Plugin {
             .add_event::<ReloadAllChunksEvent>()
             .add_event::<RefreshChunkOpsQueueEvent>()
             .add_event::<UnloadChunkOpEvent>()
+            .add_event::<UpdateSceneEvent>()
             .add_systems(
                 Update,
                 (
-                    check_should_update_chunks.run_if(in_state(AppState::MainGame)),
+                    check_if_should_update_scene.run_if(in_state(AppState::MainGame)),
+                    update_scene
+                        .run_if(in_state(AppState::MainGame))
+                        .after(check_if_should_update_scene),
                     handle::process_load_chunk_ops.run_if(in_state(AppState::MainGame)),
                     handle::process_unload_chunk_ops.run_if(in_state(AppState::MainGame)),
                     handle_update_scene_view.run_if(in_state(AppState::MainGame)),
