@@ -1,6 +1,7 @@
+use bevy::pbr::StandardMaterial;
 use rustc_hash::FxHashMap;
 
-use bevy::prelude::Resource;
+use bevy::prelude::{Mesh, Resource};
 use strum::IntoEnumIterator;
 
 use crate::assets::BlockMappings;
@@ -34,8 +35,13 @@ impl ChunkInfo {
 
 #[derive(Debug, Clone)]
 pub enum ChunkStatus {
-    Present(Box<ChunkInfo>),
-    Generating,
+    Meshed {
+        chunk_info: Box<ChunkInfo>,
+        mesh: Mesh,
+        material: StandardMaterial,
+    },
+    Generated(Box<ChunkInfo>),
+    Requested,
 }
 
 impl ChunkRegistry {
@@ -92,7 +98,7 @@ impl ChunkRegistry {
         self.set_status(
             zoom_level,
             position,
-            ChunkStatus::Present(Box::new(chunk_info.clone())),
+            ChunkStatus::Generated(Box::new(chunk_info.clone())),
         );
         chunk_info
     }
@@ -104,7 +110,7 @@ impl ChunkRegistry {
         world: &World,
         block_mappings: &BlockMappings,
     ) -> Chunk {
-        if let Some(ChunkStatus::Present(chunk_info)) = self.get_status(zoom_level, position) {
+        if let Some(ChunkStatus::Generated(chunk_info)) = self.get_status(zoom_level, position) {
             let chunk = &chunk_info.chunk;
             tracing::debug!(?position, "Got cached chunk");
             return chunk.to_owned();
@@ -120,7 +126,7 @@ impl ChunkRegistry {
         world: &World,
         block_mappings: &BlockMappings,
     ) -> [ChunkFace; 6] {
-        if let Some(ChunkStatus::Present(chunk_info)) = self.get_status(zoom_level, position) {
+        if let Some(ChunkStatus::Generated(chunk_info)) = self.get_status(zoom_level, position) {
             let faces = chunk_info.faces;
             return faces;
         }

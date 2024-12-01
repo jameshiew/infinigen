@@ -90,17 +90,9 @@ pub fn process_load_chunk_ops(
         let RequestChunkOp(cpos) = op;
 
         match chunks.get_status(scene_zoom_level, &cpos) {
-            Some(ChunkStatus::Present(_)) => {
-                tracing::debug!(?cpos, "Will render chunk");
-            }
-            Some(ChunkStatus::Generating) => {
-                // not ready yet, check again later
-                queued_generations.push(RequestChunkOp(cpos));
-                continue;
-            }
             None => {
                 // not requested yet, do so then check again later
-                chunks.set_status(scene_zoom_level, &cpos, ChunkStatus::Generating);
+                chunks.set_status(scene_zoom_level, &cpos, ChunkStatus::Requested);
                 let thread_pool = AsyncComputeTaskPool::get();
                 let worldgen = world.generator.clone();
                 let task = thread_pool.spawn(async move {
@@ -114,91 +106,101 @@ pub fn process_load_chunk_ops(
                 queued_generations.push(RequestChunkOp(cpos));
                 continue;
             }
-        }
+            Some(ChunkStatus::Generated(_)) => {
+                tracing::debug!(?cpos, "Will render chunk");
 
-        let Chunk::Unpacked(chunk) = chunks.get_mut(
-            scene_zoom_level,
-            &cpos,
-            world.as_ref(),
-            &registry.block_mappings,
-        ) else {
-            tracing::debug!(?cpos, "Empty chunk");
-            continue;
-        };
-        let opaque_mat = registry.get_material(MaterialType::DenseOpaque);
-        let translucent_mat = registry.get_material(MaterialType::Translucent);
-        let neighbor_faces = chunks.get_neighboring_faces_mut(
-            scene_zoom_level,
-            &cpos,
-            world.as_ref(),
-            &registry.block_mappings,
-        );
+                let Chunk::Unpacked(chunk) = chunks.get_mut(
+                    scene_zoom_level,
+                    &cpos,
+                    world.as_ref(),
+                    &registry.block_mappings,
+                ) else {
+                    tracing::debug!(?cpos, "Empty chunk");
+                    continue;
+                };
+                let opaque_mat = registry.get_material(MaterialType::DenseOpaque);
+                let translucent_mat = registry.get_material(MaterialType::Translucent);
+                let neighbor_faces = chunks.get_neighboring_faces_mut(
+                    scene_zoom_level,
+                    &cpos,
+                    world.as_ref(),
+                    &registry.block_mappings,
+                );
 
-        let mut loads = Vec::with_capacity(1); // most common case - only one mesh needed, for opaque blocks in chunk
+                let mut loads = Vec::with_capacity(1); // most common case - only one mesh needed, for opaque blocks in chunk
 
-        let mut opaque_chunk = *chunk;
-        let block_textures = registry.get_block_textures();
+                let mut opaque_chunk = *chunk;
+                let block_textures = registry.get_block_textures();
 
-        let translucent_chunk_block_ids: Vec<_> = registry
-            .block_mappings
-            .by_mapped_id
-            .iter()
-            .filter(|(_, block_definition)| {
-                block_definition.visibility == BlockVisibility::Translucent
-            })
-            .map(|(chunk_block_id, _)| *chunk_block_id)
-            .collect();
+                let translucent_chunk_block_ids: Vec<_> = registry
+                    .block_mappings
+                    .by_mapped_id
+                    .iter()
+                    .filter(|(_, block_definition)| {
+                        block_definition.visibility == BlockVisibility::Translucent
+                    })
+                    .map(|(chunk_block_id, _)| *chunk_block_id)
+                    .collect();
 
-        for translucent_chunk_block_id in translucent_chunk_block_ids {
-            let (remaining, translucent_chunk) = split(opaque_chunk, translucent_chunk_block_id);
-            opaque_chunk = remaining;
+                for translucent_chunk_block_id in translucent_chunk_block_ids {
+                    let (remaining, translucent_chunk) =
+                        split(opaque_chunk, translucent_chunk_block_id);
+                    opaque_chunk = remaining;
 
-            if let Chunk::Unpacked(translucent_chunk) = translucent_chunk {
-                if let Some(translucent_mesh) = bevy_mesh_greedy_quads(
-                    &translucent_chunk,
+                    if let Chunk::Unpacked(translucent_chunk) = translucent_chunk {
+                        if let Some(translucent_mesh) = bevy_mesh_greedy_quads(
+                            &translucent_chunk,
+                            &neighbor_faces,
+                            block_textures,
+                            &registry.block_mappings,
+                        ) {
+                            loads.push((translucent_mesh, translucent_mat.clone_weak()));
+                        }
+                    };
+                }
+
+                if let Some(opaque_mesh) = bevy_mesh_visible_block_faces(
+                    &opaque_chunk,
                     &neighbor_faces,
                     block_textures,
                     &registry.block_mappings,
                 ) {
-                    loads.push((translucent_mesh, translucent_mat.clone_weak()));
+                    loads.push((opaque_mesh, opaque_mat));
+                };
+
+                if loads.is_empty() {
+                    tracing::debug!(?cpos, "Occluded chunk");
+                    continue;
                 }
-            };
+
+                let wpos: WorldPosition = (&cpos).into();
+                let transform = Transform::from_xyz(wpos.x, wpos.y, wpos.z);
+
+                // TODO: the above meshing stuff should be async also
+                let mut eids = FxHashSet::default();
+                for (mesh, material) in loads {
+                    let eid = commands
+                        .spawn((
+                            Name::new("Chunk mesh"),
+                            Mesh3d(meshes.add(mesh)),
+                            MeshMaterial3d(material),
+                            transform,
+                        ))
+                        .id();
+
+                    eids.insert(eid);
+                }
+
+                tracing::debug!(?cpos, ?eids, "Chunk loaded");
+                scene.loaded.insert(cpos, eids);
+            }
+            Some(ChunkStatus::Requested) => {
+                // not ready yet, check again later
+                queued_generations.push(RequestChunkOp(cpos));
+                continue;
+            }
+            Some(ChunkStatus::Meshed { .. }) => todo!(),
         }
-
-        if let Some(opaque_mesh) = bevy_mesh_visible_block_faces(
-            &opaque_chunk,
-            &neighbor_faces,
-            block_textures,
-            &registry.block_mappings,
-        ) {
-            loads.push((opaque_mesh, opaque_mat));
-        };
-
-        if loads.is_empty() {
-            tracing::debug!(?cpos, "Occluded chunk");
-            continue;
-        }
-
-        let wpos: WorldPosition = (&cpos).into();
-        let transform = Transform::from_xyz(wpos.x, wpos.y, wpos.z);
-
-        // TODO: the above meshing stuff should be async also
-        let mut eids = FxHashSet::default();
-        for (mesh, material) in loads {
-            let eid = commands
-                .spawn((
-                    Name::new("Chunk mesh"),
-                    Mesh3d(meshes.add(mesh)),
-                    MeshMaterial3d(material),
-                    transform,
-                ))
-                .id();
-
-            eids.insert(eid);
-        }
-
-        tracing::debug!(?cpos, ?eids, "Chunk loaded");
-        scene.loaded.insert(cpos, eids);
     }
     for queued_generation in queued_generations.into_iter() {
         // prioritize rendering chunks we queued to generate this run
