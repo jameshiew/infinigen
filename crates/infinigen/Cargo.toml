@@ -1,0 +1,36 @@
+[package]
+name = "infinigen"
+version = "0.0.0"
+edition = "2021"
+publish = false
+rust-version = "1.82.0"  # msrv should be at least the msrv of the bevy version used
+
+[dependencies]
+bevy = { version = "0.15.0" }
+bevy_common_assets = { version = "0.12.0", features = ["ron"] }
+bevy_egui = { version = "0.31.1" }
+bevy-inspector-egui = "0.28.0"
+
+infinigen-common = { path = "../common" }
+
+# config
+config = { version = "0.14.1", default-features = false, features = ["ron"] }
+
+# serialization
+serde = {workspace = true}
+
+# utils
+anyhow = "1.0.93"
+futures-lite = "2.5.0"
+strum = {workspace = true}
+
+# instrumentation
+tracing = {workspace = true}
+
+# randomness
+nalgebra = "0.33.2"
+rustc-hash = {workspace = true}
+
+[features]
+default = []
+dynamic-linking = ["bevy/dynamic_linking"]
