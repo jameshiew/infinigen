@@ -9,7 +9,7 @@ use crate::world::World;
 use infinigen_common::chunks::Chunk;
 use infinigen_common::mesh::faces::extract_faces;
 use infinigen_common::mesh::shapes::{empty_chunk_face, ChunkFace};
-use infinigen_common::world::ChunkPosition;
+use infinigen_common::world::{ChunkPosition, Direction};
 use infinigen_common::zoom::ZoomLevel;
 
 // Responsible for keeping track of chunks.
@@ -77,10 +77,10 @@ impl ChunkRegistry {
         block_mappings: &BlockMappings,
     ) -> ChunkInfo {
         let chunk = world.get_chunk(zoom_level, position);
-        self.insert(zoom_level, position, chunk, block_mappings)
+        self.insert_generated(zoom_level, position, chunk, block_mappings)
     }
 
-    pub fn insert(
+    pub fn insert_generated(
         &mut self,
         zoom_level: ZoomLevel,
         position: &ChunkPosition,
@@ -163,4 +163,22 @@ impl ChunkRegistry {
         }
         neighbor_faces
     }
+}
+
+pub fn get_neighbour_cposes(position: &ChunkPosition) -> [(Direction, ChunkPosition); 6] {
+    infinigen_common::world::Direction::iter()
+        .map(|dir| {
+            let normal: [i32; 3] = dir.into();
+            (
+                dir,
+                ChunkPosition {
+                    x: position.x + normal[0],
+                    y: position.y + normal[1],
+                    z: position.z + normal[2],
+                },
+            )
+        })
+        .collect::<Vec<_>>()
+        .try_into()
+        .unwrap()
 }

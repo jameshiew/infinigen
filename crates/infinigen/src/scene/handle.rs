@@ -1,7 +1,8 @@
-use bevy::{prelude::*, tasks::AsyncComputeTaskPool};
+use bevy::prelude::*;
 use rustc_hash::FxHashSet;
 
-use crate::chunks::{registry::ChunkStatus, tasks::GenerateChunk};
+use crate::chunks::registry::ChunkStatus;
+use crate::chunks::tasks::RequestChunkEvent;
 use crate::scene::RequestChunkOp;
 use crate::{assets::MaterialType, chunks::registry::ChunkRegistry};
 use crate::{
@@ -79,6 +80,7 @@ pub fn process_load_chunk_ops(
     scene_zoom: Res<crate::scene::SceneZoom>,
     mut meshes: ResMut<Assets<Mesh>>,
     registry: Res<Registry>,
+    mut request_chunk_evs: EventWriter<RequestChunkEvent>,
 ) {
     let scene_zoom_level = scene_zoom.zoom_level.into();
     let mut queued_generations = vec![];
@@ -92,17 +94,10 @@ pub fn process_load_chunk_ops(
         match chunks.get_status(scene_zoom_level, &cpos) {
             None => {
                 // not requested yet, do so then check again later
-                chunks.set_status(scene_zoom_level, &cpos, ChunkStatus::Requested);
-                let thread_pool = AsyncComputeTaskPool::get();
-                let worldgen = world.generator.clone();
-                let task = thread_pool.spawn(async move {
-                    (
-                        scene_zoom_level,
-                        cpos,
-                        worldgen.get(&cpos, scene_zoom_level),
-                    )
+                request_chunk_evs.send(RequestChunkEvent {
+                    zoom_level: scene_zoom_level,
+                    position: cpos,
                 });
-                commands.spawn((Name::new("Generate chunk task"), GenerateChunk(task)));
                 queued_generations.push(RequestChunkOp(cpos));
                 continue;
             }
