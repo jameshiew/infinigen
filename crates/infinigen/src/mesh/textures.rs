@@ -1,4 +1,3 @@
-use bevy::prelude::TextureAtlasLayout;
 use rustc_hash::FxHashMap;
 
 use serde::{Deserialize, Serialize};
@@ -95,16 +94,6 @@ impl TextureMap {
         match tidx {
             FaceAppearance::Texture { .. } => None,
             FaceAppearance::Color { r, g, b, a } => Some([r, g, b, a]),
-        }
-    }
-}
-
-impl From<&TextureAtlasLayout> for TextureMap {
-    fn from(tatlas: &TextureAtlasLayout) -> Self {
-        let size = [tatlas.size[0] as usize, tatlas.size[1] as usize];
-        Self {
-            size,
-            appearance: Default::default(),
         }
     }
 }
