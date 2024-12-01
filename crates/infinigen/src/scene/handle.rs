@@ -14,7 +14,7 @@ use infinigen_common::{
     world::{BlockPosition, BlockVisibility, ChunkBlockId, WorldPosition},
 };
 
-use crate::assets::Registry;
+use crate::assets::BlockRegistry;
 
 use super::UnloadChunkOpEvent;
 
@@ -79,7 +79,7 @@ pub fn process_load_chunk_ops(
     mut load_ops: ResMut<crate::scene::LoadOps>,
     scene_zoom: Res<crate::scene::SceneZoom>,
     mut meshes: ResMut<Assets<Mesh>>,
-    registry: Res<Registry>,
+    registry: Res<BlockRegistry>,
     mut request_chunk_evs: EventWriter<RequestChunkEvent>,
 ) {
     let scene_zoom_level = scene_zoom.zoom_level.into();

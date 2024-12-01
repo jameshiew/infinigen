@@ -76,7 +76,7 @@ pub fn generate_chunk_async(
 
 pub fn handle_chunk_finished_generating(
     mut commands: Commands,
-    assets_registry: Res<assets::Registry>,
+    assets_registry: Res<assets::BlockRegistry>,
     mut registry: ResMut<ChunkRegistry>,
     mut transform_tasks: Query<(Entity, &mut GenerateChunkTask)>,
 ) {

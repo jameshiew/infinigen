@@ -19,7 +19,7 @@ impl bevy::prelude::Plugin for Plugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing assets plugin");
         app.add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
-            .init_resource::<Registry>()
+            .init_resource::<BlockRegistry>()
             .add_systems(OnEnter(AppState::LoadingAssets), load_assets)
             .add_systems(
                 Update,
@@ -100,7 +100,7 @@ impl BlockVisibilityChecker for BlockMappings {
 }
 
 #[derive(Default, Resource)]
-pub struct Registry {
+pub struct BlockRegistry {
     materials: [Handle<StandardMaterial>; MaterialType::COUNT],
     block_texture_folder: Handle<LoadedFolder>,
     block_definition_folder: Handle<LoadedFolder>,
@@ -108,7 +108,7 @@ pub struct Registry {
     pub block_mappings: BlockMappings,
 }
 
-pub fn load_assets(mut registry: ResMut<Registry>, asset_server: Res<AssetServer>) {
+pub fn load_assets(mut registry: ResMut<BlockRegistry>, asset_server: Res<AssetServer>) {
     registry.block_texture_folder = asset_server.load_folder("blocks/textures/");
     registry.block_definition_folder = asset_server.load_folder("blocks/types/");
     tracing::info!(
@@ -120,7 +120,7 @@ pub fn load_assets(mut registry: ResMut<Registry>, asset_server: Res<AssetServer
 
 pub fn check_assets(
     mut next_state: ResMut<NextState<AppState>>,
-    registry: ResMut<Registry>,
+    registry: ResMut<BlockRegistry>,
     asset_server: Res<AssetServer>,
 ) {
     let mut block_definitions_loaded = false;
@@ -153,7 +153,7 @@ pub fn check_assets(
 #[allow(clippy::too_many_arguments)]
 pub fn setup(
     mut next_state: ResMut<NextState<AppState>>,
-    mut registry: ResMut<Registry>,
+    mut registry: ResMut<BlockRegistry>,
     asset_server: Res<AssetServer>,
     loaded_folders: Res<Assets<LoadedFolder>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -259,7 +259,7 @@ pub fn setup(
     next_state.set(AppState::MainGame);
 }
 
-impl Registry {
+impl BlockRegistry {
     /// Returns a weak handle to a material.
     pub fn get_material(&self, material_type: MaterialType) -> Handle<StandardMaterial> {
         self.materials[material_type as usize].clone_weak()
