@@ -10,23 +10,10 @@ tracing = "0.1.40"
 
 [profile.dev]
 opt-level = 1
-split-debuginfo = 'packed'
-
-[profile.fast-compilation]
-inherits = "dev"
-opt-level = 0
-debug = 0
 
 [profile.dev.package."*"]
 opt-level = 3
 
 [profile.release]
 codegen-units = 1
-strip = "debuginfo"
-
-[profile.profiling]
-inherits = "release"
-# for profiling
-debug = 2
-split-debuginfo = "packed"
-strip = "none"
+lto = "thin"
