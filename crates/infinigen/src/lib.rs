@@ -4,6 +4,7 @@ pub mod assets;
 pub mod camera;
 pub mod chunks;
 pub mod cursor;
+#[cfg(feature = "debug-ui")]
 pub mod debug;
 pub mod mesh;
 pub mod scene;
@@ -40,6 +41,7 @@ impl Plugin for AppPlugin {
                 camera::CameraPlugin,
                 cursor::CursorPlugin,
                 world::WorldPlugin,
+                #[cfg(feature = "debug-ui")]
                 debug::UiPlugin,
             ));
     }
