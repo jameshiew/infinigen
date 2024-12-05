@@ -83,7 +83,6 @@ pub fn init_scene_from_config(
         ?initial_capacity,
         "Setting initial capacity for loaded chunks"
     );
-    // TODO: spawn load ops for each chunk that will be in the initial view, then camera_cpos needn't be an option
 }
 
 #[derive(Event)]
