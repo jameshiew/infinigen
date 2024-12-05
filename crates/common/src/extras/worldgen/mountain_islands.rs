@@ -1,12 +1,11 @@
 use rustc_hash::FxHashMap;
 
-use bracket_noise::prelude::{FastNoise, NoiseType};
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 use splines::{Interpolation, Key, Spline};
 
 use crate::extras::block_ids::{
-    DIRT_BLOCK_ID, GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, LEAVES_BLOCK_ID, SAND_BLOCK_ID, SNOW_BLOCK_ID,
-    STONE_BLOCK_ID, WATER_BLOCK_ID, WOOD_BLOCK_ID,
+    DIRT_BLOCK_ID, GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, SAND_BLOCK_ID, SNOW_BLOCK_ID, STONE_BLOCK_ID,
+    WATER_BLOCK_ID,
 };
 use crate::zoom::ZoomLevel;
 use crate::{
@@ -21,7 +20,6 @@ pub struct MountainIslands {
     verticality: Perlin,
     terrain_variance: Fbm<Perlin>,
     vspline: Spline<f64, f64>,
-    trees: FastNoise,
     /// max mountain size without zoom is roughly double this value
     vertical_scale: f64,
     horizontal_smoothness: f64,
@@ -47,7 +45,6 @@ impl MountainIslands {
             vspline,
             vertical_scale: CHUNK_SIZE_F64 * 4.,
             horizontal_smoothness: CHUNK_SIZE_F64 * 0.1,
-            trees: default_trees(seed),
         };
         tracing::debug!(?wgen.heightmap.octaves, wgen.heightmap.frequency, wgen.heightmap.lacunarity, wgen.heightmap.persistence, "MountainIslands initialized");
         wgen
@@ -60,13 +57,6 @@ fn default_heightmap(seed: u32) -> Fbm<Perlin> {
 
 pub fn default_terrain_variance(seed: u32) -> Fbm<Perlin> {
     Fbm::<Perlin>::new(seed).set_octaves(8).set_persistence(0.7)
-}
-
-fn default_trees(seed: u32) -> FastNoise {
-    let mut trees = FastNoise::seeded(seed as u64);
-    trees.set_noise_type(NoiseType::WhiteNoise);
-    trees.set_frequency(2.);
-    trees
 }
 
 impl Default for MountainIslands {
@@ -186,78 +176,6 @@ impl WorldGen for MountainIslands {
             }
             if is_empty {
                 return Chunk::Empty;
-            }
-        }
-
-        // TODO: skipping decoration if zoomed as it doesn't scale properly right now
-        if zoom_level != ZoomLevel::default() {
-            return chunk.into();
-        }
-
-        let _span = tracing::debug_span!("worldgen{stage = decoration}").entered();
-        for x in 0..CHUNK_SIZE {
-            for z in 0..CHUNK_SIZE {
-                let wheight = wheights[x as usize][z as usize];
-                if wheight < SEA_LEVEL {
-                    continue;
-                }
-                let wx = x as f64 / zoom + zoomed_offset[0];
-                let wz = z as f64 / zoom + zoomed_offset[2];
-
-                let tree_noise = self.trees.get_noise(wx as f32, wz as f32);
-                if tree_noise <= 0.99 {
-                    continue;
-                }
-                for y in 0..CHUNK_SIZE {
-                    let wy = y as f64 / zoom + zoomed_offset[1];
-                    if wy.floor() != wheight.floor() {
-                        continue;
-                    }
-                    if chunk.get(&BlockPosition { x, y, z })
-                        != Some(*self.block_mappings.get(GRASS_BLOCK_ID).unwrap())
-                        && chunk.get(&BlockPosition { x, y, z })
-                            != Some(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap())
-                    {
-                        break;
-                    }
-                    // make tree starting from here
-                    let tree_height = ((4. + (1. - tree_noise) * 400.).floor() as i8).min(8);
-                    for y_offset in 0..tree_height {
-                        chunk.insert(
-                            &BlockPosition {
-                                x,
-                                y: (y + y_offset).clamp(0, BlockPosition::MAX_IDX),
-                                z,
-                            },
-                            *self.block_mappings.get(WOOD_BLOCK_ID).unwrap(),
-                        );
-                    }
-                    let leaf_start_height = tree_height - 2;
-                    let leaf_end_height = tree_height + 2;
-                    for y_offset in leaf_start_height..leaf_end_height {
-                        for x_offset in -2..=2 {
-                            for z_offset in -2..=2 {
-                                if x_offset == 0 && z_offset == 0 && y_offset < tree_height {
-                                    continue; // don't replace trunk
-                                }
-                                if ((z_offset == 2 || z_offset == -2)
-                                    || (x_offset == 2 || x_offset == -2))
-                                    && (x_offset == z_offset || x_offset == -z_offset)
-                                {
-                                    continue;
-                                }
-                                chunk.insert_if_free(
-                                    &BlockPosition {
-                                        x: (x + x_offset).clamp(0, BlockPosition::MAX_IDX),
-                                        y: (y + y_offset).clamp(0, BlockPosition::MAX_IDX),
-                                        z: (z + z_offset).clamp(0, BlockPosition::MAX_IDX),
-                                    },
-                                    *self.block_mappings.get(LEAVES_BLOCK_ID).unwrap(),
-                                );
-                            }
-                        }
-                    }
-                }
             }
         }
 
