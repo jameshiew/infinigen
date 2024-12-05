@@ -21,8 +21,9 @@ jobs:
       - name: Install system packages needed by Bevy
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+      - uses: taiki-e/install-action@cargo-hack
       - uses: Swatinem/rust-cache@v2
-      - run: cargo clippy --all-targets
+      - run: cargo hack clippy --all-targets --feature-powerset --skip dynamic-linking
   test:
     runs-on: ubuntu-24.04
     needs: lint
@@ -45,17 +46,20 @@ jobs:
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - uses: Swatinem/rust-cache@v2
       - run: RUSTDOCFLAGS="-Dwarnings" cargo doc --document-private-items --no-deps --all-features
-  check:
-    runs-on: [ubuntu-24.04, windows-2022, macos-15]
+  check_other_oses:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - windows-2022
+          - macos-15
     needs: lint
     steps:
       - uses: actions/checkout@v4
       - run: rustup show
-      - name: Install system packages needed by Bevy
-        run: |
-          sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+      - uses: taiki-e/install-action@cargo-hack
       - uses: Swatinem/rust-cache@v2
-      - run: cargo check --all-targets
+      - run: cargo hack clippy --all-targets --feature-powerset --skip dynamic-linking
   wasm:
     runs-on: ubuntu-24.04
     needs: lint
