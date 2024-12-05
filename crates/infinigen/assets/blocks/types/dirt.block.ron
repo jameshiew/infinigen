@@ -1,5 +1,6 @@
 (
     id: "infinigen:dirt",
+    color: (139, 69, 19, 255),
     textures: Some({
         Top: "dirt",
         Bottom: "dirt",

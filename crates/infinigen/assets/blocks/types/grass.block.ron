@@ -1,5 +1,6 @@
 (
     id: "infinigen:grass",
+    color: (84, 161, 66, 255),
     textures: Some({
         Top: "grass",
         Bottom: "dirt",
