@@ -5,7 +5,7 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 use nalgebra::{Matrix4, Vector3};
 use nalgebra::{Perspective3, Quaternion, UnitQuaternion};
-use rustc_hash::{FxHashMap, FxHashSet};
+use rustc_hash::FxHashSet;
 
 use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
 use crate::AppState;
@@ -16,11 +16,9 @@ mod handle;
 pub mod lights;
 pub mod visible_chunks;
 
-/// Holds details of the currently rendered scene.
-#[derive(Debug, Default, Resource)]
-pub struct Scene {
-    /// Loaded chunks and their entities.
-    pub loaded: FxHashMap<ChunkPosition, FxHashSet<Entity>>,
+#[derive(Component)]
+pub struct LoadedChunk {
+    pub cpos: ChunkPosition,
 }
 
 #[derive(Resource, Default)]
@@ -66,7 +64,6 @@ pub struct UnloadChunkOpEvent(ChunkPosition);
 pub const FAR: f32 = CHUNK_SIZE_F32 * 64.;
 
 pub fn init_scene_from_config(
-    mut scene: ResMut<Scene>,
     mut scene_view: ResMut<SceneView>,
     mut scene_zoom: ResMut<SceneZoom>,
     config: Res<Config>,
@@ -87,7 +84,6 @@ pub fn init_scene_from_config(
         "Setting initial capacity for loaded chunks"
     );
     // TODO: spawn load ops for each chunk that will be in the initial view, then camera_cpos needn't be an option
-    scene.loaded = FxHashMap::default();
 }
 
 #[derive(Event)]
@@ -156,12 +152,12 @@ pub struct UpdateSceneEvent;
 
 pub fn check_if_should_update_scene(
     mut commands: Commands,
-    mut scene: ResMut<Scene>,
     mut scene_camera: ResMut<SceneCamera>,
     camera: Query<&Transform, With<Camera>>,
     mut reload_evs: EventReader<ReloadAllChunksEvent>,
     mut refresh_evs: EventReader<RefreshChunkOpsQueueEvent>,
     mut update_scene_evs: EventWriter<UpdateSceneEvent>,
+    loaded: Query<Entity, With<LoadedChunk>>,
 ) {
     let mut should_update = false;
     if refresh_evs.read().next().is_some() {
@@ -169,10 +165,8 @@ pub fn check_if_should_update_scene(
     }
     if reload_evs.read().next().is_some() {
         tracing::info!("Reloading all chunks");
-        for (_, eids) in scene.loaded.drain() {
-            eids.iter().for_each(|physical_eid| {
-                commands.entity(*physical_eid).despawn();
-            });
+        for loaded_chunk in loaded.iter() {
+            commands.entity(loaded_chunk).despawn_recursive();
         }
         should_update = true;
     }
@@ -198,11 +192,11 @@ pub fn check_if_should_update_scene(
 
 pub fn update_scene(
     scene_view: Res<SceneView>,
-    scene: Res<Scene>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
     mut load_ops: ResMut<LoadOps>,
     mut unload_evs: EventWriter<UnloadChunkOpEvent>,
     mut update_scene_evs: EventReader<UpdateSceneEvent>,
+    loaded: Query<&LoadedChunk>,
 ) {
     if update_scene_evs.read().next().is_none() {
         return;
@@ -255,7 +249,7 @@ pub fn update_scene(
     )
     .collect();
 
-    let already_loaded_or_loading: FxHashSet<_> = scene.loaded.keys().cloned().collect();
+    let already_loaded_or_loading: FxHashSet<_> = loaded.iter().map(|l| l.cpos).collect();
 
     let mut to_load: Vec<_> = chunks_within_render_distance
         .difference(&already_loaded_or_loading)
@@ -309,8 +303,7 @@ pub struct Plugin;
 impl bevy::prelude::Plugin for Plugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing scene plugin");
-        app.init_resource::<Scene>()
-            .init_resource::<SceneView>()
+        app.init_resource::<SceneView>()
             .init_resource::<SceneCamera>()
             .init_resource::<SceneZoom>()
             .init_resource::<LoadOps>()
