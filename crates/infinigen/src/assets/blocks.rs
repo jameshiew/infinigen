@@ -72,7 +72,7 @@ impl BlockMappings {
 
     pub fn add(&mut self, block_definition: BlockDefinition) -> ChunkBlockId {
         let mapped_id = self.next_free_mapped_id;
-        tracing::info!(?block_definition, ?mapped_id, "Mapping block");
+        tracing::debug!(?block_definition, ?mapped_id, "Mapping block");
         self.by_block_id
             .insert(block_definition.id.clone(), self.next_free_mapped_id);
         self.by_mapped_id
