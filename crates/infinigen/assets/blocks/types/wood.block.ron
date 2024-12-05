@@ -1,5 +1,6 @@
 (
     id: "infinigen:wood",
+    color: (139, 69, 19, 255),
     textures: Some({
         Top: "wood",
         Bottom: "wood",

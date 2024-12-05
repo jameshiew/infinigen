@@ -1,5 +1,6 @@
 (
     id: "infinigen:gravel",
+    color: (128, 128, 128, 255),
     textures: Some({
         Top: "gravel",
         Bottom: "gravel",

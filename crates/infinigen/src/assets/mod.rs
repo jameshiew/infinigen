@@ -2,7 +2,7 @@ use crate::{settings::Config, world::World, AppState};
 use bevy::asset::{LoadedFolder, RecursiveDependencyLoadState};
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
-use blocks::{BlockDefinition, BlockRegistry, MaterialType};
+use blocks::{default_block_definitions, BlockDefinition, BlockRegistry, MaterialType};
 use infinigen_common::mesh::textures::{Face, FaceAppearance, TextureMap};
 use std::{collections::HashMap, sync::Arc};
 use strum::IntoEnumIterator;
@@ -15,13 +15,23 @@ impl bevy::prelude::Plugin for Plugin {
         tracing::info!("Initializing assets plugin");
         app.add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
             .init_resource::<BlockRegistry>()
-            .add_systems(OnEnter(AppState::LoadingAssets), load_assets)
+            .add_systems(OnEnter(AppState::InitializingRegistry), setup);
+
+        #[cfg(not(target_family = "wasm"))]
+        app.add_systems(OnEnter(AppState::LoadingAssets), load_assets)
             .add_systems(
                 Update,
                 (check_assets.run_if(in_state(AppState::LoadingAssets)),),
-            )
-            .add_systems(OnEnter(AppState::InitializingRegistry), setup);
+            );
+
+        #[cfg(target_family = "wasm")]
+        app.add_systems(OnEnter(AppState::LoadingAssets), skip_loading_assets);
     }
+}
+
+/// For targets not yet supported for loading assets.
+pub fn skip_loading_assets(mut next_state: ResMut<NextState<AppState>>) {
+    next_state.set(AppState::InitializingRegistry);
 }
 
 pub fn load_assets(mut registry: ResMut<BlockRegistry>, asset_server: Res<AssetServer>) {
@@ -81,46 +91,55 @@ pub fn setup(
     // block textures
     let mut block_texture_handles_by_name = HashMap::new();
     let mut block_tatlas_builder = TextureAtlasBuilder::default();
-    for handle in loaded_folders
-        .get(&registry.block_texture_folder)
-        .unwrap()
-        .handles
-        .iter()
+    let (atlas_sources, atlas_layout, texture_atlas) = if let Some(block_texture_folder) =
+        loaded_folders.get(&registry.block_texture_folder)
     {
-        let handle = handle.clone_weak().typed();
-        let path = asset_server.get_path(handle.id());
-        if let Some(texture) = textures.get(&handle) {
-            tracing::info!(?path, "Texture found");
-            let path = path.unwrap();
-            let name = path.path().file_name().unwrap().to_str().unwrap();
-            let name = name.trim_end_matches(".png");
+        for handle in block_texture_folder.handles.iter() {
+            let handle = handle.clone_weak().typed();
+            let path = asset_server.get_path(handle.id());
+            if let Some(texture) = textures.get(&handle) {
+                tracing::info!(?path, "Texture found");
+                let path = path.unwrap();
+                let name = path.path().file_name().unwrap().to_str().unwrap();
+                let name = name.trim_end_matches(".png");
 
-            block_texture_handles_by_name.insert(name.to_owned(), handle.clone_weak());
-            block_tatlas_builder.add_texture(Some(handle.id()), texture);
-        } else {
-            tracing::warn!("{:?} did not resolve to an `Image` asset.", path,);
-            panic!();
-        };
-    }
-    let (atlas_layout, atlas_sources, texture_atlas) = block_tatlas_builder.build().unwrap();
-    tracing::info!(?atlas_layout.size, ?atlas_layout.textures, "Stitched texture atlas");
-    let texture_atlas = textures.add(texture_atlas);
+                block_texture_handles_by_name.insert(name.to_owned(), handle.clone_weak());
+                block_tatlas_builder.add_texture(Some(handle.id()), texture);
+            } else {
+                tracing::warn!("{:?} did not resolve to an `Image` asset.", path,);
+                panic!();
+            };
+        }
+        let (atlas_layout, atlas_sources, texture_atlas) = block_tatlas_builder.build().unwrap();
+        tracing::info!(?atlas_layout.size, ?atlas_layout.textures, "Stitched texture atlas");
+        let texture_atlas = textures.add(texture_atlas);
+        (Some(atlas_sources), Some(atlas_layout), Some(texture_atlas))
+    } else {
+        tracing::warn!("Block textures were not loaded");
+        (None, None, None)
+    };
 
     let mut block_textures = TextureMap::default();
-    block_textures.size = [atlas_layout.size[0] as usize, atlas_layout.size[1] as usize];
+    if let Some(atlas_layout) = atlas_layout.as_ref() {
+        block_textures.size = [atlas_layout.size[0] as usize, atlas_layout.size[1] as usize];
+    }
 
-    // map block definitions in alphabetical order by ID
-    // so for the same set of block definitions, we should get the same mapping
     let mut block_definitions: Vec<_> = block_definitions
         .iter()
         .map(|(_handle, block_definition)| block_definition)
         .cloned()
         .collect();
+    if block_definitions.is_empty() {
+        tracing::warn!("No block definition files found, falling back to defaults");
+        block_definitions = default_block_definitions();
+    }
+    // map block definitions in alphabetical order by ID
+    // so for the same set of block definitions, we should get the same mapping
     block_definitions.sort();
 
     for block_definition in block_definitions {
-        // fall back to color where texture isn't provided
         tracing::info!(?block_definition, "Block definition found");
+        // default to color in case texture is missing
         let mut faces = [FaceAppearance::Color {
             r: block_definition.color[0] as f32 / 256.,
             g: block_definition.color[1] as f32 / 256.,
@@ -128,6 +147,8 @@ pub fn setup(
             a: block_definition.color[3] as f32 / 256.,
         }; 6];
         if let Some(ref texture_file_names) = block_definition.textures {
+            let atlas_sources = atlas_sources.as_ref().unwrap();
+            let atlas_layout = atlas_layout.as_ref().unwrap().clone();
             for face in Face::iter() {
                 // TODO: don't unwrap here
                 let texture_handle = block_texture_handles_by_name
@@ -159,7 +180,7 @@ pub fn setup(
         base_color: Color::WHITE,
         perceptual_roughness: 0.75,
         reflectance: 0.25,
-        base_color_texture: Some(texture_atlas),
+        base_color_texture: texture_atlas,
         ..default()
     });
     registry.materials[MaterialType::Translucent as usize] = materials.add(StandardMaterial {

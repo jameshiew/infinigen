@@ -1,5 +1,6 @@
 (
     id: "infinigen:leaves",
+    color: (84, 161, 66, 255),
     textures: Some({
         Top: "leaves",
         Bottom: "leaves",
