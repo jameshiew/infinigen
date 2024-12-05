@@ -23,6 +23,7 @@ bevy = { version = "0.15.0", default-features = false, features = [
     "tonemapping_luts",
     "x11",
     "wayland",
+    "webgpu",
 ] }
 
 bevy_common_assets = { version = "0.12.0", features = ["ron"] }
