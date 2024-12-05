@@ -137,7 +137,7 @@ pub fn mesh_chunk_visible_block_faces(
                     }
                 },
                 None => {
-                    tracing::warn!(
+                    tracing::error!(
                         ?chunk_block_id,
                         ?block_face,
                         "No appearance defined for block face"

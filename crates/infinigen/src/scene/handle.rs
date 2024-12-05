@@ -104,10 +104,10 @@ pub fn process_load_chunk_ops(
                 continue;
             }
             Some(ChunkStatus::Generated(chunk_info)) => {
-                tracing::debug!(?cpos, "Will render chunk");
+                tracing::trace!(?cpos, "Will render chunk");
 
                 let Chunk::Unpacked(ref chunk) = chunk_info.chunk else {
-                    tracing::debug!(?cpos, "Empty chunk");
+                    tracing::trace!(?cpos, "Empty chunk");
                     continue;
                 };
                 let mut opaque_chunk = chunk.to_owned();
@@ -161,7 +161,7 @@ pub fn process_load_chunk_ops(
                 };
 
                 if loads.is_empty() {
-                    tracing::debug!(?cpos, "Occluded chunk");
+                    tracing::trace!(?cpos, "Occluded chunk");
                     continue;
                 }
 
@@ -187,7 +187,7 @@ pub fn process_load_chunk_ops(
                         .set_parent(cid);
                 }
 
-                tracing::debug!(?cpos, "Chunk loaded");
+                tracing::trace!(?cpos, "Chunk loaded");
             }
             Some(ChunkStatus::Meshed { .. }) => todo!(),
         }

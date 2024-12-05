@@ -37,7 +37,7 @@ pub fn skip_loading_assets(mut next_state: ResMut<NextState<AppState>>) {
 pub fn load_assets(mut registry: ResMut<BlockRegistry>, asset_server: Res<AssetServer>) {
     registry.block_texture_folder = asset_server.load_folder("blocks/textures/");
     registry.block_definition_folder = asset_server.load_folder("blocks/types/");
-    tracing::info!(
+    tracing::debug!(
         "Loading assets: textures: {}, block definitions: {}",
         registry.block_texture_folder.path().unwrap(),
         registry.block_definition_folder.path().unwrap(),
@@ -53,7 +53,7 @@ pub fn check_assets(
     let blockdef_load_state =
         asset_server.get_recursive_dependency_load_state(&registry.block_definition_folder);
     if let Some(RecursiveDependencyLoadState::Loaded) = blockdef_load_state {
-        tracing::info!("Finished loading block definitions");
+        tracing::debug!("Finished loading block definitions");
         block_definitions_loaded = true;
     }
 
@@ -61,14 +61,14 @@ pub fn check_assets(
     let blocktex_load_state =
         asset_server.get_recursive_dependency_load_state(&registry.block_texture_folder);
     if let Some(RecursiveDependencyLoadState::Loaded) = blocktex_load_state {
-        tracing::info!("Finished loading block textures");
+        tracing::debug!("Finished loading block textures");
         block_textures_loaded = true;
     }
 
     if block_definitions_loaded && block_textures_loaded {
         next_state.set(AppState::InitializingRegistry);
     } else {
-        tracing::info!(
+        tracing::debug!(
             "Loading block definitions: {:?}, block textures: {:?}",
             blockdef_load_state,
             blocktex_load_state
@@ -98,7 +98,7 @@ pub fn setup(
             let handle = handle.clone_weak().typed();
             let path = asset_server.get_path(handle.id());
             if let Some(texture) = textures.get(&handle) {
-                tracing::info!(?path, "Texture found");
+                tracing::debug!(?path, "Texture found");
                 let path = path.unwrap();
                 let name = path.path().file_name().unwrap().to_str().unwrap();
                 let name = name.trim_end_matches(".png");
@@ -106,16 +106,16 @@ pub fn setup(
                 block_texture_handles_by_name.insert(name.to_owned(), handle.clone_weak());
                 block_tatlas_builder.add_texture(Some(handle.id()), texture);
             } else {
-                tracing::warn!("{:?} did not resolve to an `Image` asset.", path,);
+                tracing::error!("{:?} did not resolve to an `Image` asset.", path,);
                 panic!();
             };
         }
         let (atlas_layout, atlas_sources, texture_atlas) = block_tatlas_builder.build().unwrap();
-        tracing::info!(?atlas_layout.size, ?atlas_layout.textures, "Stitched texture atlas");
+        tracing::debug!(?atlas_layout.size, ?atlas_layout.textures, "Stitched texture atlas");
         let texture_atlas = textures.add(texture_atlas);
         (Some(atlas_sources), Some(atlas_layout), Some(texture_atlas))
     } else {
-        tracing::warn!("Block textures were not loaded");
+        tracing::warn!("Block textures were not loaded, falling back to colours");
         (None, None, None)
     };
 
@@ -130,7 +130,7 @@ pub fn setup(
         .cloned()
         .collect();
     if block_definitions.is_empty() {
-        tracing::warn!("No block definition files found, falling back to defaults");
+        tracing::warn!("No block definition files found, falling back to default definitions");
         block_definitions = default_block_definitions();
     }
     // map block definitions in alphabetical order by ID
@@ -138,7 +138,7 @@ pub fn setup(
     block_definitions.sort();
 
     for block_definition in block_definitions {
-        tracing::info!(?block_definition, "Block definition found");
+        tracing::debug!(?block_definition, "Block definition found");
         // default to color in case texture is missing
         let mut faces = [FaceAppearance::Color {
             r: block_definition.color[0] as f32 / 256.,
@@ -154,7 +154,7 @@ pub fn setup(
                 let texture_handle = block_texture_handles_by_name
                     .get(texture_file_names.get(&face).unwrap())
                     .unwrap();
-                tracing::info!(?face, ?block_definition.id, "Found specific texture");
+                tracing::debug!(?face, ?block_definition.id, "Found specific texture");
                 let tidx = atlas_sources.texture_index(texture_handle).unwrap();
                 let tidx = FaceAppearance::Texture {
                     coords: [

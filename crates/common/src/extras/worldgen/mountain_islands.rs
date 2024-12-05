@@ -49,7 +49,7 @@ impl MountainIslands {
             horizontal_smoothness: CHUNK_SIZE_F64 * 0.1,
             trees: default_trees(seed),
         };
-        tracing::info!(?wgen.heightmap.octaves, wgen.heightmap.frequency, wgen.heightmap.lacunarity, wgen.heightmap.persistence, "MountainIslands initialized");
+        tracing::debug!(?wgen.heightmap.octaves, wgen.heightmap.frequency, wgen.heightmap.lacunarity, wgen.heightmap.persistence, "MountainIslands initialized");
         wgen
     }
 }
