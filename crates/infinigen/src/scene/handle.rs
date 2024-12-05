@@ -5,7 +5,7 @@ use crate::chunks::registry::ChunkStatus;
 use crate::chunks::tasks::RequestChunkEvent;
 use crate::scene::RequestChunkOp;
 use crate::{
-    mesh::mesh::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces},
+    utils::mesh::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces},
     world::World,
 };
 use infinigen_common::{
