@@ -170,7 +170,12 @@ pub fn process_load_chunk_ops(
                 // TODO: the above meshing stuff should be async also
 
                 let cid = commands
-                    .spawn((Name::new("Chunk"), LoadedChunk { cpos }, transform))
+                    .spawn((
+                        Name::new("Chunk"),
+                        LoadedChunk { cpos },
+                        Visibility::default(),
+                        transform,
+                    ))
                     .id();
                 for (mesh, material) in loads {
                     commands
