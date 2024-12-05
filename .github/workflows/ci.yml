@@ -18,16 +18,9 @@ jobs:
       - run: rustup show
       - run: rustup component add rustfmt
       - run: cargo fmt --all -- --check
-  vet:
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      - uses: actions/checkout@v4
-      - run: rustup show
       - name: Install system packages needed by Bevy
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: Swatinem/rust-cache@v2
       - run: cargo clippy --all-targets
   test:
     runs-on: ubuntu-latest
@@ -40,3 +33,14 @@ jobs:
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - uses: Swatinem/rust-cache@v2
       - run: cargo test --all-targets
+  docs:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup show
+      - name: Install system packages needed by Bevy
+        run: |
+          sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+      - uses: Swatinem/rust-cache@v2
+      - run: RUSTDOCFLAGS="-Dwarnings" cargo doc --document-private-items --no-deps --all-features
