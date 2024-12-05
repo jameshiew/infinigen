@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use rustc_hash::FxHashSet;
 
 use crate::chunks::registry::ChunkRegistry;
 use crate::chunks::registry::ChunkStatus;
@@ -14,6 +13,7 @@ use infinigen_common::{
     world::{BlockPosition, BlockVisibility, ChunkBlockId, WorldPosition},
 };
 
+use super::LoadedChunk;
 use super::UnloadChunkOpEvent;
 use crate::assets::blocks::BlockRegistry;
 use crate::assets::blocks::MaterialType;
@@ -51,7 +51,7 @@ pub fn split(mut chunk: UnpackedChunk, chunk_block_id: ChunkBlockId) -> (Unpacke
 pub fn process_unload_chunk_ops(
     mut commands: Commands,
     mut unload_evs: EventReader<crate::scene::UnloadChunkOpEvent>,
-    mut scene: ResMut<crate::scene::Scene>,
+    loaded: Query<(Entity, &LoadedChunk)>,
 ) {
     for _ in 0..CHUNK_OP_RATE {
         let Some(op) = unload_evs.read().next() else {
@@ -59,13 +59,10 @@ pub fn process_unload_chunk_ops(
         };
         let UnloadChunkOpEvent(cpos) = op;
 
-        if let Some(eids) = scene.loaded.get(cpos) {
-            tracing::debug!(?cpos, "Unloading chunk");
-            eids.iter().for_each(|physical_eid| {
-                commands.entity(*physical_eid).despawn();
-            });
-            tracing::debug!(?cpos, "Chunk unloaded");
-            scene.loaded.remove(cpos);
+        for (eid, LoadedChunk { cpos: loaded_cpos }) in loaded.iter() {
+            if loaded_cpos == cpos {
+                commands.entity(eid).despawn_recursive();
+            }
         }
     }
 }
@@ -75,7 +72,6 @@ pub fn process_load_chunk_ops(
     mut commands: Commands,
     mut chunks: ResMut<ChunkRegistry>,
     world: Res<World>,
-    mut scene: ResMut<crate::scene::Scene>,
     mut load_ops: ResMut<crate::scene::LoadOps>,
     scene_zoom: Res<crate::scene::SceneZoom>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -171,24 +167,22 @@ pub fn process_load_chunk_ops(
 
                 let wpos: WorldPosition = (&cpos).into();
                 let transform = Transform::from_xyz(wpos.x, wpos.y, wpos.z);
-
                 // TODO: the above meshing stuff should be async also
-                let mut eids = FxHashSet::default();
+
+                let cid = commands
+                    .spawn((Name::new("Chunk"), LoadedChunk { cpos }, transform))
+                    .id();
                 for (mesh, material) in loads {
-                    let eid = commands
+                    commands
                         .spawn((
                             Name::new("Chunk mesh"),
                             Mesh3d(meshes.add(mesh)),
                             MeshMaterial3d(material),
-                            transform,
                         ))
-                        .id();
-
-                    eids.insert(eid);
+                        .set_parent(cid);
                 }
 
-                tracing::debug!(?cpos, ?eids, "Chunk loaded");
-                scene.loaded.insert(cpos, eids);
+                tracing::debug!(?cpos, "Chunk loaded");
             }
             Some(ChunkStatus::Meshed { .. }) => todo!(),
         }

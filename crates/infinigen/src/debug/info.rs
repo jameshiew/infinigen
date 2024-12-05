@@ -7,7 +7,7 @@ use bevy_egui::{
     EguiContexts,
 };
 
-use crate::scene;
+use crate::scene::{self, LoadedChunk};
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 
 #[allow(clippy::too_many_arguments)]
@@ -15,12 +15,12 @@ pub fn display_debug_info(
     mut egui: EguiContexts,
     diagnostics: Res<DiagnosticsStore>,
     mut camera: Query<(&Transform, &mut crate::camera::settings::Settings)>,
-    scene: Res<scene::Scene>,
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
     load_ops: Res<scene::LoadOps>,
     mut update_evs: EventWriter<scene::UpdateSettingsEvent>,
     mut reload_evs: EventWriter<scene::ReloadAllChunksEvent>,
+    loaded_chunks: Query<&LoadedChunk>,
 ) {
     let (camera_wpos, mut camera) = camera.single_mut();
     egui::Window::new("Performance").show(egui.ctx_mut(), |ui| {
@@ -41,7 +41,10 @@ pub fn display_debug_info(
                 .unwrap_or_default()
         ));
         ui.label(format!("# queued chunk ops: {}", load_ops.deque.len()));
-        ui.label(format!("# non-empty chunks loaded: {}", scene.loaded.len()));
+        ui.label(format!(
+            "# non-empty chunks loaded: {}",
+            loaded_chunks.iter().count(),
+        ));
         if ui.button("Clear and reload all chunks").clicked() {
             reload_evs.send(scene::ReloadAllChunksEvent);
         }
