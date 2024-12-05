@@ -13,7 +13,6 @@ tracing = { workspace = true }
 rand = "0.8.5"
 block-mesh = { git = "https://github.com/bonsairobo/block-mesh-rs", rev = "793c53e82c12b3f7e9502006664c6e81f8b1c78a" }
 noise = "0.9.0"
-bracket-noise = "0.8.7"
 splines = "4.4.0"
 ndarray = { version = "0.16.1", features = ["serde"] }
 

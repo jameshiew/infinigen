@@ -1309,30 +1309,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bracket-noise"
-version = "0.8.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0b7443d0990c69db7a83f376f0101d684c20a911698e5f932bffbda2c8b08dd"
-dependencies = [
- "bracket-random",
-]
-
-[[package]]
-name = "bracket-random"
-version = "0.8.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "437be61484077b1ddb57002ce3c96b7d03cbf500b5d15157ee7e67e22332c39b"
-dependencies = [
- "getrandom",
- "js-sys",
- "lazy_static",
- "rand",
- "rand_xorshift",
- "regex",
- "wasm-bindgen",
-]
-
-[[package]]
 name = "bumpalo"
 version = "3.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2550,7 +2526,6 @@ name = "infinigen-common"
 version = "0.0.0"
 dependencies = [
  "block-mesh",
- "bracket-noise",
  "criterion",
  "ndarray",
  "noise",
