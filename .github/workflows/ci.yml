@@ -12,7 +12,7 @@ env:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - run: rustup show
@@ -23,7 +23,7 @@ jobs:
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - run: cargo clippy --all-targets
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: cargo test --all-targets
   docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint
     steps:
       - uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: RUSTDOCFLAGS="-Dwarnings" cargo doc --document-private-items --no-deps --all-features
   check:
-    runs-on: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: [ubuntu-24.04, windows-2022, macos-15]
     needs: lint
     steps:
       - uses: actions/checkout@v4
