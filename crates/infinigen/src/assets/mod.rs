@@ -4,7 +4,8 @@ use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use blocks::{default_block_definitions, BlockDefinition, BlockRegistry, MaterialType};
 use infinigen_common::mesh::textures::{Face, FaceAppearance, TextureMap};
-use std::{collections::HashMap, sync::Arc};
+use rustc_hash::FxHashMap;
+use std::sync::Arc;
 use strum::IntoEnumIterator;
 
 pub mod blocks;
@@ -89,7 +90,7 @@ pub fn setup(
     config: Res<Config>,
 ) {
     // block textures
-    let mut block_texture_handles_by_name = HashMap::new();
+    let mut block_texture_handles_by_name = FxHashMap::default();
     let mut block_tatlas_builder = TextureAtlasBuilder::default();
     let (atlas_sources, atlas_layout, texture_atlas) = if let Some(block_texture_folder) =
         loaded_folders.get(&registry.block_texture_folder)
