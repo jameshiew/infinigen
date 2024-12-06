@@ -5,10 +5,18 @@ use bevy::window::{Window, WindowPlugin};
 use bevy::DefaultPlugins;
 use config::Config;
 use infinigen::AppPlugin;
-#[cfg(all(not(target_env = "msvc"), not(feature = "dynamic-linking")))]
+#[cfg(all(
+    not(target_env = "msvc"),
+    not(feature = "dynamic-linking"),
+    not(target_family = "wasm")
+))]
 use tikv_jemallocator::Jemalloc;
 
-#[cfg(all(not(target_env = "msvc"), not(feature = "dynamic-linking")))]
+#[cfg(all(
+    not(target_env = "msvc"),
+    not(feature = "dynamic-linking"),
+    not(target_family = "wasm")
+))]
 #[global_allocator]
 static GLOBAL: Jemalloc = Jemalloc;
 

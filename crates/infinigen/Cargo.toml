@@ -50,7 +50,7 @@ tracing = {workspace = true}
 nalgebra = "0.33.2"
 rustc-hash = {workspace = true}
 
-[target.'cfg(not(target_env = "msvc"))'.dependencies]
+[target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]
 tikv-jemallocator = "0.6"
 
 [features]
