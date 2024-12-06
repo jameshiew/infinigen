@@ -8,7 +8,9 @@ use infinigen_common::mesh::textures::{Face, FaceAppearance, TextureMap};
 use rustc_hash::FxHashMap;
 use strum::IntoEnumIterator;
 
-use crate::{settings::Config, world::World, AppState};
+use crate::settings::Config;
+use crate::world::World;
+use crate::AppState;
 
 pub mod blocks;
 pub struct Plugin;

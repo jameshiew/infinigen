@@ -2,15 +2,13 @@ use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 use rustc_hash::FxHashMap;
 use splines::{Interpolation, Key, Spline};
 
+use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
 use crate::extras::block_ids::{
     DIRT_BLOCK_ID, GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, SAND_BLOCK_ID, SNOW_BLOCK_ID, STONE_BLOCK_ID,
     WATER_BLOCK_ID,
 };
+use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition};
 use crate::zoom::ZoomLevel;
-use crate::{
-    chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE},
-    world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition},
-};
 
 pub struct MountainIslands {
     pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,

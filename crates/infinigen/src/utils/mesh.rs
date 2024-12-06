@@ -7,9 +7,8 @@ use bevy::render::render_resource::PrimitiveTopology;
 use infinigen_common::chunks::UnpackedChunk;
 use infinigen_common::mesh::faces::prepare_padded_chunk;
 use infinigen_common::mesh::shapes::ChunkFace;
-use infinigen_common::mesh::{
-    mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces, textures::TextureMap, MeshInfo,
-};
+use infinigen_common::mesh::textures::TextureMap;
+use infinigen_common::mesh::{mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces, MeshInfo};
 
 use crate::assets::blocks::BlockMappings;
 

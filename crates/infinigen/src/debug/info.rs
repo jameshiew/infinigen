@@ -2,10 +2,8 @@ use bevy::diagnostic::{
     DiagnosticsStore, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
 };
 use bevy::prelude::*;
-use bevy_egui::{
-    egui::{self, Slider},
-    EguiContexts,
-};
+use bevy_egui::egui::{self, Slider};
+use bevy_egui::EguiContexts;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 
 use crate::scene::{self, LoadedChunk};

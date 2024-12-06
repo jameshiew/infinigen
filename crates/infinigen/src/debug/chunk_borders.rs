@@ -1,16 +1,10 @@
-use bevy::render::mesh::MeshVertexBufferLayoutRef;
+use bevy::pbr::{MaterialPipeline, MaterialPipelineKey};
+use bevy::prelude::*;
+use bevy::reflect::TypePath;
+use bevy::render::mesh::{MeshVertexBufferLayoutRef, PrimitiveTopology};
 use bevy::render::render_asset::RenderAssetUsages;
-use bevy::{
-    pbr::{MaterialPipeline, MaterialPipelineKey},
-    prelude::*,
-    reflect::TypePath,
-    render::{
-        mesh::PrimitiveTopology,
-        render_resource::{
-            AsBindGroup, PolygonMode, RenderPipelineDescriptor, ShaderRef,
-            SpecializedMeshPipelineError,
-        },
-    },
+use bevy::render::render_resource::{
+    AsBindGroup, PolygonMode, RenderPipelineDescriptor, ShaderRef, SpecializedMeshPipelineError,
 };
 /// Adapted from lines example of Bevy - https://github.com/bevyengine/bevy/blob/release-0.14.2/examples/3d/lines.rs
 use infinigen_common::chunks::CHUNK_SIZE_F32;

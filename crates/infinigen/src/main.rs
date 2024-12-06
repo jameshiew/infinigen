@@ -1,10 +1,8 @@
 use anyhow::{Context, Result};
-use bevy::{
-    log::LogPlugin,
-    prelude::*,
-    window::{Window, WindowPlugin},
-    DefaultPlugins,
-};
+use bevy::log::LogPlugin;
+use bevy::prelude::*;
+use bevy::window::{Window, WindowPlugin};
+use bevy::DefaultPlugins;
 use config::Config;
 use infinigen::AppPlugin;
 
