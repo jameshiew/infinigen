@@ -5,6 +5,12 @@ use bevy::window::{Window, WindowPlugin};
 use bevy::DefaultPlugins;
 use config::Config;
 use infinigen::AppPlugin;
+#[cfg(all(not(target_env = "msvc"), not(feature = "dynamic-linking")))]
+use tikv_jemallocator::Jemalloc;
+
+#[cfg(all(not(target_env = "msvc"), not(feature = "dynamic-linking")))]
+#[global_allocator]
+static GLOBAL: Jemalloc = Jemalloc;
 
 const APP_NAME: &str = "infinigen";
 const CONFIG_PREFIX: &str = "infinigen_";
