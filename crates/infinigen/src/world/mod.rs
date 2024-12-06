@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use bevy::prelude::*;
-
 use infinigen_common::chunks::Chunk;
 use infinigen_common::extras::worldgen;
 use infinigen_common::world::{ChunkPosition, WorldGen};

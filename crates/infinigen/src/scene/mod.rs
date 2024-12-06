@@ -3,14 +3,14 @@ use std::collections::VecDeque;
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
+use infinigen_common::chunks::CHUNK_SIZE_F32;
+use infinigen_common::world::{ChunkPosition, WorldPosition};
 use nalgebra::{Matrix4, Vector3};
 use nalgebra::{Perspective3, Quaternion, UnitQuaternion};
 use rustc_hash::FxHashSet;
 
 use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
 use crate::AppState;
-use infinigen_common::chunks::CHUNK_SIZE_F32;
-use infinigen_common::world::{ChunkPosition, WorldPosition};
 
 mod handle;
 pub mod lights;

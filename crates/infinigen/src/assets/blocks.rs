@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use bevy::asset::{Asset, Handle, LoadedFolder};
 use bevy::pbr::StandardMaterial;
 use bevy::prelude::{Resource, TypePath};
@@ -10,7 +12,6 @@ use infinigen_common::mesh::textures::{Face, TextureMap};
 use infinigen_common::world::{BlockId, BlockVisibility, ChunkBlockId};
 use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
 use strum::EnumCount;
 
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Hash, EnumCount)]

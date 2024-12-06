@@ -1,12 +1,14 @@
-use crate::{settings::Config, world::World, AppState};
+use std::sync::Arc;
+
 use bevy::asset::{LoadedFolder, RecursiveDependencyLoadState};
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use blocks::{default_block_definitions, BlockDefinition, BlockRegistry, MaterialType};
 use infinigen_common::mesh::textures::{Face, FaceAppearance, TextureMap};
 use rustc_hash::FxHashMap;
-use std::sync::Arc;
 use strum::IntoEnumIterator;
+
+use crate::{settings::Config, world::World, AppState};
 
 pub mod blocks;
 pub struct Plugin;

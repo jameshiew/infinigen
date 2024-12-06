@@ -1,9 +1,10 @@
+use rustc_hash::FxHashMap;
+
 use crate::chunks::{Chunk, CHUNK_SIZE};
 use crate::extras::block_ids::{GRASS_BLOCK_ID, WATER_BLOCK_ID};
 use crate::extras::chunks;
 use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
 use crate::zoom::ZoomLevel;
-use rustc_hash::FxHashMap;
 
 /// A flat water world with solid blocks in the corners of chunks.
 #[derive(Debug, Default)]

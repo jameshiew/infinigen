@@ -1,6 +1,5 @@
-use rustc_hash::FxHashMap;
-
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
+use rustc_hash::FxHashMap;
 
 use crate::extras::block_ids::{GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, SAND_BLOCK_ID, WATER_BLOCK_ID};
 use crate::zoom::ZoomLevel;

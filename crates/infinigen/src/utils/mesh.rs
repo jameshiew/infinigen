@@ -4,14 +4,14 @@ use bevy::prelude::*;
 use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::render::render_asset::RenderAssetUsages;
 use bevy::render::render_resource::PrimitiveTopology;
-
-use crate::assets::blocks::BlockMappings;
 use infinigen_common::chunks::UnpackedChunk;
 use infinigen_common::mesh::faces::prepare_padded_chunk;
 use infinigen_common::mesh::shapes::ChunkFace;
 use infinigen_common::mesh::{
     mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces, textures::TextureMap, MeshInfo,
 };
+
+use crate::assets::blocks::BlockMappings;
 
 pub fn to_bevy_mesh(
     MeshInfo {

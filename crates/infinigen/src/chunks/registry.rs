@@ -1,16 +1,15 @@
 use bevy::pbr::StandardMaterial;
-use rustc_hash::FxHashMap;
-
 use bevy::prelude::{Mesh, Resource};
-use strum::IntoEnumIterator;
-
-use crate::assets::blocks::BlockMappings;
-use crate::world::World;
 use infinigen_common::chunks::Chunk;
 use infinigen_common::mesh::faces::extract_faces;
 use infinigen_common::mesh::shapes::{empty_chunk_face, ChunkFace};
 use infinigen_common::world::{ChunkPosition, Direction};
 use infinigen_common::zoom::ZoomLevel;
+use rustc_hash::FxHashMap;
+use strum::IntoEnumIterator;
+
+use crate::assets::blocks::BlockMappings;
+use crate::world::World;
 
 // Responsible for keeping track of chunks.
 #[derive(Default, Resource)]

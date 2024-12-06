@@ -3,9 +3,8 @@ use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-use crate::AppState;
-
 use self::info::{display_debug_info, toggle_debug_info, UiState};
+use crate::AppState;
 
 #[cfg(not(target_family = "wasm"))]
 mod chunk_borders;
