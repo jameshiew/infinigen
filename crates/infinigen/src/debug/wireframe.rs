@@ -1,4 +1,5 @@
-use bevy::{pbr::wireframe::WireframeConfig, prelude::*};
+use bevy::pbr::wireframe::WireframeConfig;
+use bevy::prelude::*;
 
 pub fn toggle(keys: Res<ButtonInput<KeyCode>>, mut wireframe_cfg: ResMut<WireframeConfig>) {
     for key in keys.get_just_pressed() {

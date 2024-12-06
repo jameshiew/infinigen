@@ -4,9 +4,9 @@ use bevy::core::Name;
 use bevy::prelude::{Commands, Component, Entity, Event, EventReader, Query, Res, ResMut};
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 use futures_lite::future;
-use infinigen_common::world::WorldGen;
+use infinigen_common::chunks::Chunk;
+use infinigen_common::world::{ChunkPosition, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
-use infinigen_common::{chunks::Chunk, world::ChunkPosition};
 
 use super::registry::{get_neighbour_cposes, ChunkRegistry, ChunkStatus};
 use crate::assets;

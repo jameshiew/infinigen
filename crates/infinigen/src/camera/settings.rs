@@ -1,9 +1,10 @@
-use bevy::{
-    core_pipeline::experimental::taa::TemporalAntiAliasing, pbr::ScreenSpaceAmbientOcclusion,
-    prelude::*, utils::default,
-};
+use bevy::core_pipeline::experimental::taa::TemporalAntiAliasing;
+use bevy::pbr::ScreenSpaceAmbientOcclusion;
+use bevy::prelude::*;
+use bevy::utils::default;
 
-use crate::{scene::FAR, settings::Config};
+use crate::scene::FAR;
+use crate::settings::Config;
 
 #[derive(Component)]
 pub struct Settings {
