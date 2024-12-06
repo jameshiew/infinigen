@@ -6,9 +6,9 @@ use bevy_egui::{
     egui::{self, Slider},
     EguiContexts,
 };
+use infinigen_common::chunks::CHUNK_SIZE_F32;
 
 use crate::scene::{self, LoadedChunk};
-use infinigen_common::chunks::CHUNK_SIZE_F32;
 
 #[allow(clippy::too_many_arguments)]
 pub fn display_debug_info(

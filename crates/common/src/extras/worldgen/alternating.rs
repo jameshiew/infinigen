@@ -1,9 +1,10 @@
+use rustc_hash::FxHashMap;
+
 use crate::chunks::Chunk;
 use crate::extras::block_ids::DIRT_BLOCK_ID;
 use crate::extras::chunks;
 use crate::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
 use crate::zoom::ZoomLevel;
-use rustc_hash::FxHashMap;
 
 #[derive(Debug, Default, Clone)]
 pub struct Alternating {

@@ -6,7 +6,6 @@ use bevy::{
     DefaultPlugins,
 };
 use config::Config;
-
 use infinigen::AppPlugin;
 
 const APP_NAME: &str = "infinigen";

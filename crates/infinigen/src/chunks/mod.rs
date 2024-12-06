@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-
 use registry::ChunkRegistry;
 use tasks::RequestChunkEvent;
 

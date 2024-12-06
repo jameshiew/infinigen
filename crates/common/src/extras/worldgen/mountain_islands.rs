@@ -1,6 +1,5 @@
-use rustc_hash::FxHashMap;
-
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
+use rustc_hash::FxHashMap;
 use splines::{Interpolation, Key, Spline};
 
 use crate::extras::block_ids::{

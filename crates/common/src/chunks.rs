@@ -3,9 +3,8 @@ use std::fmt;
 use ndarray::Array3;
 use serde::{Deserialize, Serialize};
 
-use crate::world::BlockPosition;
-
 use super::world::ChunkBlockId;
+use crate::world::BlockPosition;
 
 /// The length of one side of a cubic chunk.
 pub const CHUNK_SIZE: i8 = 32;

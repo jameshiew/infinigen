@@ -1,7 +1,6 @@
-use nalgebra::{Matrix4, Unit, Vector4};
-
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 use infinigen_common::world::ChunkPosition;
+use nalgebra::{Matrix4, Unit, Vector4};
 
 /// Returns an iterator over `ChunkPosition`s within a cylinder centred at `centre` that should be loaded and rendered.
 pub fn in_distance(

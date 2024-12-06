@@ -1,13 +1,4 @@
 use bevy::prelude::*;
-
-use crate::chunks::registry::ChunkRegistry;
-use crate::chunks::registry::ChunkStatus;
-use crate::chunks::tasks::RequestChunkEvent;
-use crate::scene::RequestChunkOp;
-use crate::{
-    utils::mesh::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces},
-    world::World,
-};
 use infinigen_common::{
     chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F32},
     world::{BlockPosition, BlockVisibility, ChunkBlockId, WorldPosition},
@@ -17,6 +8,14 @@ use super::LoadedChunk;
 use super::UnloadChunkOpEvent;
 use crate::assets::blocks::BlockRegistry;
 use crate::assets::blocks::MaterialType;
+use crate::chunks::registry::ChunkRegistry;
+use crate::chunks::registry::ChunkStatus;
+use crate::chunks::tasks::RequestChunkEvent;
+use crate::scene::RequestChunkOp;
+use crate::{
+    utils::mesh::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces},
+    world::World,
+};
 
 // bigger chunks means go slower to prevent lag/stutter
 const CHUNK_OP_RATE: usize = (16. * (32. / CHUNK_SIZE_F32)) as usize;

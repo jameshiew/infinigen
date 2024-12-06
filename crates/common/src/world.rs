@@ -1,5 +1,4 @@
 use rustc_hash::FxHashMap;
-
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
