@@ -14,13 +14,13 @@ These commands must be run from within the root directory of the repo, in order 
 
 ```shell
 cargo run --release # best performance
+cargo run --release --features jemalloc  # on macOS/Linux
 ```
 
 or
 
 ```shell
-# dynamically linked debug build, compiles faster and runs slower
-cargo run --features dynamic_linking
+cargo run --features bevy/dynamic-linking  # compiles fastest
 ```
 
 ### Controls

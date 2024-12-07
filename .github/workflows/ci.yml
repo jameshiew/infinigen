@@ -5,73 +5,74 @@ on:
   push:
     branches:
       - main
-      - develop
 
 env:
   CARGO_TERM_COLOR: always
   CARGO_TERM_VERBOSE: true
 
 jobs:
-  lint:
+  fmt:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: rustup show
-      - run: rustup component add rustfmt
-      - run: cargo fmt --all -- --check
-      - name: Install system packages needed by Bevy
-        run: |
-          sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: taiki-e/install-action@cargo-hack
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo hack clippy --all-targets --feature-powerset --skip dynamic-linking
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+          toolchain: nightly
+      - run: cargo +nightly fmt --all -- --check
   test:
     runs-on: ubuntu-24.04
-    needs: lint
+    needs: fmt
     steps:
       - uses: actions/checkout@v4
-      - run: rustup show
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install system packages needed by Bevy
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - uses: taiki-e/install-action@cargo-hack
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo hack test --all-targets --feature-powerset --skip dynamic-linking
+      - run: cargo hack test --all-targets --feature-powerset
   docs:
     runs-on: ubuntu-24.04
-    needs: lint
+    needs: fmt
     steps:
       - uses: actions/checkout@v4
-      - run: rustup show
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install system packages needed by Bevy
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - uses: taiki-e/install-action@cargo-hack
-      - uses: Swatinem/rust-cache@v2
-      - run: RUSTDOCFLAGS="-Dwarnings" cargo hack doc --document-private-items --no-deps --feature-powerset --skip dynamic-linking
-  check_other_oses:
+      - run: RUSTDOCFLAGS="-Dwarnings" cargo hack doc --document-private-items --no-deps --feature-powerset
+  clippy:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os:
           - windows-2022
           - macos-15
-    needs: lint
+          - ubuntu-24.04
+    needs: fmt
     steps:
       - uses: actions/checkout@v4
-      - run: rustup show
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+      - name: Install system packages needed by Bevy
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - uses: taiki-e/install-action@cargo-hack
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo hack clippy --all-targets --feature-powerset --skip dynamic-linking
+      - run: cargo hack clippy --all-targets --feature-powerset
   wasm:
     runs-on: ubuntu-24.04
-    needs: lint
+    needs: fmt
     steps:
       - uses: actions/checkout@v4
-      - run: rustup show
-      - run: rustup target add wasm32-unknown-unknown
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+          target: wasm32-unknown-unknown
+          rustflags: "-D warnings --cfg web_sys_unstable_apis"
       - name: Install system packages needed by Bevy
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: Swatinem/rust-cache@v2
-      - run: RUSTFLAGS="--cfg web_sys_unstable_apis" cargo clippy --target wasm32-unknown-unknown
+      - run: cargo clippy --target wasm32-unknown-unknown

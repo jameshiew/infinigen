@@ -4,6 +4,7 @@ version = "0.0.0"
 edition = "2021"
 publish = false
 rust-version = "1.82.0"  # msrv should be at least the msrv of the bevy version used
+default-run = "infinigen"
 
 [dependencies]
 bevy = { version = "0.15.0", default-features = false, features = [
@@ -51,9 +52,9 @@ nalgebra = "0.33.2"
 rustc-hash = {workspace = true}
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]
-tikv-jemallocator = "0.6"
+tikv-jemallocator = {version = "0.6", optional = true}
 
 [features]
 default = ["debug-ui"]
 debug-ui = ["dep:bevy_egui", "dep:bevy-inspector-egui"]
-dynamic-linking = ["bevy/dynamic_linking"]
+jemalloc = ["dep:tikv-jemallocator"]
