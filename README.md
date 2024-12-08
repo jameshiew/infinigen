@@ -20,7 +20,7 @@ cargo run --release --features jemalloc  # on macOS/Linux
 or
 
 ```shell
-cargo run --features bevy/dynamic-linking  # compiles fastest
+cargo run --features bevy/dynamic_linking  # compiles fastest
 ```
 
 ### Controls
