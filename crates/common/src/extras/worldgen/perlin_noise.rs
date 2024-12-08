@@ -1,5 +1,5 @@
+use ahash::AHashMap;
 use noise::{NoiseFn, Perlin};
-use rustc_hash::FxHashMap;
 
 use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64};
 use crate::extras::block_ids::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID, WATER_BLOCK_ID};
@@ -9,7 +9,7 @@ use crate::zoom::ZoomLevel;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct PerlinNoise {
-    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: AHashMap<BlockId, ChunkBlockId>,
     seed: u32,
 }
 
@@ -18,7 +18,7 @@ const MAX_HEIGHT: f64 = CHUNK_SIZE_F64 / 2.;
 const MAX_DEPTH: f64 = CHUNK_SIZE_F64 / 4.;
 
 impl WorldGen for PerlinNoise {
-    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: AHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
     fn get(&self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {

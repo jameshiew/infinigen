@@ -1,4 +1,4 @@
-use rustc_hash::FxHashMap;
+use ahash::AHashMap;
 
 use crate::chunks::{Chunk, CHUNK_SIZE};
 use crate::extras::block_ids::{GRASS_BLOCK_ID, WATER_BLOCK_ID};
@@ -9,11 +9,11 @@ use crate::zoom::ZoomLevel;
 /// A flat water world with solid blocks in the corners of chunks.
 #[derive(Debug, Default)]
 pub struct Water {
-    block_mappings: FxHashMap<BlockId, ChunkBlockId>,
+    block_mappings: AHashMap<BlockId, ChunkBlockId>,
 }
 
 impl WorldGen for Water {
-    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: AHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
     fn get(&self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {

@@ -1,5 +1,5 @@
+use ahash::AHashMap;
 use rand::Rng;
-use rustc_hash::FxHashMap;
 
 use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE};
 use crate::extras::block_ids::DIRT_BLOCK_ID;
@@ -9,11 +9,11 @@ use crate::zoom::ZoomLevel;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Random {
-    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: AHashMap<BlockId, ChunkBlockId>,
 }
 
 impl WorldGen for Random {
-    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: AHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
     fn get(&self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {

@@ -1,5 +1,5 @@
+use ahash::AHashMap;
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
-use rustc_hash::FxHashMap;
 use splines::{Interpolation, Key, Spline};
 
 use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
@@ -11,7 +11,7 @@ use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen
 use crate::zoom::ZoomLevel;
 
 pub struct MountainIslands {
-    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: AHashMap<BlockId, ChunkBlockId>,
     /// The world height at any given (x, z)
     heightmap: Fbm<Perlin>,
     verticality: Perlin,
@@ -70,7 +70,7 @@ const MIN_Y_HEIGHT: i32 = -6;
 
 /// Based on <https://www.youtube.com/watch?v=CSa5O6knuwI>
 impl WorldGen for MountainIslands {
-    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: AHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
 
