@@ -41,7 +41,7 @@ pub fn handle_chunk_request(
         );
         commands.spawn((Name::new("Generate chunk task"), task));
         // request neighbours directly also, so that the above chunk can be meshed later
-        for (_, neighbour_cpos) in get_neighbour_cposes(&ev.position).into_iter() {
+        for (_, neighbour_cpos) in get_neighbour_cposes(&ev.position) {
             if registry
                 .get_status(ev.zoom_level, &neighbour_cpos)
                 .is_some()

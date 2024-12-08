@@ -164,20 +164,18 @@ impl ChunkRegistry {
     }
 }
 
-pub fn get_neighbour_cposes(position: &ChunkPosition) -> [(Direction, ChunkPosition); 6] {
-    infinigen_common::world::Direction::iter()
-        .map(|dir| {
-            let normal: [i32; 3] = dir.into();
-            (
-                dir,
-                ChunkPosition {
-                    x: position.x + normal[0],
-                    y: position.y + normal[1],
-                    z: position.z + normal[2],
-                },
-            )
-        })
-        .collect::<Vec<_>>()
-        .try_into()
-        .unwrap()
+pub fn get_neighbour_cposes(
+    position: &ChunkPosition,
+) -> impl Iterator<Item = (Direction, ChunkPosition)> + '_ {
+    infinigen_common::world::Direction::iter().map(|dir| {
+        let normal: [i32; 3] = dir.into();
+        (
+            dir,
+            ChunkPosition {
+                x: position.x + normal[0],
+                y: position.y + normal[1],
+                z: position.z + normal[2],
+            },
+        )
+    })
 }
