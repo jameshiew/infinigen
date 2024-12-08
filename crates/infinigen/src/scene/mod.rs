@@ -2,11 +2,11 @@ use std::cmp::Ordering;
 use std::collections::VecDeque;
 use std::f32::consts::PI;
 
+use ahash::AHashSet;
 use bevy::prelude::*;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 use infinigen_common::world::{ChunkPosition, WorldPosition};
 use nalgebra::{Matrix4, Perspective3, Quaternion, UnitQuaternion, Vector3};
-use rustc_hash::FxHashSet;
 
 use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
 use crate::AppState;
@@ -240,14 +240,14 @@ pub fn update_scene(
     let combined_matrix = projection_matrix * view_matrix;
     let frustum_planes = visible_chunks::compute_frustum_planes(&combined_matrix);
 
-    let chunks_within_render_distance: FxHashSet<_> = visible_chunks::in_distance(
+    let chunks_within_render_distance: AHashSet<_> = visible_chunks::in_distance(
         &current_cpos,
         scene_view.hview_distance,
         scene_view.vview_distance,
     )
     .collect();
 
-    let already_loaded_or_loading: FxHashSet<_> = loaded.iter().map(|l| l.cpos).collect();
+    let already_loaded_or_loading: AHashSet<_> = loaded.iter().map(|l| l.cpos).collect();
 
     let mut to_load: Vec<_> = chunks_within_render_distance
         .difference(&already_loaded_or_loading)

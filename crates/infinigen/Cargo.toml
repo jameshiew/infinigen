@@ -26,30 +26,18 @@ bevy = { version = "0.15.0", default-features = false, features = [
     "wayland",
     "webgpu",
 ] }
-
 bevy_common_assets = { version = "0.12.0", features = ["ron"] }
 bevy_egui = { version = "0.31.1", optional = true }
 bevy-inspector-egui = {version = "0.28.0", optional = true}
-
 infinigen-common = { path = "../common" }
-
-# config
 config = { version = "0.14.1", default-features = false, features = ["ron"] }
-
-# serialization
 serde = {workspace = true}
-
-# utils
 anyhow = "1.0.93"
 futures-lite = "2.5.0"
 strum = {workspace = true}
-
-# instrumentation
 tracing = {workspace = true}
-
-# randomness
 nalgebra = "0.33.2"
-rustc-hash = {workspace = true}
+ahash = {workspace = true}
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]
 tikv-jemallocator = {version = "0.6", optional = true}

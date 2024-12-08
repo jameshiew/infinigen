@@ -3,7 +3,7 @@ members = ["crates/*"]
 resolver = "2"
 
 [workspace.dependencies]
-rustc-hash = "2.0.0"
+ahash = "0.8.11"
 strum = { version = "0.26.3", features = ["derive"] }
 serde = { version = "1.0.215", features = ["derive"] }
 tracing = "0.1.40"

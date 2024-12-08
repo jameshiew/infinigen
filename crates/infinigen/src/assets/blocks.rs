@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use ahash::AHashMap;
 use bevy::asset::{Asset, Handle, LoadedFolder};
 use bevy::pbr::StandardMaterial;
 use bevy::prelude::{Resource, TypePath};
@@ -10,7 +11,6 @@ use infinigen_common::extras::block_ids::{
 use infinigen_common::mesh::faces::BlockVisibilityChecker;
 use infinigen_common::mesh::textures::{Face, TextureMap};
 use infinigen_common::world::{BlockId, BlockVisibility, ChunkBlockId};
-use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
 use strum::EnumCount;
 
@@ -51,12 +51,12 @@ fn default_block_color() -> [u8; 4] {
 // TODO: overflow checking, safety
 #[derive(Debug, Default, Clone)]
 pub struct BlockMappings {
-    pub by_mapped_id: FxHashMap<ChunkBlockId, BlockDefinition>,
-    by_block_id: FxHashMap<BlockId, ChunkBlockId>,
+    pub by_mapped_id: AHashMap<ChunkBlockId, BlockDefinition>,
+    by_block_id: AHashMap<BlockId, ChunkBlockId>,
     next_free_mapped_id: ChunkBlockId,
 }
 
-impl From<&BlockMappings> for FxHashMap<BlockId, ChunkBlockId> {
+impl From<&BlockMappings> for AHashMap<BlockId, ChunkBlockId> {
     fn from(value: &BlockMappings) -> Self {
         value.by_block_id.clone()
     }

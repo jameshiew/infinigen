@@ -1,5 +1,5 @@
+use ahash::AHashMap;
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
-use rustc_hash::FxHashMap;
 
 use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
 use crate::extras::block_ids::{GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, SAND_BLOCK_ID, WATER_BLOCK_ID};
@@ -7,7 +7,7 @@ use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen
 use crate::zoom::ZoomLevel;
 
 pub struct Experiment1 {
-    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: AHashMap<BlockId, ChunkBlockId>,
     heightmap: Fbm<Perlin>,
     // bigger = higher
     vertical_scale: f64,
@@ -18,7 +18,7 @@ pub struct Experiment1 {
 impl Default for Experiment1 {
     fn default() -> Self {
         Self {
-            block_mappings: FxHashMap::default(),
+            block_mappings: AHashMap::default(),
             heightmap: Fbm::new(0)
                 .set_octaves(6)
                 .set_frequency(1.)
@@ -32,7 +32,7 @@ impl Default for Experiment1 {
 }
 
 impl WorldGen for Experiment1 {
-    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: AHashMap<BlockId, ChunkBlockId>) {
         self.block_mappings = mappings;
     }
 

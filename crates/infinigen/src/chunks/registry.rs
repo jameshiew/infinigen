@@ -1,3 +1,4 @@
+use ahash::AHashMap;
 use bevy::pbr::StandardMaterial;
 use bevy::prelude::{Mesh, Resource};
 use infinigen_common::chunks::Chunk;
@@ -5,7 +6,6 @@ use infinigen_common::mesh::faces::extract_faces;
 use infinigen_common::mesh::shapes::{empty_chunk_face, ChunkFace};
 use infinigen_common::world::{ChunkPosition, Direction};
 use infinigen_common::zoom::ZoomLevel;
-use rustc_hash::FxHashMap;
 use strum::IntoEnumIterator;
 
 use crate::assets::blocks::BlockMappings;
@@ -14,7 +14,7 @@ use crate::world::World;
 // Responsible for keeping track of chunks.
 #[derive(Default, Resource)]
 pub struct ChunkRegistry {
-    cached: FxHashMap<ZoomLevel, FxHashMap<ChunkPosition, ChunkStatus>>,
+    cached: AHashMap<ZoomLevel, AHashMap<ChunkPosition, ChunkStatus>>,
 }
 
 #[derive(Debug, Clone)]
@@ -61,7 +61,7 @@ impl ChunkRegistry {
                 chunks.insert(*cpos, status);
             }
             None => {
-                let mut chunks = FxHashMap::default();
+                let mut chunks = AHashMap::default();
                 chunks.insert(*cpos, status);
                 self.cached.insert(zoom_level, chunks);
             }

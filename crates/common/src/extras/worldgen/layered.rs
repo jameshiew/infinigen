@@ -1,5 +1,5 @@
+use ahash::AHashMap;
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
-use rustc_hash::FxHashMap;
 use splines::{Interpolation, Key, Spline};
 
 use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
@@ -52,7 +52,7 @@ impl Layered {
 
 #[derive(Debug, Clone)]
 pub struct Config {
-    pub block_mappings: FxHashMap<BlockId, ChunkBlockId>,
+    pub block_mappings: AHashMap<BlockId, ChunkBlockId>,
     heightmap: Fbm<Perlin>,
     vertical_scale: f64,
     horizontal_smoothness: f64,
@@ -182,7 +182,7 @@ impl Config {
 }
 
 impl WorldGen for Layered {
-    fn initialize(&mut self, mappings: FxHashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: AHashMap<BlockId, ChunkBlockId>) {
         self.config.block_mappings = mappings;
     }
 

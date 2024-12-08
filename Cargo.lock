@@ -1197,7 +1197,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "regex",
- "rustc-hash 1.1.0",
+ "rustc-hash",
  "shlex",
  "syn",
 ]
@@ -2496,6 +2496,7 @@ dependencies = [
 name = "infinigen"
 version = "0.0.0"
 dependencies = [
+ "ahash",
  "anyhow",
  "bevy",
  "bevy-inspector-egui",
@@ -2505,7 +2506,6 @@ dependencies = [
  "futures-lite",
  "infinigen-common",
  "nalgebra",
- "rustc-hash 2.1.0",
  "serde",
  "strum",
  "tikv-jemallocator",
@@ -2516,12 +2516,12 @@ dependencies = [
 name = "infinigen-common"
 version = "0.0.0"
 dependencies = [
+ "ahash",
  "block-mesh",
  "criterion",
  "ndarray",
  "noise",
  "rand",
- "rustc-hash 2.1.0",
  "serde",
  "splines",
  "strum",
@@ -2798,7 +2798,7 @@ dependencies = [
  "indexmap",
  "log",
  "pp-rs",
- "rustc-hash 1.1.0",
+ "rustc-hash",
  "spirv",
  "termcolor",
  "thiserror",
@@ -2819,7 +2819,7 @@ dependencies = [
  "once_cell",
  "regex",
  "regex-syntax 0.8.5",
- "rustc-hash 1.1.0",
+ "rustc-hash",
  "thiserror",
  "tracing",
  "unicode-ident",
@@ -3741,12 +3741,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
 
 [[package]]
-name = "rustc-hash"
-version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7fb8039b3032c191086b10f11f319a6e99e1e82889c5cc6046f515c9db1d497"
-
-[[package]]
 name = "rustix"
 version = "0.38.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4647,7 +4641,7 @@ dependencies = [
  "parking_lot",
  "profiling",
  "raw-window-handle",
- "rustc-hash 1.1.0",
+ "rustc-hash",
  "smallvec",
  "thiserror",
  "wgpu-hal",
@@ -4689,7 +4683,7 @@ dependencies = [
  "range-alloc",
  "raw-window-handle",
  "renderdoc-sys",
- "rustc-hash 1.1.0",
+ "rustc-hash",
  "smallvec",
  "thiserror",
  "wasm-bindgen",

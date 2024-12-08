@@ -1,4 +1,4 @@
-use rustc_hash::FxHashMap;
+use ahash::AHashMap;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
@@ -28,7 +28,7 @@ pub struct TextureMap {
     /// Size of the texture atlas containing the textures.
     pub size: [usize; 2],
     /// Top left corner of texture in atlas, indexed by [`Face`].
-    appearance: FxHashMap<ChunkBlockId, [FaceAppearance; 6]>,
+    appearance: AHashMap<ChunkBlockId, [FaceAppearance; 6]>,
 }
 
 #[derive(Debug, Clone, Copy)]
