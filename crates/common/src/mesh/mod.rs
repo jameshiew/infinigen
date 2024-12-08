@@ -65,6 +65,17 @@ pub fn mesh_chunk_visible_block_faces(
 
             // all normals should be identical so we can just take the first one (it will be one of the six cardinal directions - up, down, north, east, south, west)
             let normal = nrmls[0];
+            // front face on south (+Z) by default
+            let mut block_face = match normal {
+                [0., 0., 1.] => Face::Back,
+                [0., 0., -1.] => Face::Front,
+                [0., 1., 0.] => Face::Top,
+                [0., -1., 0.] => Face::Bottom,
+                [1., 0., 0.] => Face::Right,
+                [-1., 0., 0.] => Face::Left,
+                _ => panic!("unexpected value for normal"),
+            };
+
             let mut padded_chunk_coord = [
                 pstns[0][0].floor() as u32,
                 pstns[0][1].floor() as u32,
@@ -75,23 +86,6 @@ pub fn mesh_chunk_visible_block_faces(
                 padded_chunk_coord[1] -= normal[1] as u32;
                 padded_chunk_coord[2] -= normal[2] as u32;
             }
-
-            // front face on south (+Z) by default
-            let mut block_face = if normal == [0., 0., 1.] {
-                Face::Back
-            } else if normal == [0., 0., -1.] {
-                Face::Front
-            } else if normal == [0., 1., 0.] {
-                Face::Top
-            } else if normal == [0., -1., 0.] {
-                Face::Bottom
-            } else if normal == [1., 0., 0.] {
-                Face::Right
-            } else if normal == [-1., 0., 0.] {
-                Face::Left
-            } else {
-                panic!("invalid normal")
-            };
             let mut flip_v = false;
             match block_face {
                 Face::Top => {
@@ -121,7 +115,7 @@ pub fn mesh_chunk_visible_block_faces(
 
             let texture_uvs = face.tex_coords(face.permutation().axes()[0], flip_v, &uq);
             let VoxelBlock::Opaque(chunk_block_id) = block else {
-                panic!()
+                unimplemented!("only opaque blocks are supported")
             };
 
             match block_textures.get(&chunk_block_id, block_face, texture_uvs) {
@@ -188,9 +182,22 @@ pub fn mesh_chunk_greedy_quads(
             positions.extend_from_slice(&pstns);
             let nrmls = face.quad_mesh_normals();
             normals.extend_from_slice(&nrmls);
+            uvs.extend_from_slice(&face.tex_coords(face.permutation().axes()[0], false, &quad));
+
             // all normals should be identical so we can just take the first one (it will be one of the six cardinal directions - up, down, north, east, south, west)
             // TODO: probably some of this logic isn't important when rendering water
             let normal = nrmls[0];
+            // front face on south (+Z) by default
+            let mut block_face = match normal {
+                [0., 0., 1.] => Face::Back,
+                [0., 0., -1.] => Face::Front,
+                [0., 1., 0.] => Face::Top,
+                [0., -1., 0.] => Face::Bottom,
+                [1., 0., 0.] => Face::Right,
+                [-1., 0., 0.] => Face::Left,
+                _ => panic!("unexpected value for normal"),
+            };
+
             let mut padded_chunk_coord = [
                 pstns[0][0].floor() as u32,
                 pstns[0][1].floor() as u32,
@@ -201,29 +208,11 @@ pub fn mesh_chunk_greedy_quads(
                 padded_chunk_coord[1] -= normal[1] as u32;
                 padded_chunk_coord[2] -= normal[2] as u32;
             }
-            uvs.extend_from_slice(&face.tex_coords(face.permutation().axes()[0], false, &quad));
 
             let i = PaddedChunkShape::linearize(padded_chunk_coord);
             let block = padded[i as usize];
             let VoxelBlock::Translucent(chunk_block_id) = block else {
-                panic!()
-            };
-
-            // front face on south (+Z) by default
-            let mut block_face = if normal == [0., 0., 1.] {
-                Face::Back
-            } else if normal == [0., 0., -1.] {
-                Face::Front
-            } else if normal == [0., 1., 0.] {
-                Face::Top
-            } else if normal == [0., -1., 0.] {
-                Face::Bottom
-            } else if normal == [1., 0., 0.] {
-                Face::Right
-            } else if normal == [-1., 0., 0.] {
-                Face::Left
-            } else {
-                panic!("invalid normal")
+                unimplemented!("only translucent blocks are supported")
             };
             let mut _flip_v = false;
             match block_face {
