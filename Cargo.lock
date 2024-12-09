@@ -2505,6 +2505,7 @@ dependencies = [
  "config",
  "futures-lite",
  "infinigen-common",
+ "infinigen-extras",
  "nalgebra",
  "serde",
  "strum",
@@ -2518,13 +2519,24 @@ version = "0.0.0"
 dependencies = [
  "ahash",
  "block-mesh",
- "criterion",
  "ndarray",
+ "rand",
+ "serde",
+ "strum",
+ "tracing",
+]
+
+[[package]]
+name = "infinigen-extras"
+version = "0.0.0"
+dependencies = [
+ "ahash",
+ "criterion",
+ "infinigen-common",
  "noise",
  "rand",
  "serde",
  "splines",
- "strum",
  "tracing",
 ]
 

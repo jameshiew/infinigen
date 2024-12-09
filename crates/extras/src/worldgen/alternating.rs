@@ -1,10 +1,9 @@
 use ahash::AHashMap;
+use infinigen_common::chunks::Chunk;
+use infinigen_common::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
+use infinigen_common::zoom::ZoomLevel;
 
-use crate::chunks::Chunk;
-use crate::extras::block_ids::DIRT_BLOCK_ID;
-use crate::extras::chunks;
-use crate::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
-use crate::zoom::ZoomLevel;
+use crate::block_ids::DIRT_BLOCK_ID;
 
 #[derive(Debug, Default, Clone)]
 pub struct Alternating {
@@ -21,10 +20,14 @@ impl WorldGen for Alternating {
             if pos.x % 2 == 0 || pos.z % 2 == 0 {
                 Chunk::Empty
             } else {
-                chunks::filled_chunk(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap()).into()
+                infinigen_common::chunks::filled_chunk(
+                    *self.block_mappings.get(DIRT_BLOCK_ID).unwrap(),
+                )
+                .into()
             }
         } else if pos.x % 2 == 0 || pos.z % 2 == 0 {
-            chunks::filled_chunk(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap()).into()
+            infinigen_common::chunks::filled_chunk(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap())
+                .into()
         } else {
             Chunk::Empty
         }

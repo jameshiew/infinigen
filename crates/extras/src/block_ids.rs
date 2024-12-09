@@ -1,8 +1,7 @@
 //! IDs of the default blocks provided in this repo.
 
 use ahash::AHashMap;
-
-use crate::world::{BlockId, ChunkBlockId};
+use infinigen_common::world::{BlockId, ChunkBlockId};
 
 pub const DIRT_BLOCK_ID: &str = "infinigen:dirt";
 pub const GRASS_BLOCK_ID: &str = "infinigen:grass";

@@ -4,13 +4,13 @@ use ahash::AHashMap;
 use bevy::asset::{Asset, Handle, LoadedFolder};
 use bevy::pbr::StandardMaterial;
 use bevy::prelude::{Resource, TypePath};
-use infinigen_common::extras::block_ids::{
-    DIRT_BLOCK_ID, GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, LAVA_BLOCK_ID, LEAVES_BLOCK_ID, SAND_BLOCK_ID,
-    SNOW_BLOCK_ID, STONE_BLOCK_ID, WATER_BLOCK_ID, WOOD_BLOCK_ID,
-};
 use infinigen_common::mesh::faces::BlockVisibilityChecker;
 use infinigen_common::mesh::textures::{Face, TextureMap};
 use infinigen_common::world::{BlockId, BlockVisibility, ChunkBlockId};
+use infinigen_extras::block_ids::{
+    DIRT_BLOCK_ID, GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, LAVA_BLOCK_ID, LEAVES_BLOCK_ID, SAND_BLOCK_ID,
+    SNOW_BLOCK_ID, STONE_BLOCK_ID, WATER_BLOCK_ID, WOOD_BLOCK_ID,
+};
 use serde::{Deserialize, Serialize};
 use strum::EnumCount;
 

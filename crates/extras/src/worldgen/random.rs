@@ -1,11 +1,10 @@
 use ahash::AHashMap;
+use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE};
+use infinigen_common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
+use infinigen_common::zoom::ZoomLevel;
 use rand::Rng;
 
-use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE};
-use crate::extras::block_ids::DIRT_BLOCK_ID;
-use crate::extras::chunks;
-use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
-use crate::zoom::ZoomLevel;
+use crate::block_ids::DIRT_BLOCK_ID;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Random {
@@ -22,7 +21,10 @@ impl WorldGen for Random {
             return Chunk::Empty;
         }
         if pos.y == -1 {
-            return chunks::top_chunk(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap()).into();
+            return infinigen_common::chunks::top_chunk(
+                *self.block_mappings.get(DIRT_BLOCK_ID).unwrap(),
+            )
+            .into();
         }
         if pos.y >= 1 {
             return Chunk::Empty;

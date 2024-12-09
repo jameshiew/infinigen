@@ -1,10 +1,12 @@
 use ahash::AHashMap;
+use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
+use infinigen_common::world::{
+    BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition,
+};
+use infinigen_common::zoom::ZoomLevel;
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 
-use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
-use crate::extras::block_ids::{GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, SAND_BLOCK_ID, WATER_BLOCK_ID};
-use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition};
-use crate::zoom::ZoomLevel;
+use crate::block_ids::{GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, SAND_BLOCK_ID, WATER_BLOCK_ID};
 
 pub struct Experiment1 {
     pub block_mappings: AHashMap<BlockId, ChunkBlockId>,
