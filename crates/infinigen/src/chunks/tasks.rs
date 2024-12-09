@@ -28,7 +28,7 @@ pub fn handle_chunk_request(
     world: Res<World>,
 ) {
     let task_pool = AsyncComputeTaskPool::get();
-    for ev in request_chunk_evs.read() {
+    for (ev, _) in request_chunk_evs.par_read() {
         if registry.get_status(ev.zoom_level, &ev.position).is_some() {
             continue;
         }
