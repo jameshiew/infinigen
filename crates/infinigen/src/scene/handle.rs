@@ -45,12 +45,7 @@ pub fn process_unload_chunk_ops(
     mut unload_evs: EventReader<crate::scene::UnloadChunkOpEvent>,
     loaded: Query<(Entity, &LoadedChunk)>,
 ) {
-    for _ in 0..CHUNK_OP_RATE {
-        let Some(op) = unload_evs.read().next() else {
-            return;
-        };
-        let UnloadChunkOpEvent(cpos) = op;
-
+    for (UnloadChunkOpEvent(cpos), _) in unload_evs.par_read() {
         for (eid, LoadedChunk { cpos: loaded_cpos }) in loaded.iter() {
             if loaded_cpos == cpos {
                 commands.entity(eid).despawn_recursive();
