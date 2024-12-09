@@ -4,6 +4,7 @@ use bevy::diagnostic::{
 use bevy::prelude::*;
 use bevy_egui::egui::{self, Slider};
 use bevy_egui::EguiContexts;
+use bevy_flycam::MovementSettings;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 
 use crate::scene::{self, LoadedChunk};
@@ -12,7 +13,8 @@ use crate::scene::{self, LoadedChunk};
 pub fn display_debug_info(
     mut egui: EguiContexts,
     diagnostics: Res<DiagnosticsStore>,
-    mut camera: Query<(&Transform, &mut crate::camera::settings::Settings)>,
+    camera: Query<&Transform, With<Camera3d>>,
+    mut movement_settings: ResMut<MovementSettings>,
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
     load_ops: Res<scene::LoadOps>,
@@ -20,7 +22,7 @@ pub fn display_debug_info(
     mut reload_evs: EventWriter<scene::ReloadAllChunksEvent>,
     loaded_chunks: Query<&LoadedChunk>,
 ) {
-    let (camera_wpos, mut camera) = camera.single_mut();
+    let camera_wpos = camera.single();
     egui::Window::new("Performance").show(egui.ctx_mut(), |ui| {
         ui.label(format!(
             "FPS: {:.0}",
@@ -101,7 +103,7 @@ pub fn display_debug_info(
         };
 
         ui.label("Camera speed");
-        ui.add(Slider::new(&mut camera.speed, 1.0..=100.0));
+        ui.add(Slider::new(&mut movement_settings.speed, 1.0..=100.0));
     });
 }
 
