@@ -11,7 +11,6 @@ use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen
 use crate::zoom::ZoomLevel;
 
 pub struct MountainIslands {
-    pub block_mappings: AHashMap<BlockId, ChunkBlockId>,
     /// The world height at any given (x, z)
     heightmap: Fbm<Perlin>,
     verticality: Perlin,
@@ -20,6 +19,14 @@ pub struct MountainIslands {
     /// max mountain size without zoom is roughly double this value
     vertical_scale: f64,
     horizontal_smoothness: f64,
+
+    water: ChunkBlockId,
+    snow: ChunkBlockId,
+    gravel: ChunkBlockId,
+    sand: ChunkBlockId,
+    dirt: ChunkBlockId,
+    grass: ChunkBlockId,
+    stone: ChunkBlockId,
 }
 
 impl MountainIslands {
@@ -35,13 +42,20 @@ impl MountainIslands {
         ]);
 
         let wgen = Self {
-            block_mappings: Default::default(),
             heightmap: default_heightmap(seed),
             verticality: Perlin::new(seed),
             terrain_variance: default_terrain_variance(seed),
             vspline,
             vertical_scale: CHUNK_SIZE_F64 * 4.,
             horizontal_smoothness: CHUNK_SIZE_F64 * 0.1,
+
+            water: 1,
+            snow: 2,
+            gravel: 3,
+            sand: 4,
+            dirt: 5,
+            grass: 6,
+            stone: 7,
         };
         tracing::debug!(?wgen.heightmap.octaves, wgen.heightmap.frequency, wgen.heightmap.lacunarity, wgen.heightmap.persistence, "MountainIslands initialized");
         wgen
@@ -71,7 +85,13 @@ const MIN_Y_HEIGHT: i32 = -6;
 /// Based on <https://www.youtube.com/watch?v=CSa5O6knuwI>
 impl WorldGen for MountainIslands {
     fn initialize(&mut self, mappings: AHashMap<BlockId, ChunkBlockId>) {
-        self.block_mappings = mappings;
+        self.water = *mappings.get(WATER_BLOCK_ID).unwrap();
+        self.snow = *mappings.get(SNOW_BLOCK_ID).unwrap();
+        self.gravel = *mappings.get(GRAVEL_BLOCK_ID).unwrap();
+        self.sand = *mappings.get(SAND_BLOCK_ID).unwrap();
+        self.dirt = *mappings.get(DIRT_BLOCK_ID).unwrap();
+        self.grass = *mappings.get(GRASS_BLOCK_ID).unwrap();
+        self.stone = *mappings.get(STONE_BLOCK_ID).unwrap();
     }
 
     fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
@@ -79,7 +99,16 @@ impl WorldGen for MountainIslands {
             return Chunk::Empty;
         }
         let zoom = zoom_level.as_f64();
+        let sand_level = (SEA_LEVEL + (1. / zoom)).floor();
         // let snow_level: f64 = (SEA_LEVEL + self.vertical_scale) * zoom;
+
+        let block_ranges = [
+            (SEA_LEVEL + (-3. * zoom + 1.), self.sand),
+            (SEA_LEVEL + (9. * zoom + 1.), self.dirt),
+            (SEA_LEVEL + (285. * zoom + 1.), self.grass),
+            (SEA_LEVEL + (300. * zoom + 1.), self.stone),
+            (f64::INFINITY, self.snow),
+        ];
 
         let mut chunk = UnpackedChunk::default();
         let mut is_empty = true;
@@ -90,40 +119,28 @@ impl WorldGen for MountainIslands {
             offset.z as f64 / zoom,
         ];
 
-        // TODO: only record wheights that are in this chunk, as we only decorate if the wheight is in our chunk
-        let mut wheights = [[0.; CHUNK_USIZE]; CHUNK_USIZE];
+        let mut terrain_variances = [[0.; CHUNK_USIZE]; CHUNK_USIZE];
 
         {
             let _span = tracing::debug_span!("worldgen{stage = terrain}").entered();
             for x in 0..CHUNK_SIZE {
-                for y in 0..CHUNK_SIZE {
-                    for z in 0..CHUNK_SIZE {
-                        let wx = x as f64 / zoom + zoomed_offset[0];
+                for z in 0..CHUNK_SIZE {
+                    let wx = x as f64 / zoom + zoomed_offset[0];
+                    let wz = z as f64 / zoom + zoomed_offset[2];
+
+                    let nx = wx / (self.horizontal_smoothness * self.vertical_scale);
+                    let nz = wz / (self.horizontal_smoothness * self.vertical_scale);
+
+                    let mut wheight = self.heightmap.get([nx, nz]);
+                    let verticality = self.verticality.get([nx, nz]);
+                    wheight *= self.vertical_scale * self.vspline.sample(verticality).unwrap();
+                    for y in 0..CHUNK_SIZE {
                         let wy = y as f64 / zoom + zoomed_offset[1];
-                        let wz = z as f64 / zoom + zoomed_offset[2];
-
-                        let nx = wx / (self.horizontal_smoothness * self.vertical_scale);
-                        let nz = wz / (self.horizontal_smoothness * self.vertical_scale);
-
-                        // get approximate height of the world at this wx, wz
-                        let mut wheight =
-                            tracing::trace_span!("worldgen{stage = terrain, noise = heightmap}")
-                                .in_scope(|| self.heightmap.get([nx, nz]));
-
-                        let verticality =
-                            tracing::trace_span!("worldgen{stage = terrain, noise = verticality}")
-                                .in_scope(|| self.verticality.get([nx, nz]));
-                        wheight *= self.vertical_scale * self.vspline.sample(verticality).unwrap();
-
-                        wheights[x as usize][z as usize] = wheight;
 
                         // wheight is sunken, so we're in a body of water
                         if wheight <= wy && wy <= SEA_LEVEL {
                             is_empty = false;
-                            chunk.insert(
-                                &BlockPosition { x, y, z },
-                                *self.block_mappings.get(WATER_BLOCK_ID).unwrap(),
-                            );
+                            chunk.insert(&BlockPosition { x, y, z }, self.water);
                             continue;
                         }
 
@@ -132,29 +149,22 @@ impl WorldGen for MountainIslands {
                             is_empty = false;
                             if wy < SEA_LEVEL {
                                 // always gravel under sea
-                                chunk.insert(
-                                    &BlockPosition { x, y, z },
-                                    *self.block_mappings.get(GRAVEL_BLOCK_ID).unwrap(),
-                                );
+                                chunk.insert(&BlockPosition { x, y, z }, self.gravel);
                                 continue;
-                            } else if wy.floor() <= (SEA_LEVEL + (1. / zoom)).floor() {
+                            } else if wy.floor() <= sand_level {
                                 // sand always borders water
-                                chunk.insert(
-                                    &BlockPosition { x, y, z },
-                                    *self.block_mappings.get(SAND_BLOCK_ID).unwrap(),
-                                );
+                                chunk.insert(&BlockPosition { x, y, z }, self.sand);
                                 continue;
                             }
 
-                            let next_band_chance = self.terrain_variance.get([nx, nz]) / 2.;
-
-                            let block_ranges = [
-                                (SEA_LEVEL + (-3. * zoom + 1.), SAND_BLOCK_ID),
-                                (SEA_LEVEL + (9. * zoom + 1.), DIRT_BLOCK_ID),
-                                (SEA_LEVEL + (285. * zoom + 1.), GRASS_BLOCK_ID),
-                                (SEA_LEVEL + (300. * zoom + 1.), STONE_BLOCK_ID),
-                                (f64::INFINITY, SNOW_BLOCK_ID),
-                            ];
+                            let next_band_chance = {
+                                let val = &mut terrain_variances[x as usize][z as usize];
+                                // exactly float zero means it (probably?) wasn't calculated before
+                                if *val == 0. {
+                                    *val = self.terrain_variance.get([nx, nz]) / 2.0;
+                                }
+                                *val
+                            };
 
                             // Assign block type based on the height and noise.
                             let mut block_id = block_ranges[0].1;
@@ -165,12 +175,12 @@ impl WorldGen for MountainIslands {
                                 }
                             }
 
-                            let block = *self.block_mappings.get(block_id).unwrap();
-                            chunk.insert(&BlockPosition { x, y, z }, block);
+                            chunk.insert(&BlockPosition { x, y, z }, block_id);
                         }
                     }
                 }
             }
+
             if is_empty {
                 return Chunk::Empty;
             }
