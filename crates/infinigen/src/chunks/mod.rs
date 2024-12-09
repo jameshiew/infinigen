@@ -2,6 +2,8 @@ use bevy::prelude::*;
 use registry::ChunkRegistry;
 use tasks::RequestChunkEvent;
 
+use crate::AppState;
+
 pub mod registry;
 pub mod tasks;
 
@@ -15,9 +17,10 @@ impl Plugin for ChunksPlugin {
             .add_systems(
                 Update,
                 (
-                    tasks::handle_chunk_request,
+                    tasks::handle_chunk_request.run_if(on_event::<RequestChunkEvent>),
                     tasks::handle_chunk_finished_generating,
-                ),
+                )
+                    .run_if(in_state(AppState::MainGame)),
             );
     }
 }
