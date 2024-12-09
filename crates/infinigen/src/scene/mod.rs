@@ -290,10 +290,7 @@ pub fn update_scene(
     });
     // the order in which chunks are unloaded is not so important
     let to_unload = already_loaded_or_loading.difference(&chunks_within_render_distance);
-    to_unload.for_each(|cpos| {
-        let cpos = cpos.to_owned();
-        unload_evs.send(UnloadChunkOpEvent(cpos));
-    });
+    unload_evs.send_batch(to_unload.into_iter().map(|&cpos| UnloadChunkOpEvent(cpos)));
 }
 
 pub struct Plugin;
