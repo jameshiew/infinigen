@@ -22,7 +22,7 @@ impl Plugin for UiPlugin {
                 EguiPlugin,
                 FrameTimeDiagnosticsPlugin,
                 EntityCountDiagnosticsPlugin,
-                WorldInspectorPlugin::new().run_if(resource_equals(UiState {
+                WorldInspectorPlugin::default().run_if(resource_equals(UiState {
                     show_debug_info: true,
                 })),
             ))

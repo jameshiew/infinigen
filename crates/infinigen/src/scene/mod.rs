@@ -302,7 +302,10 @@ impl bevy::prelude::Plugin for Plugin {
             .init_resource::<SceneCamera>()
             .init_resource::<SceneZoom>()
             .init_resource::<LoadOps>()
-            .add_systems(Startup, (lights::setup, init_scene_from_config))
+            .add_systems(
+                OnEnter(AppState::MainGame),
+                (lights::setup, init_scene_from_config),
+            )
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ReloadAllChunksEvent>()
             .add_event::<RefreshChunkOpsQueueEvent>()
@@ -310,15 +313,17 @@ impl bevy::prelude::Plugin for Plugin {
             .add_event::<UpdateSceneEvent>()
             .add_systems(
                 Update,
-                (
-                    check_if_should_update_scene.run_if(in_state(AppState::MainGame)),
-                    update_scene
-                        .run_if(in_state(AppState::MainGame))
-                        .after(check_if_should_update_scene),
-                    handle::process_load_chunk_ops.run_if(in_state(AppState::MainGame)),
-                    handle::process_unload_chunk_ops.run_if(in_state(AppState::MainGame)),
-                    handle_update_scene_view.run_if(in_state(AppState::MainGame)),
-                ),
+                ((
+                    (
+                        handle_update_scene_view.run_if(on_event::<UpdateSettingsEvent>),
+                        check_if_should_update_scene,
+                        update_scene.run_if(on_event::<UpdateSceneEvent>),
+                    )
+                        .chain(),
+                    handle::process_load_chunk_ops,
+                    handle::process_unload_chunk_ops.run_if(on_event::<UnloadChunkOpEvent>),
+                )
+                    .run_if(in_state(AppState::MainGame)),),
             );
     }
 }
