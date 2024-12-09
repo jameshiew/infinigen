@@ -1,11 +1,10 @@
 use ahash::AHashMap;
+use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64};
+use infinigen_common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
+use infinigen_common::zoom::ZoomLevel;
 use noise::{NoiseFn, Perlin};
 
-use crate::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64};
-use crate::extras::block_ids::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID, WATER_BLOCK_ID};
-use crate::extras::chunks;
-use crate::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
-use crate::zoom::ZoomLevel;
+use crate::block_ids::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID, WATER_BLOCK_ID};
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct PerlinNoise {
@@ -32,7 +31,9 @@ impl WorldGen for PerlinNoise {
 
         let perlin = Perlin::new(self.seed);
         let chunk = if pos.y == -1 {
-            let mut chunk = chunks::filled_chunk(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap());
+            let mut chunk = infinigen_common::chunks::filled_chunk(
+                *self.block_mappings.get(DIRT_BLOCK_ID).unwrap(),
+            );
             for x in 0..CHUNK_SIZE {
                 for z in 0..CHUNK_SIZE {
                     chunk.insert(

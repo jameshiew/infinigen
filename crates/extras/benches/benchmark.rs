@@ -1,8 +1,8 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use infinigen_common::extras::block_ids::default_block_ids;
-use infinigen_common::extras::worldgen::mountain_islands::MountainIslands;
 use infinigen_common::world::{ChunkPosition, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
+use infinigen_extras::block_ids::default_block_ids;
+use infinigen_extras::worldgen::mountain_islands::MountainIslands;
 
 fn bench_mountain_islands(c: &mut Criterion) {
     let mut wgen = MountainIslands::default();

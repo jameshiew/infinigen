@@ -1,10 +1,9 @@
 use ahash::AHashMap;
+use infinigen_common::chunks::Chunk;
+use infinigen_common::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
+use infinigen_common::zoom::ZoomLevel;
 
-use crate::chunks::Chunk;
-use crate::extras::block_ids::DIRT_BLOCK_ID;
-use crate::extras::chunks;
-use crate::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
-use crate::zoom::ZoomLevel;
+use crate::block_ids::DIRT_BLOCK_ID;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Flat {
@@ -19,7 +18,8 @@ impl WorldGen for Flat {
     fn get(&self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
         // zoom doesn't change anything
         if pos.y == -1 {
-            chunks::top_chunk(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap()).into()
+            infinigen_common::chunks::top_chunk(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap())
+                .into()
         } else {
             Chunk::Empty
         }

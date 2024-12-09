@@ -1,5 +1,5 @@
 use bevy::prelude::Resource;
-use infinigen_common::extras::worldgen::WorldGenTypes;
+use infinigen_extras::worldgen::WorldGenTypes;
 use serde::{Deserialize, Serialize};
 
 pub const DEFAULT_HORIZONTAL_VIEW_DISTANCE: usize = 8;

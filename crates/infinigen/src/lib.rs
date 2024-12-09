@@ -1,3 +1,4 @@
+//! Bevy-specific code and the entrypoint for the application.
 use bevy::prelude::{AppExtStates, Plugin, States};
 
 pub mod assets;
