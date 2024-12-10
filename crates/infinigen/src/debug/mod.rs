@@ -6,8 +6,6 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use self::info::{display_debug_info, toggle_debug_info, UiState};
 use crate::AppState;
 
-#[cfg(not(target_family = "wasm"))]
-mod chunk_borders;
 mod info;
 #[cfg(not(target_family = "wasm"))]
 mod wireframe;
@@ -40,17 +38,12 @@ impl Plugin for UiPlugin {
         {
             use bevy::pbr::wireframe::WireframePlugin;
 
-            app.init_resource::<chunk_borders::ChunkBordersState>()
-                .add_plugins((
-                    WireframePlugin,
-                    MaterialPlugin::<chunk_borders::LineMaterial>::default(),
-                ))
-                .add_systems(
-                    Update,
-                    (wireframe::toggle, chunk_borders::toggle).run_if(
-                        in_state(AppState::MainGame).and(resource_changed::<ButtonInput<KeyCode>>),
-                    ),
-                );
+            app.add_plugins((WireframePlugin,)).add_systems(
+                Update,
+                wireframe::toggle.run_if(
+                    in_state(AppState::MainGame).and(resource_changed::<ButtonInput<KeyCode>>),
+                ),
+            );
         }
     }
 }
