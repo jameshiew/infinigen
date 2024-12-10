@@ -1,8 +1,10 @@
 #![deny(unstable_features)]
 #![deny(unused_features)]
 use anyhow::{Context, Result};
+use bevy::core::TaskPoolThreadAssignmentPolicy;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
+use bevy::tasks::available_parallelism;
 use bevy::window::{Window, WindowPlugin};
 use bevy::DefaultPlugins;
 use config::Config;
@@ -50,6 +52,16 @@ fn main() -> Result<()> {
                     filter: DEFAULT_LOG_FILTER.into(),
                     level: bevy::log::Level::DEBUG,
                     custom_layer: |_| None,
+                })
+                .set(TaskPoolPlugin {
+                    task_pool_options: TaskPoolOptions {
+                        compute: TaskPoolThreadAssignmentPolicy {
+                            min_threads: available_parallelism(),
+                            max_threads: usize::MAX,
+                            percent: 1.0,
+                        },
+                        ..default()
+                    },
                 })
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
