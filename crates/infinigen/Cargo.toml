@@ -34,7 +34,6 @@ infinigen-common = { path = "../common" }
 infinigen-extras = { path = "../extras" }
 config = { version = "0.14.1", default-features = false, features = ["ron"] }
 serde = {workspace = true}
-anyhow = "1.0.93"
 futures-lite = "2.5.0"
 strum = {workspace = true}
 tracing = {workspace = true}
