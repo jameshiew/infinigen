@@ -2506,7 +2506,6 @@ name = "infinigen"
 version = "0.0.0"
 dependencies = [
  "ahash",
- "anyhow",
  "bevy",
  "bevy-inspector-egui",
  "bevy_common_assets",
