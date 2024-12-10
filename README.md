@@ -30,7 +30,6 @@ cargo run --features bevy/dynamic_linking  # compiles fastest
 - <kbd>Shift</kbd> - descend
 - <kbd>F3</kbd> - toggle wireframes
 - <kbd>F7</kbd> - toggle debug panels
-- <kbd>F9</kbd> - toggle chunk borders (only works near the origin)
 
 ### Configuration
 
