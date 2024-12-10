@@ -188,7 +188,7 @@ pub fn check_if_should_update_scene(
 
 pub fn update_scene(
     scene_view: Res<SceneView>,
-    camera: Query<(&Transform, &Projection), With<Camera>>,
+    camera_components: Single<(&Transform, &Projection), With<Camera>>,
     mut load_ops: ResMut<LoadOps>,
     mut unload_evs: EventWriter<UnloadChunkOpEvent>,
     mut update_scene_evs: EventReader<UpdateSceneEvent>,
@@ -199,7 +199,7 @@ pub fn update_scene(
     }
     load_ops.deque.clear();
 
-    let (camera, projection) = camera.single();
+    let (camera, projection) = (camera_components.0, camera_components.1);
     let current_cpos: ChunkPosition = WorldPosition {
         x: camera.translation.x,
         y: camera.translation.y,
