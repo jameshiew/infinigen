@@ -2,6 +2,7 @@ use bevy::core_pipeline::contrast_adaptive_sharpening::ContrastAdaptiveSharpenin
 use bevy::core_pipeline::experimental::taa::TemporalAntiAliasing;
 use bevy::pbr::ScreenSpaceAmbientOcclusion;
 use bevy::prelude::*;
+use bevy::render::view::GpuCulling;
 use bevy_flycam::FlyCam;
 
 use crate::settings::Config;
@@ -24,5 +25,6 @@ pub fn setup(mut commands: Commands, config: Res<Config>) {
         ScreenSpaceAmbientOcclusion::default(),
         TemporalAntiAliasing::default(),
         Msaa::Off,
+        GpuCulling,
     ));
 }
