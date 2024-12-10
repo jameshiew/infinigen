@@ -5,6 +5,7 @@ use std::f32::consts::PI;
 use ahash::AHashSet;
 use bevy::prelude::*;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
+use infinigen_common::view;
 use infinigen_common::world::{ChunkPosition, WorldPosition};
 use nalgebra::{Matrix4, Perspective3, Quaternion, UnitQuaternion, Vector3};
 
@@ -13,7 +14,6 @@ use crate::AppState;
 
 mod handle;
 pub mod lights;
-pub mod visible_chunks;
 
 #[derive(Component)]
 pub struct LoadedChunk {
@@ -236,9 +236,9 @@ pub fn update_scene(
 
     // Compute the frustum planes from the combined matrix
     let combined_matrix = projection_matrix * view_matrix;
-    let frustum_planes = visible_chunks::compute_frustum_planes(&combined_matrix);
+    let frustum_planes = view::compute_frustum_planes(&combined_matrix);
 
-    let chunks_within_render_distance: AHashSet<_> = visible_chunks::in_distance(
+    let chunks_within_render_distance: AHashSet<_> = view::in_distance(
         &current_cpos,
         scene_view.hview_distance,
         scene_view.vview_distance,
@@ -260,8 +260,8 @@ pub fn update_scene(
     });
     // chunks within view frustum first
     to_load.sort_unstable_by(|&c1, &c2| {
-        let in_frustum1 = visible_chunks::check_chunk_in_frustum(c1, &frustum_planes);
-        let in_frustum2 = visible_chunks::check_chunk_in_frustum(c2, &frustum_planes);
+        let in_frustum1 = view::check_chunk_in_frustum(c1, &frustum_planes);
+        let in_frustum2 = view::check_chunk_in_frustum(c2, &frustum_planes);
 
         if in_frustum1 && !in_frustum2 {
             Ordering::Less

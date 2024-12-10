@@ -13,7 +13,7 @@ use crate::scene::{self, LoadedChunk};
 pub fn display_debug_info(
     mut egui: EguiContexts,
     diagnostics: Res<DiagnosticsStore>,
-    camera: Single<&Transform, With<Camera>>,
+    camera_wpos: Single<&Transform, With<Camera>>,
     mut movement_settings: ResMut<MovementSettings>,
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
@@ -51,26 +51,26 @@ pub fn display_debug_info(
 
     egui::Window::new("Scene").show(egui.ctx_mut(), |ui| {
         ui.label("Position");
-        ui.label(format!("X: {:.2}", camera.translation.x));
-        ui.label(format!("Y: {:.2}", camera.translation.y));
-        ui.label(format!("Z: {:.2}", camera.translation.z));
+        ui.label(format!("X: {:.2}", camera_wpos.translation.x));
+        ui.label(format!("Y: {:.2}", camera_wpos.translation.y));
+        ui.label(format!("Z: {:.2}", camera_wpos.translation.z));
         ui.label("Rotation");
-        ui.label(format!("X: {:.2}", camera.rotation.x));
-        ui.label(format!("Y: {:.2}", camera.rotation.y));
-        ui.label(format!("Z: {:.2}", camera.rotation.z));
-        ui.label(format!("W: {:.2}", camera.rotation.w));
+        ui.label(format!("X: {:.2}", camera_wpos.rotation.x));
+        ui.label(format!("Y: {:.2}", camera_wpos.rotation.y));
+        ui.label(format!("Z: {:.2}", camera_wpos.rotation.z));
+        ui.label(format!("W: {:.2}", camera_wpos.rotation.w));
 
         let chunk_pos = [
-            (camera.translation.x / CHUNK_SIZE_F32).floor() as i32,
-            (camera.translation.y / CHUNK_SIZE_F32).floor() as i32,
-            (camera.translation.z / CHUNK_SIZE_F32).floor() as i32,
+            (camera_wpos.translation.x / CHUNK_SIZE_F32).floor() as i32,
+            (camera_wpos.translation.y / CHUNK_SIZE_F32).floor() as i32,
+            (camera_wpos.translation.z / CHUNK_SIZE_F32).floor() as i32,
         ];
         ui.label(format!("Chunk: {:?}", chunk_pos));
 
         let block_pos = [
-            camera.translation.x.floor() as i32,
-            camera.translation.y.floor() as i32,
-            camera.translation.z.floor() as i32,
+            camera_wpos.translation.x.floor() as i32,
+            camera_wpos.translation.y.floor() as i32,
+            camera_wpos.translation.z.floor() as i32,
         ];
         ui.label(format!("Block: {:?}", block_pos));
 

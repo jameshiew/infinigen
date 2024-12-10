@@ -1,6 +1,7 @@
-use infinigen_common::chunks::CHUNK_SIZE_F32;
-use infinigen_common::world::ChunkPosition;
 use nalgebra::{Matrix4, Unit, Vector4};
+
+use crate::chunks::CHUNK_SIZE_F32;
+use crate::world::ChunkPosition;
 
 /// Returns an iterator over `ChunkPosition`s within a cylinder centred at `centre` that should be loaded and rendered.
 pub fn in_distance(
@@ -98,8 +99,7 @@ pub fn check_chunk_in_frustum(chunk: &ChunkPosition, frustum_planes: &[Plane; 6]
 
 #[cfg(test)]
 mod tests {
-    use crate::scene::visible_chunks::in_distance;
-    use crate::scene::*;
+    use super::*;
 
     #[test]
     fn test_in_distance() {
