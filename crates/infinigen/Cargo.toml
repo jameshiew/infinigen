@@ -37,7 +37,6 @@ serde = {workspace = true}
 futures-lite = "2.5.0"
 strum = {workspace = true}
 tracing = {workspace = true}
-nalgebra = "0.33.2"
 ahash = {workspace = true}
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]

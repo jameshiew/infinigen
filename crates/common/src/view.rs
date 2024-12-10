@@ -1,4 +1,7 @@
-use nalgebra::{Matrix4, Unit, Vector4};
+use std::cmp::Ordering;
+
+use ahash::AHashSet;
+use nalgebra::{Matrix4, Perspective3, Quaternion, Unit, UnitQuaternion, Vector3, Vector4};
 
 use crate::chunks::CHUNK_SIZE_F32;
 use crate::world::ChunkPosition;
@@ -95,6 +98,86 @@ pub fn check_chunk_in_frustum(chunk: &ChunkPosition, frustum_planes: &[Plane; 6]
         }
     }
     true
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn compute_chunks_delta(
+    current_cpos: ChunkPosition,
+    hview_distance: usize,
+    vview_distance: usize,
+    camera_translation: [f32; 3],
+    camera_rotation: [f32; 4], // w,x,y,z
+    aspect_ratio: f32,
+    fov: f32,
+    near: f32,
+    far: f32,
+    already_loaded_or_loading: &AHashSet<ChunkPosition>,
+) -> (Vec<ChunkPosition>, Vec<ChunkPosition>) {
+    let rotation = UnitQuaternion::from_quaternion(Quaternion::new(
+        camera_rotation[0],
+        camera_rotation[1],
+        camera_rotation[2],
+        camera_rotation[3],
+    ));
+    let translation = Vector3::new(
+        camera_translation[0],
+        camera_translation[1],
+        camera_translation[2],
+    );
+
+    let persp_proj = Perspective3::new(aspect_ratio, fov, near, far);
+    let projection_matrix: Matrix4<f32> = *persp_proj.as_matrix();
+    let view_matrix: Matrix4<f32> =
+        Matrix4::from(rotation.to_rotation_matrix()).append_translation(&-translation);
+    let combined_matrix = projection_matrix * view_matrix;
+    let frustum_planes = compute_frustum_planes(&combined_matrix);
+
+    let chunks_within_render_distance: AHashSet<_> =
+        in_distance(&current_cpos, hview_distance, vview_distance).collect();
+
+    let mut to_load: Vec<_> = chunks_within_render_distance
+        .difference(already_loaded_or_loading)
+        .copied()
+        .collect();
+
+    // nearest chunks first
+    to_load.sort_unstable_by_key(|c| {
+        let dx = c.x - current_cpos.x;
+        let dy = c.y - current_cpos.y;
+        let dz = c.z - current_cpos.z;
+        dx * dx + dy * dy + dz * dz
+    });
+
+    // chunks within view frustum first
+    to_load.sort_unstable_by(|c1, c2| {
+        let in_frustum1 = check_chunk_in_frustum(c1, &frustum_planes);
+        let in_frustum2 = check_chunk_in_frustum(c2, &frustum_planes);
+
+        if in_frustum1 && !in_frustum2 {
+            Ordering::Less
+        } else if !in_frustum1 && in_frustum2 {
+            Ordering::Greater
+        } else {
+            let dx1 = c1.x - current_cpos.x;
+            let dy1 = c1.y - current_cpos.y;
+            let dz1 = c1.z - current_cpos.z;
+            let dist1 = dx1 * dx1 + dy1 * dy1 + dz1 * dz1;
+
+            let dx2 = c2.x - current_cpos.x;
+            let dy2 = c2.y - current_cpos.y;
+            let dz2 = c2.z - current_cpos.z;
+            let dist2 = dx2 * dx2 + dy2 * dy2 + dz2 * dz2;
+
+            dist1.cmp(&dist2)
+        }
+    });
+
+    let to_unload: Vec<_> = already_loaded_or_loading
+        .difference(&chunks_within_render_distance)
+        .copied()
+        .collect();
+
+    (to_load, to_unload)
 }
 
 #[cfg(test)]
