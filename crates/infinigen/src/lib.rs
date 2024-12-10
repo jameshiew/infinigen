@@ -6,9 +6,9 @@ pub mod camera;
 pub mod chunks;
 #[cfg(feature = "debug-ui")]
 pub mod debug;
+pub mod mesh;
 pub mod scene;
 pub mod settings;
-pub mod utils;
 pub mod world;
 
 #[derive(States, Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
