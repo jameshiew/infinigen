@@ -100,7 +100,7 @@ pub enum UpdateSettingsEvent {
 pub fn handle_update_scene_view(
     mut scene_view: ResMut<SceneView>,
     mut scene_zoom: ResMut<SceneZoom>,
-    mut camera: Query<&mut Transform, With<Camera>>,
+    mut camera: Single<&mut Transform, With<Camera>>,
     mut update_evs: EventReader<UpdateSettingsEvent>,
     mut refresh_evs: EventWriter<RefreshChunkOpsQueueEvent>,
     mut reload_evs: EventWriter<ReloadAllChunksEvent>,
@@ -134,7 +134,6 @@ pub fn handle_update_scene_view(
                 scene_zoom.prev_zoom_level = scene_zoom.zoom_level;
                 scene_zoom.zoom_level = *zoom_level;
 
-                let mut camera = camera.single_mut();
                 let dzoom = (scene_zoom.zoom_level - scene_zoom.prev_zoom_level) as f32;
                 camera.translation.x *= 2f32.powf(dzoom);
                 camera.translation.y *= 2f32.powf(dzoom);
@@ -151,7 +150,7 @@ pub struct UpdateSceneEvent;
 pub fn check_if_should_update_scene(
     mut commands: Commands,
     mut scene_camera: ResMut<SceneCamera>,
-    camera: Query<&Transform, With<Camera>>,
+    camera: Single<&Transform, With<Camera>>,
     mut reload_evs: EventReader<ReloadAllChunksEvent>,
     mut refresh_evs: EventReader<RefreshChunkOpsQueueEvent>,
     mut update_scene_evs: EventWriter<UpdateSceneEvent>,
@@ -169,7 +168,6 @@ pub fn check_if_should_update_scene(
         should_update = true;
     }
 
-    let camera = camera.single();
     let current_cpos: ChunkPosition = WorldPosition {
         x: camera.translation.x,
         y: camera.translation.y,
