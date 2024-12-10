@@ -1,3 +1,4 @@
+use bevy::core_pipeline::contrast_adaptive_sharpening::ContrastAdaptiveSharpening;
 use bevy::core_pipeline::experimental::taa::TemporalAntiAliasing;
 use bevy::pbr::ScreenSpaceAmbientOcclusion;
 use bevy::prelude::*;
@@ -14,9 +15,14 @@ pub fn setup(mut commands: Commands, config: Res<Config>) {
     transform.rotation.w = config.rotation_w;
     transform.rotation = transform.rotation.normalize();
     dbg!(transform.rotation);
-    commands
-        .spawn((Name::new("Camera"), FlyCam, transform, Camera3d::default()))
-        .insert(ScreenSpaceAmbientOcclusion::default())
-        .insert(TemporalAntiAliasing::default())
-        .insert(Msaa::Off);
+    commands.spawn((
+        Name::new("Camera"),
+        FlyCam,
+        transform,
+        Camera3d::default(),
+        ContrastAdaptiveSharpening::default(),
+        ScreenSpaceAmbientOcclusion::default(),
+        TemporalAntiAliasing::default(),
+        Msaa::Off,
+    ));
 }
