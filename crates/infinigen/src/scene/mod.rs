@@ -320,7 +320,7 @@ impl bevy::prelude::Plugin for Plugin {
                         update_scene.run_if(on_event::<UpdateSceneEvent>),
                     )
                         .chain(),
-                    handle::process_load_chunk_ops,
+                    handle::process_load_chunk_ops.run_if(resource_changed::<LoadOps>),
                     handle::process_unload_chunk_ops.run_if(on_event::<UnloadChunkOpEvent>),
                 )
                     .run_if(in_state(AppState::MainGame)),),
