@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use registry::ChunkRegistry;
-use tasks::RequestChunkEvent;
+use tasks::{GenerateChunkTask, RequestChunkEvent};
 
 use crate::AppState;
 
@@ -18,7 +18,8 @@ impl Plugin for ChunksPlugin {
                 Update,
                 (
                     tasks::handle_chunk_request.run_if(on_event::<RequestChunkEvent>),
-                    tasks::handle_chunk_finished_generating,
+                    tasks::handle_chunk_finished_generating
+                        .run_if(any_with_component::<GenerateChunkTask>),
                 )
                     .run_if(in_state(AppState::MainGame)),
             );

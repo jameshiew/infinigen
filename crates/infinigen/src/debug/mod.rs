@@ -32,7 +32,7 @@ impl Plugin for UiPlugin {
                     display_debug_info.run_if(resource_equals(UiState {
                         show_debug_info: true,
                     })),
-                    toggle_debug_info,
+                    toggle_debug_info.run_if(resource_changed::<ButtonInput<KeyCode>>),
                 )
                     .run_if(in_state(AppState::MainGame)),
             );
@@ -47,7 +47,9 @@ impl Plugin for UiPlugin {
                 ))
                 .add_systems(
                     Update,
-                    (wireframe::toggle, chunk_borders::toggle).run_if(in_state(AppState::MainGame)),
+                    (wireframe::toggle, chunk_borders::toggle).run_if(
+                        in_state(AppState::MainGame).and(resource_changed::<ButtonInput<KeyCode>>),
+                    ),
                 );
         }
     }
