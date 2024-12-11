@@ -1,8 +1,8 @@
-name: nightly
+name: scheduled
 
 on:
   schedule:
-    - cron: "43 15 * * *"
+    - cron: "43 13 12 * *"
   workflow_dispatch:
 
 env:
