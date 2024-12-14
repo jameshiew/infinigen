@@ -67,10 +67,7 @@ pub fn process_load_chunk_ops(
     mut request_chunk_evs: EventWriter<RequestChunkEvent>,
 ) {
     let scene_zoom_level = scene_zoom.zoom_level.into();
-    // if a chunk isn't ready yet, check again later
-    let mut requeued_requests = vec![];
     for _ in 0..CHUNK_OP_RATE {
-        // loading
         let Some(op) = load_ops.deque.pop_front() else {
             return;
         };
@@ -78,18 +75,10 @@ pub fn process_load_chunk_ops(
 
         match chunks.get_status(scene_zoom_level, &cpos) {
             None => {
-                // not requested yet, do so then check again later
                 request_chunk_evs.send(RequestChunkEvent {
                     zoom_level: scene_zoom_level,
                     position: cpos,
                 });
-                requeued_requests.push(RequestChunkOp(cpos));
-                continue;
-            }
-            Some(ChunkStatus::Requested) => {
-                // not ready yet, check again later
-                requeued_requests.push(RequestChunkOp(cpos));
-                continue;
             }
             Some(ChunkStatus::Generated(chunk_info)) => {
                 tracing::trace!(?cpos, "Will render chunk");
@@ -177,11 +166,7 @@ pub fn process_load_chunk_ops(
 
                 tracing::trace!(?cpos, "Chunk loaded");
             }
-            Some(ChunkStatus::Meshed { .. }) => todo!(),
+            _ => continue,
         }
-    }
-    for requeued in requeued_requests.into_iter() {
-        // prioritize rendering chunks we queued to generate this run
-        load_ops.deque.push_front(requeued);
     }
 }
