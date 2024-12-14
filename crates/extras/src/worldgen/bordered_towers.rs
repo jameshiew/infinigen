@@ -42,7 +42,7 @@ impl WorldGen for BorderedTowers {
                         // tower
                         for y in 0..(pos.x.abs() + pos.z.abs()).min(CHUNK_SIZE_I32 - 1) {
                             chunk.insert(
-                                &BlockPosition { x, y: y as i8, z },
+                                &BlockPosition { x, y: y as u8, z },
                                 *self.block_mappings.get(GRASS_BLOCK_ID).unwrap(),
                             );
                         }
