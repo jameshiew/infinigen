@@ -1,6 +1,7 @@
 use bevy::prelude::*;
+use infinigen_common::blocks::BlockVisibility;
 use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F32};
-use infinigen_common::world::{BlockPosition, BlockVisibility, ChunkBlockId, WorldPosition};
+use infinigen_common::world::{BlockPosition, ChunkBlockId, WorldPosition};
 
 use super::{LoadedChunk, UnloadChunkOpEvent};
 use crate::assets::blocks::{BlockRegistry, MaterialType};

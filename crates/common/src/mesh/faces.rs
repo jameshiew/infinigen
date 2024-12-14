@@ -2,11 +2,12 @@ use block_mesh::ndshape::ConstShape;
 use block_mesh::{OrientedBlockFace, RIGHT_HANDED_Y_UP_CONFIG};
 use strum::IntoEnumIterator;
 
+use crate::blocks::BlockVisibility;
 use crate::chunks::{UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_U32};
 use crate::mesh::block::VoxelBlock;
 use crate::mesh::shapes;
 use crate::mesh::shapes::{ChunkFace, ChunkFaceShape, PaddedChunk, PaddedChunkShape};
-use crate::world::{BlockPosition, BlockVisibility, ChunkBlockId};
+use crate::world::{BlockPosition, ChunkBlockId};
 
 pub const RHS_FACES: [OrientedBlockFace; 6] = RIGHT_HANDED_Y_UP_CONFIG.faces;
 
@@ -33,10 +34,10 @@ pub fn extract_faces(
                         let block = match block {
                             Some(chunk_block_id) => {
                                 match block_mappings.get_visibility(&chunk_block_id) {
-                                    crate::world::BlockVisibility::Opaque => {
+                                    crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    crate::world::BlockVisibility::Translucent => {
+                                    crate::blocks::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -59,10 +60,10 @@ pub fn extract_faces(
                         let block = match block {
                             Some(chunk_block_id) => {
                                 match block_mappings.get_visibility(&chunk_block_id) {
-                                    crate::world::BlockVisibility::Opaque => {
+                                    crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    crate::world::BlockVisibility::Translucent => {
+                                    crate::blocks::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -85,10 +86,10 @@ pub fn extract_faces(
                         let block = match block {
                             Some(chunk_block_id) => {
                                 match block_mappings.get_visibility(&chunk_block_id) {
-                                    crate::world::BlockVisibility::Opaque => {
+                                    crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    crate::world::BlockVisibility::Translucent => {
+                                    crate::blocks::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -111,10 +112,10 @@ pub fn extract_faces(
                         let block = match block {
                             Some(chunk_block_id) => {
                                 match block_mappings.get_visibility(&chunk_block_id) {
-                                    crate::world::BlockVisibility::Opaque => {
+                                    crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    crate::world::BlockVisibility::Translucent => {
+                                    crate::blocks::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -137,10 +138,10 @@ pub fn extract_faces(
                         let block = match block {
                             Some(chunk_block_id) => {
                                 match block_mappings.get_visibility(&chunk_block_id) {
-                                    crate::world::BlockVisibility::Opaque => {
+                                    crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    crate::world::BlockVisibility::Translucent => {
+                                    crate::blocks::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -163,10 +164,10 @@ pub fn extract_faces(
                         let block = match block {
                             Some(chunk_block_id) => {
                                 match block_mappings.get_visibility(&chunk_block_id) {
-                                    crate::world::BlockVisibility::Opaque => {
+                                    crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
-                                    crate::world::BlockVisibility::Translucent => {
+                                    crate::blocks::BlockVisibility::Translucent => {
                                         VoxelBlock::Translucent(chunk_block_id)
                                     }
                                 }
@@ -299,10 +300,10 @@ pub fn prepare_padded_chunk(
                     let block = match block {
                         Some(chunk_block_id) => {
                             match block_mappings.get_visibility(&chunk_block_id) {
-                                crate::world::BlockVisibility::Opaque => {
+                                crate::blocks::BlockVisibility::Opaque => {
                                     VoxelBlock::Opaque(chunk_block_id)
                                 }
-                                crate::world::BlockVisibility::Translucent => {
+                                crate::blocks::BlockVisibility::Translucent => {
                                     VoxelBlock::Translucent(chunk_block_id)
                                 }
                             }
@@ -321,11 +322,11 @@ pub fn prepare_padded_chunk(
 mod tests {
     use block_mesh::{visible_block_faces, UnitQuadBuffer};
 
+    use crate::blocks::BlockVisibility;
     use crate::chunks::{filled_chunk, CHUNK_SIZE_U32};
     use crate::mesh::shapes::{
         empty_chunk_face, ChunkFace, ChunkFaceShape, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
     };
-    use crate::world::BlockVisibility;
 
     struct AllOpaque;
 

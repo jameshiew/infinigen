@@ -4,8 +4,9 @@ use ahash::AHashMap;
 use bevy::asset::{LoadedFolder, RecursiveDependencyLoadState};
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
-use blocks::{default_block_definitions, BlockDefinition, BlockRegistry, MaterialType};
+use blocks::{BlockDefinition, BlockRegistry, MaterialType};
 use infinigen_common::mesh::textures::{Face, FaceAppearance, TextureMap};
+use infinigen_extras::blocks::block_types;
 use loading::AssetFolders;
 use strum::IntoEnumIterator;
 
@@ -140,7 +141,7 @@ fn setup(
         .collect();
     if block_definitions.is_empty() {
         tracing::warn!("No block definition files found, falling back to default definitions");
-        block_definitions = default_block_definitions();
+        block_definitions = block_types().map(BlockDefinition::from).collect();
     }
     // map block definitions in alphabetical order by ID
     // so for the same set of block definitions, we should get the same mapping

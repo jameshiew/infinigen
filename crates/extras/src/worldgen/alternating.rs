@@ -1,9 +1,10 @@
 use ahash::AHashMap;
+use infinigen_common::blocks::BlockId;
 use infinigen_common::chunks::Chunk;
-use infinigen_common::world::{BlockId, ChunkBlockId, ChunkPosition, WorldGen};
+use infinigen_common::world::{ChunkBlockId, ChunkPosition, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
 
-use crate::block_ids::DIRT_BLOCK_ID;
+use crate::blocks::DIRT_BLOCK_ID;
 
 #[derive(Debug, Default, Clone)]
 pub struct Alternating {
