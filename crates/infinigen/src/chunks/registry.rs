@@ -1,6 +1,5 @@
 use ahash::AHashMap;
-use bevy::pbr::StandardMaterial;
-use bevy::prelude::{Mesh, Resource};
+use bevy::prelude::Resource;
 use infinigen_common::chunks::Chunk;
 use infinigen_common::mesh::faces::extract_faces;
 use infinigen_common::mesh::shapes::{empty_chunk_face, ChunkFace};
@@ -34,11 +33,6 @@ impl ChunkInfo {
 
 #[derive(Debug, Clone)]
 pub enum ChunkStatus {
-    Meshed {
-        chunk_info: Box<ChunkInfo>,
-        mesh: Mesh,
-        material: StandardMaterial,
-    },
     Generated(Box<ChunkInfo>),
     Requested,
 }
