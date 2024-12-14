@@ -16,6 +16,7 @@ pub enum AppState {
     #[default]
     LoadingAssets,
     InitializingRegistry,
+    InitializingWorld,
     MainGame,
 }
 

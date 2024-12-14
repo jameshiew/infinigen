@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use ahash::AHashMap;
 use bevy::asset::{LoadedFolder, RecursiveDependencyLoadState};
 use bevy::prelude::*;
@@ -10,8 +8,6 @@ use infinigen_extras::blocks::block_types;
 use loading::AssetFolders;
 use strum::IntoEnumIterator;
 
-use crate::settings::Config;
-use crate::world::World;
 use crate::AppState;
 
 pub mod blocks;
@@ -95,8 +91,6 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut textures: ResMut<Assets<Image>>,
     block_definitions: Res<Assets<BlockDefinition>>,
-    mut world: ResMut<World>,
-    config: Res<Config>,
 ) {
     // block textures
     let mut block_texture_handles_by_name = AHashMap::default();
@@ -199,9 +193,5 @@ fn setup(
         ..default()
     });
 
-    let mut worldgen: Box<dyn infinigen_common::world::WorldGen + Send + Sync> =
-        config.world.into();
-    worldgen.initialize((&registry.block_mappings).into());
-    world.generator = Arc::new(worldgen);
-    next_state.set(AppState::MainGame);
+    next_state.set(AppState::InitializingWorld);
 }
