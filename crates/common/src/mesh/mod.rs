@@ -10,8 +10,6 @@ use shapes::{PaddedChunk, PaddedChunkShape, PADDED_CHUNK_MAX_INDEX};
 
 use self::block::VoxelBlock;
 use self::textures::{Face, TextureMap};
-use crate::chunks::{Array3Chunk, CHUNK_SIZE};
-use crate::world::{BlockPosition, LocalPosition};
 
 pub mod block;
 pub mod faces;
@@ -252,73 +250,4 @@ pub fn mesh_chunk_greedy_quads(
         colors,
         uvs,
     })
-}
-
-// Returns the local locations of all visible blocks in the chunk, which then need to be offset by the chunk position.
-pub fn mesh_chunk_naive(chunk: Array3Chunk) -> Vec<LocalPosition> {
-    let mut positions = vec![];
-    for bx in 0..CHUNK_SIZE {
-        for by in 0..CHUNK_SIZE {
-            for bz in 0..CHUNK_SIZE {
-                let block = chunk.get(&BlockPosition {
-                    x: bx,
-                    y: by,
-                    z: bz,
-                });
-                if block.is_none() {
-                    continue;
-                }
-
-                let up = chunk.get(&BlockPosition {
-                    x: bx,
-                    y: (by + 1).min(CHUNK_SIZE - 1),
-                    z: bz,
-                });
-                let down = chunk.get(&BlockPosition {
-                    x: bx,
-                    y: by - 1,
-                    z: bz,
-                });
-                let north = chunk.get(&BlockPosition {
-                    x: bx,
-                    y: by,
-                    z: bz - 1,
-                });
-                let east = chunk.get(&BlockPosition {
-                    x: (bx + 1).min(CHUNK_SIZE - 1),
-                    y: by,
-                    z: bz,
-                });
-                let west = chunk.get(&BlockPosition {
-                    x: bx - 1,
-                    y: by,
-                    z: bz,
-                });
-                let south = chunk.get(&BlockPosition {
-                    x: bx,
-                    y: by,
-                    z: (bz + 1).min(CHUNK_SIZE - 1),
-                });
-                if up.is_some()
-                    && down.is_some()
-                    && north.is_some()
-                    && east.is_some()
-                    && west.is_some()
-                    && south.is_some()
-                    && !(bx == 0
-                        || bx == CHUNK_SIZE - 1
-                        || by == 0
-                        || by == CHUNK_SIZE - 1
-                        || bz == 0
-                        || bz == CHUNK_SIZE - 1)
-                {
-                    continue;
-                }
-
-                let (x, y, z) = (bx as f32, by as f32, bz as f32);
-                positions.push(LocalPosition { x, y, z });
-            }
-        }
-    }
-    positions
 }

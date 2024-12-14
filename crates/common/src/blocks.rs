@@ -1,19 +1,7 @@
 use serde::{Deserialize, Serialize};
-use strum::EnumCount;
 
 #[derive(
-    Debug,
-    Default,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-    Ord,
-    PartialOrd,
-    Serialize,
-    Deserialize,
-    EnumCount,
+    Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Serialize, Deserialize,
 )]
 pub enum BlockVisibility {
     #[default]

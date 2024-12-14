@@ -17,12 +17,3 @@ pub type ChunkFace = [VoxelBlock; ChunkFaceShape::SIZE as usize];
 pub fn empty_chunk_face() -> ChunkFace {
     [VoxelBlock::Empty; ChunkFaceShape::SIZE as usize]
 }
-
-pub fn count_not_empty_in_chunk_face(chunk_face: &ChunkFace) -> i32 {
-    let mut count = 0;
-    (0..ChunkFaceShape::SIZE as usize).for_each(|i| match chunk_face[i] {
-        VoxelBlock::Opaque(_) | VoxelBlock::Translucent(_) => count += 1,
-        VoxelBlock::Empty => (),
-    });
-    count
-}
