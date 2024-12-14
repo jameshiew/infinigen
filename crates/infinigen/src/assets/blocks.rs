@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use ahash::AHashMap;
-use bevy::asset::{Asset, Handle, LoadedFolder};
+use bevy::asset::{Asset, Handle};
 use bevy::pbr::StandardMaterial;
 use bevy::prelude::{Resource, TypePath};
 use infinigen_common::mesh::faces::BlockVisibilityChecker;
@@ -98,8 +98,6 @@ impl BlockVisibilityChecker for BlockMappings {
 #[derive(Default, Resource)]
 pub struct BlockRegistry {
     pub materials: [Handle<StandardMaterial>; MaterialType::COUNT],
-    pub block_texture_folder: Handle<LoadedFolder>,
-    pub block_definition_folder: Handle<LoadedFolder>,
     pub block_textures: TextureMap,
     pub block_mappings: BlockMappings,
 }

@@ -6,6 +6,7 @@ use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use blocks::{default_block_definitions, BlockDefinition, BlockRegistry, MaterialType};
 use infinigen_common::mesh::textures::{Face, FaceAppearance, TextureMap};
+use loading::AssetFolders;
 use strum::IntoEnumIterator;
 
 use crate::settings::Config;
@@ -13,12 +14,14 @@ use crate::world::World;
 use crate::AppState;
 
 pub mod blocks;
+mod loading;
 pub struct AssetsPlugin;
 
 impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing assets plugin");
         app.add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
+            .init_resource::<AssetFolders>()
             .init_resource::<BlockRegistry>()
             .add_systems(OnEnter(AppState::InitializingRegistry), setup);
 
@@ -39,24 +42,24 @@ pub fn skip_loading_assets(mut next_state: ResMut<NextState<AppState>>) {
     next_state.set(AppState::InitializingRegistry);
 }
 
-pub fn load_assets(mut registry: ResMut<BlockRegistry>, asset_server: Res<AssetServer>) {
-    registry.block_texture_folder = asset_server.load_folder("blocks/textures/");
-    registry.block_definition_folder = asset_server.load_folder("blocks/types/");
+fn load_assets(mut folders: ResMut<AssetFolders>, server: Res<AssetServer>) {
+    folders.block_textures = server.load_folder("blocks/textures/");
+    folders.block_definitions = server.load_folder("blocks/types/");
     tracing::debug!(
         "Loading assets: textures: {}, block definitions: {}",
-        registry.block_texture_folder.path().unwrap(),
-        registry.block_definition_folder.path().unwrap(),
+        folders.block_textures.path().unwrap(),
+        folders.block_definitions.path().unwrap(),
     );
 }
 
-pub fn check_assets(
+fn check_assets(
     mut next_state: ResMut<NextState<AppState>>,
-    registry: ResMut<BlockRegistry>,
+    folders: ResMut<AssetFolders>,
     asset_server: Res<AssetServer>,
 ) {
     let mut block_definitions_loaded = false;
     let blockdef_load_state =
-        asset_server.get_recursive_dependency_load_state(&registry.block_definition_folder);
+        asset_server.get_recursive_dependency_load_state(&folders.block_definitions);
     if let Some(RecursiveDependencyLoadState::Loaded) = blockdef_load_state {
         tracing::debug!("Finished loading block definitions");
         block_definitions_loaded = true;
@@ -64,7 +67,7 @@ pub fn check_assets(
 
     let mut block_textures_loaded = false;
     let blocktex_load_state =
-        asset_server.get_recursive_dependency_load_state(&registry.block_texture_folder);
+        asset_server.get_recursive_dependency_load_state(&folders.block_textures);
     if let Some(RecursiveDependencyLoadState::Loaded) = blocktex_load_state {
         tracing::debug!("Finished loading block textures");
         block_textures_loaded = true;
@@ -82,9 +85,10 @@ pub fn check_assets(
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn setup(
+fn setup(
     mut next_state: ResMut<NextState<AppState>>,
     mut registry: ResMut<BlockRegistry>,
+    folders: Res<AssetFolders>,
     asset_server: Res<AssetServer>,
     loaded_folders: Res<Assets<LoadedFolder>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -97,7 +101,7 @@ pub fn setup(
     let mut block_texture_handles_by_name = AHashMap::default();
     let mut block_tatlas_builder = TextureAtlasBuilder::default();
     let (atlas_sources, atlas_layout, texture_atlas) = if let Some(block_texture_folder) =
-        loaded_folders.get(&registry.block_texture_folder)
+        loaded_folders.get(&folders.block_textures)
     {
         for handle in block_texture_folder.handles.iter() {
             let handle = handle.clone_weak().typed();
