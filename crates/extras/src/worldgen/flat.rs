@@ -6,21 +6,21 @@ use infinigen_common::zoom::ZoomLevel;
 
 use crate::blocks::DIRT_BLOCK_ID;
 
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
+/// Generates a completely flat world of dirt at y=0.
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq)]
 pub struct Flat {
-    pub block_mappings: AHashMap<BlockID, MappedBlockID>,
+    dirt: MappedBlockID,
 }
 
 impl WorldGen for Flat {
     fn initialize(&mut self, mappings: AHashMap<BlockID, MappedBlockID>) {
-        self.block_mappings = mappings;
+        self.dirt = *mappings.get(DIRT_BLOCK_ID).unwrap();
     }
 
     fn get(&self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
-        // zoom doesn't change anything
+        // zoom level does not change anything
         if pos.y == -1 {
-            infinigen_common::chunks::top_chunk(*self.block_mappings.get(DIRT_BLOCK_ID).unwrap())
-                .into()
+            infinigen_common::chunks::top_chunk(self.dirt).into()
         } else {
             Chunk::Empty
         }

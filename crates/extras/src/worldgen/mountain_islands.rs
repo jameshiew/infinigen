@@ -13,6 +13,7 @@ use crate::blocks::{
     WATER_BLOCK_ID,
 };
 
+#[derive(Debug, Clone)]
 pub struct MountainIslands {
     /// The world height at any given (x, z)
     heightmap: Fbm<Perlin>,
