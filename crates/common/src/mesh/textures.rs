@@ -65,24 +65,6 @@ impl TextureMap {
         }
     }
 
-    pub fn to_tex_coords(
-        &self,
-        id: &MappedBlockID,
-        face: Face,
-        uvs: [[f32; 2]; 4],
-    ) -> Option<[[f32; 2]; 4]> {
-        let tidx = match self.appearance.get(id) {
-            Some(faces) => faces[face as usize],
-            None => {
-                return None;
-            }
-        };
-        match tidx {
-            FaceAppearance::Texture { coords } => Some(to_tex_coords_raw(uvs, coords, self.size)),
-            FaceAppearance::Color { .. } => None,
-        }
-    }
-
     pub fn to_color(&self, id: &MappedBlockID, face: Face) -> Option<[f32; 4]> {
         let tidx = match self.appearance.get(id) {
             Some(faces) => faces[face as usize],
@@ -107,21 +89,4 @@ pub enum Face {
     Right,
     Front,
     Back,
-}
-
-impl Face {
-    pub fn opposite(&self) -> Self {
-        match self {
-            Self::Top => Self::Bottom,
-            Self::Bottom => Self::Top,
-            Self::Left => Self::Right,
-            Self::Right => Self::Left,
-            Self::Front => Self::Back,
-            Self::Back => Self::Front,
-        }
-    }
-
-    pub fn is_side(&self) -> bool {
-        !matches!(self, Self::Top | Self::Bottom)
-    }
 }

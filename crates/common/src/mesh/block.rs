@@ -9,12 +9,6 @@ pub enum VoxelBlock {
     Empty,
 }
 
-impl VoxelBlock {
-    pub fn new(block: MappedBlockID) -> Self {
-        Self::Opaque(block)
-    }
-}
-
 impl Voxel for VoxelBlock {
     fn get_visibility(&self) -> VoxelVisibility {
         match self {
