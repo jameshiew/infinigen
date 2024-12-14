@@ -2,8 +2,7 @@ use std::sync::Arc;
 
 use bevy::core::Name;
 use bevy::prelude::{Commands, Component, Entity, Event, EventReader, Query, Res, ResMut};
-use bevy::tasks::{AsyncComputeTaskPool, Task};
-use futures_lite::future;
+use bevy::tasks::{block_on, poll_once, AsyncComputeTaskPool, Task};
 use infinigen_common::chunks::Chunk;
 use infinigen_common::world::{ChunkPosition, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
@@ -77,10 +76,10 @@ pub fn handle_chunk_finished_generating(
     mut commands: Commands,
     assets_registry: Res<assets::blocks::BlockRegistry>,
     mut registry: ResMut<ChunkRegistry>,
-    mut transform_tasks: Query<(Entity, &mut GenerateChunkTask)>,
+    mut generate_chunk_tasks: Query<(Entity, &mut GenerateChunkTask)>,
 ) {
-    for (entity, mut task) in &mut transform_tasks {
-        if let Some((zoom_level, cpos, chunk)) = future::block_on(future::poll_once(&mut task.0)) {
+    for (entity, mut task) in generate_chunk_tasks.iter_mut() {
+        if let Some((zoom_level, cpos, chunk)) = block_on(poll_once(&mut task.0)) {
             registry.insert_generated(zoom_level, &cpos, chunk, &assets_registry.block_mappings);
             commands.entity(entity).despawn();
         }
