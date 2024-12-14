@@ -1,18 +1,16 @@
-//! This module is concerned with meshing chunks, and not with rendering.
 use block_mesh::{MergeVoxel, Voxel, VoxelVisibility};
 
-use crate::world::ChunkBlockId;
+use crate::world::MappedBlockID;
 
-/// Wraps the common block type into something that we can implement block mesh traits for e.g. [`MergeVoxel`] and [`Voxel`].
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum VoxelBlock {
-    Opaque(ChunkBlockId),
-    Translucent(ChunkBlockId),
+    Opaque(MappedBlockID),
+    Translucent(MappedBlockID),
     Empty,
 }
 
 impl VoxelBlock {
-    pub fn new(block: ChunkBlockId) -> Self {
+    pub fn new(block: MappedBlockID) -> Self {
         Self::Opaque(block)
     }
 }

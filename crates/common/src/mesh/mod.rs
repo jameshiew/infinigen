@@ -10,7 +10,7 @@ use shapes::{PaddedChunk, PaddedChunkShape, PADDED_CHUNK_MAX_INDEX};
 
 use self::block::VoxelBlock;
 use self::textures::{Face, TextureMap};
-use crate::chunks::{UnpackedChunk, CHUNK_SIZE};
+use crate::chunks::{Array3Chunk, CHUNK_SIZE};
 use crate::world::{BlockPosition, LocalPosition};
 
 pub mod block;
@@ -255,7 +255,7 @@ pub fn mesh_chunk_greedy_quads(
 }
 
 // Returns the local locations of all visible blocks in the chunk, which then need to be offset by the chunk position.
-pub fn mesh_chunk_naive(chunk: UnpackedChunk) -> Vec<LocalPosition> {
+pub fn mesh_chunk_naive(chunk: Array3Chunk) -> Vec<LocalPosition> {
     let mut positions = vec![];
     for bx in 0..CHUNK_SIZE {
         for by in 0..CHUNK_SIZE {

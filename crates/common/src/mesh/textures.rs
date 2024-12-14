@@ -2,7 +2,7 @@ use ahash::AHashMap;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
-use crate::world::ChunkBlockId;
+use crate::world::MappedBlockID;
 
 const TEXTURE_SIZE: usize = 64;
 
@@ -28,7 +28,7 @@ pub struct TextureMap {
     /// Size of the texture atlas containing the textures.
     pub size: [usize; 2],
     /// Top left corner of texture in atlas, indexed by [`Face`].
-    appearance: AHashMap<ChunkBlockId, [FaceAppearance; 6]>,
+    appearance: AHashMap<MappedBlockID, [FaceAppearance; 6]>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -43,14 +43,14 @@ pub enum FaceAppearanceTransformed {
 }
 
 impl TextureMap {
-    pub fn add(&mut self, id: ChunkBlockId, appearance: [FaceAppearance; 6]) {
+    pub fn add(&mut self, id: MappedBlockID, appearance: [FaceAppearance; 6]) {
         tracing::debug!(?id, ?appearance, "Recording appearance for block");
         self.appearance.insert(id, appearance);
     }
 
     pub fn get(
         &self,
-        id: &ChunkBlockId,
+        id: &MappedBlockID,
         face: Face,
         uvs: [[f32; 2]; 4],
     ) -> Option<FaceAppearanceTransformed> {
@@ -67,7 +67,7 @@ impl TextureMap {
 
     pub fn to_tex_coords(
         &self,
-        id: &ChunkBlockId,
+        id: &MappedBlockID,
         face: Face,
         uvs: [[f32; 2]; 4],
     ) -> Option<[[f32; 2]; 4]> {
@@ -83,7 +83,7 @@ impl TextureMap {
         }
     }
 
-    pub fn to_color(&self, id: &ChunkBlockId, face: Face) -> Option<[f32; 4]> {
+    pub fn to_color(&self, id: &MappedBlockID, face: Face) -> Option<[f32; 4]> {
         let tidx = match self.appearance.get(id) {
             Some(faces) => faces[face as usize],
             None => {

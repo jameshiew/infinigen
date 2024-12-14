@@ -21,11 +21,11 @@ pub enum BlockVisibility {
     Translucent,
 }
 
-pub type BlockId = String;
+pub type BlockID = String;
 pub type BlockColor = [u8; 4];
 
 pub struct BlockType {
-    pub id: BlockId,
+    pub id: BlockID,
     pub visibility: BlockVisibility,
     pub color: BlockColor,
 }

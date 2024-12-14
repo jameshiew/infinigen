@@ -4,10 +4,10 @@ use ahash::AHashMap;
 use bevy::asset::{Asset, Handle};
 use bevy::pbr::StandardMaterial;
 use bevy::prelude::{Resource, TypePath};
-use infinigen_common::blocks::{BlockColor, BlockId, BlockType, BlockVisibility};
+use infinigen_common::blocks::{BlockColor, BlockID, BlockType, BlockVisibility};
 use infinigen_common::mesh::faces::BlockVisibilityChecker;
 use infinigen_common::mesh::textures::{Face, TextureMap};
-use infinigen_common::world::ChunkBlockId;
+use infinigen_common::world::MappedBlockID;
 use serde::{Deserialize, Serialize};
 use strum::EnumCount;
 
@@ -21,7 +21,7 @@ pub enum MaterialType {
     Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Ord, PartialOrd, TypePath, Asset,
 )]
 pub struct BlockDefinition {
-    pub id: BlockId,
+    pub id: BlockID,
     #[serde(default)]
     pub visibility: BlockVisibility,
     #[serde(default = "default_block_color")]
@@ -59,27 +59,27 @@ fn default_block_color() -> BlockColor {
 // TODO: overflow checking, safety
 #[derive(Debug, Default, Clone)]
 pub struct BlockMappings {
-    pub by_mapped_id: AHashMap<ChunkBlockId, BlockDefinition>,
-    by_block_id: AHashMap<BlockId, ChunkBlockId>,
-    next_free_mapped_id: ChunkBlockId,
+    pub by_mapped_id: AHashMap<MappedBlockID, BlockDefinition>,
+    by_block_id: AHashMap<BlockID, MappedBlockID>,
+    next_free_mapped_id: MappedBlockID,
 }
 
-impl From<&BlockMappings> for AHashMap<BlockId, ChunkBlockId> {
+impl From<&BlockMappings> for AHashMap<BlockID, MappedBlockID> {
     fn from(value: &BlockMappings) -> Self {
         value.by_block_id.clone()
     }
 }
 
 impl BlockMappings {
-    pub fn get_by_mapped_id(&self, mapped_id: &ChunkBlockId) -> &BlockDefinition {
+    pub fn get_by_mapped_id(&self, mapped_id: &MappedBlockID) -> &BlockDefinition {
         self.by_mapped_id.get(mapped_id).unwrap()
     }
 
-    pub fn get_by_block_id(&self, block_id: &BlockId) -> ChunkBlockId {
+    pub fn get_by_block_id(&self, block_id: &BlockID) -> MappedBlockID {
         *self.by_block_id.get(block_id).unwrap()
     }
 
-    pub fn add(&mut self, block_definition: BlockDefinition) -> ChunkBlockId {
+    pub fn add(&mut self, block_definition: BlockDefinition) -> MappedBlockID {
         let mapped_id = self.next_free_mapped_id;
         tracing::debug!(?block_definition, ?mapped_id, "Mapping block");
         self.by_block_id
@@ -92,13 +92,13 @@ impl BlockMappings {
 }
 
 impl BlockVisibilityChecker for &BlockMappings {
-    fn get_visibility(&self, mapped_id: &ChunkBlockId) -> BlockVisibility {
+    fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility {
         self.get_by_mapped_id(mapped_id).visibility
     }
 }
 
 impl BlockVisibilityChecker for BlockMappings {
-    fn get_visibility(&self, mapped_id: &ChunkBlockId) -> BlockVisibility {
+    fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility {
         (&self).get_visibility(mapped_id)
     }
 }
