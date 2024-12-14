@@ -1,15 +1,16 @@
 use ahash::AHashMap;
 use strum::EnumIter;
 
-use crate::blocks::BlockId;
+use crate::blocks::BlockID;
 use crate::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
 use crate::zoom::ZoomLevel;
 
-pub type ChunkBlockId = u8;
+/// Chunks work with [`MappedBlockID`]s (u8s), which correspond to [`BlockID`]s (strings).
+pub type MappedBlockID = u8;
 
 pub trait WorldGen {
-    /// Must be called before getting any chunks. If a world gen depends on a [`BlockId`] for which there is no [`ChunkBlockId`] provided, it may panic!
-    fn initialize(&mut self, mappings: AHashMap<BlockId, ChunkBlockId>);
+    /// Must be called before getting any chunks. If a world gen depends on a [`BlockID`] for which there is no [`MappedBlockID`] provided, it may panic!
+    fn initialize(&mut self, mappings: AHashMap<BlockID, MappedBlockID>);
     fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk;
 }
 

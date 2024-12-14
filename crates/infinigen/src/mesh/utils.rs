@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::render::render_asset::RenderAssetUsages;
 use bevy::render::render_resource::PrimitiveTopology;
-use infinigen_common::chunks::UnpackedChunk;
+use infinigen_common::chunks::Array3Chunk;
 use infinigen_common::mesh::faces::prepare_padded_chunk;
 use infinigen_common::mesh::shapes::ChunkFace;
 use infinigen_common::mesh::textures::TextureMap;
@@ -45,7 +45,7 @@ pub fn to_bevy_mesh(
 /// Returns a mesh of all visible block faces in the chunk.
 /// adapted from <https://github.com/bonsairobo/block-mesh-rs/blob/main/examples-crate/render/main.rs>
 pub fn bevy_mesh_visible_block_faces(
-    chunk: &UnpackedChunk,
+    chunk: &Array3Chunk,
     neighbor_faces: &[ChunkFace; 6],
     block_textures: &TextureMap,
     block_mappings: &BlockMappings,
@@ -58,7 +58,7 @@ pub fn bevy_mesh_visible_block_faces(
 /// Returns a mesh of quads in a chunk.
 /// adapted from <https://github.com/bonsairobo/block-mesh-rs/blob/main/examples-crate/render/main.rs>
 pub fn bevy_mesh_greedy_quads(
-    chunk: &UnpackedChunk,
+    chunk: &Array3Chunk,
     neighbor_faces: &[ChunkFace; 6],
     block_textures: &TextureMap,
     block_mappings: &BlockMappings,

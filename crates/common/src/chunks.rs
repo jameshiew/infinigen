@@ -3,7 +3,7 @@ use std::fmt;
 use ndarray::Array3;
 use serde::{Deserialize, Serialize};
 
-use super::world::ChunkBlockId;
+use super::world::MappedBlockID;
 use crate::world::BlockPosition;
 
 /// The length of one side of a cubic chunk.
@@ -19,46 +19,43 @@ pub const CHUNK_SIZE_F64: f64 = CHUNK_SIZE as f64;
 pub enum Chunk {
     #[default]
     Empty,
-    Unpacked(Box<UnpackedChunk>),
+    Array3(Box<Array3Chunk>),
 }
 
 impl fmt::Debug for Chunk {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Chunk::Empty => write!(f, "Chunk::Empty"),
-            Chunk::Unpacked(_) => write!(f, "Chunk::Unpacked"),
+            Chunk::Array3(_) => write!(f, "Chunk::Array3"),
         }
     }
 }
 
-impl From<UnpackedChunk> for Chunk {
-    fn from(chunk: UnpackedChunk) -> Self {
-        // we don't check if the chunk is empty here because that's expensive?
-        Chunk::Unpacked(Box::new(chunk))
+impl From<Array3Chunk> for Chunk {
+    fn from(chunk: Array3Chunk) -> Self {
+        Chunk::Array3(Box::new(chunk))
     }
 }
 
-impl From<Chunk> for UnpackedChunk {
+impl From<Chunk> for Array3Chunk {
     fn from(value: Chunk) -> Self {
         match value {
-            Chunk::Unpacked(chunk) => *chunk,
-            Chunk::Empty => UnpackedChunk::default(),
+            Chunk::Array3(chunk) => *chunk,
+            Chunk::Empty => Array3Chunk::default(),
         }
     }
 }
 
-/// A chunk of the world. `None` blocks represent empty blocks.
-/// Explicitly not `Copy` as copying could be expensive.
-/// We don't derive `Debug` or `Default`, so that we can use chunk sizes greater than 32.
+/// Chunk represented as a 3D array of [`MappedBlockID`].
 #[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct UnpackedChunk {
-    blocks: Array3<Option<ChunkBlockId>>,
+pub struct Array3Chunk {
+    blocks: Array3<Option<MappedBlockID>>,
 }
 
-impl Default for UnpackedChunk {
+impl Default for Array3Chunk {
     fn default() -> Self {
         Self {
-            blocks: Array3::<Option<ChunkBlockId>>::from_elem(
+            blocks: Array3::<Option<MappedBlockID>>::from_elem(
                 (CHUNK_USIZE, CHUNK_USIZE, CHUNK_USIZE),
                 None,
             ),
@@ -66,16 +63,16 @@ impl Default for UnpackedChunk {
     }
 }
 
-impl UnpackedChunk {
-    pub fn get(&self, pos: &BlockPosition) -> Option<ChunkBlockId> {
+impl Array3Chunk {
+    pub fn get(&self, pos: &BlockPosition) -> Option<MappedBlockID> {
         self.blocks[[pos.x as usize, pos.y as usize, pos.z as usize]]
     }
 
-    pub fn insert(&mut self, pos: &BlockPosition, block: ChunkBlockId) {
+    pub fn insert(&mut self, pos: &BlockPosition, block: MappedBlockID) {
         self.blocks[[pos.x as usize, pos.y as usize, pos.z as usize]] = Some(block);
     }
 
-    pub fn insert_if_free(&mut self, pos: &BlockPosition, block: ChunkBlockId) {
+    pub fn insert_if_free(&mut self, pos: &BlockPosition, block: MappedBlockID) {
         if self.blocks[[pos.x as usize, pos.y as usize, pos.z as usize]].is_none() {
             self.blocks[[pos.x as usize, pos.y as usize, pos.z as usize]] = Some(block);
         }
@@ -86,8 +83,8 @@ impl UnpackedChunk {
     }
 }
 
-pub fn filled_chunk(block: ChunkBlockId) -> UnpackedChunk {
-    let mut chunk = UnpackedChunk::default();
+pub fn filled_chunk(block: MappedBlockID) -> Array3Chunk {
+    let mut chunk = Array3Chunk::default();
     for x in 0..CHUNK_SIZE {
         for y in 0..CHUNK_SIZE {
             for z in 0..CHUNK_SIZE {
@@ -99,8 +96,8 @@ pub fn filled_chunk(block: ChunkBlockId) -> UnpackedChunk {
 }
 
 /// Chunk where the topmost layer is dirt - can be used to represent the ground.
-pub fn top_chunk(block: ChunkBlockId) -> UnpackedChunk {
-    let mut chunk = UnpackedChunk::default();
+pub fn top_chunk(block: MappedBlockID) -> Array3Chunk {
+    let mut chunk = Array3Chunk::default();
     for x in 0..CHUNK_SIZE {
         for z in 0..CHUNK_SIZE {
             chunk.insert(

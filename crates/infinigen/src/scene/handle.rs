@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use infinigen_common::blocks::BlockVisibility;
-use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F32};
-use infinigen_common::world::{BlockPosition, ChunkBlockId, WorldPosition};
+use infinigen_common::chunks::{Array3Chunk, Chunk, CHUNK_SIZE, CHUNK_SIZE_F32};
+use infinigen_common::world::{BlockPosition, MappedBlockID, WorldPosition};
 
 use super::{LoadedChunk, UnloadChunkOpEvent};
 use crate::assets::blocks::{BlockRegistry, MaterialType};
@@ -15,8 +15,8 @@ use crate::world::World;
 const CHUNK_OP_RATE: usize = (16. * (32. / CHUNK_SIZE_F32)) as usize;
 
 /// Split out blocks from this chunk.
-pub fn split(mut chunk: UnpackedChunk, chunk_block_id: ChunkBlockId) -> (UnpackedChunk, Chunk) {
-    let mut split_out = UnpackedChunk::default();
+pub fn split(mut chunk: Array3Chunk, chunk_block_id: MappedBlockID) -> (Array3Chunk, Chunk) {
+    let mut split_out = Array3Chunk::default();
     let mut contained_blocks_to_be_split_out = false;
 
     for x in 0..CHUNK_SIZE {
@@ -34,7 +34,7 @@ pub fn split(mut chunk: UnpackedChunk, chunk_block_id: ChunkBlockId) -> (Unpacke
     }
 
     let split_out = if contained_blocks_to_be_split_out {
-        Chunk::Unpacked(Box::new(split_out))
+        Chunk::Array3(Box::new(split_out))
     } else {
         Chunk::Empty
     };
@@ -94,7 +94,7 @@ pub fn process_load_chunk_ops(
             Some(ChunkStatus::Generated(chunk_info)) => {
                 tracing::trace!(?cpos, "Will render chunk");
 
-                let Chunk::Unpacked(ref chunk) = chunk_info.chunk else {
+                let Chunk::Array3(ref chunk) = chunk_info.chunk else {
                     tracing::trace!(?cpos, "Empty chunk");
                     continue;
                 };
@@ -127,7 +127,7 @@ pub fn process_load_chunk_ops(
                         split(*opaque_chunk, translucent_chunk_block_id);
                     opaque_chunk = Box::new(remaining);
 
-                    if let Chunk::Unpacked(translucent_chunk) = translucent_chunk {
+                    if let Chunk::Array3(translucent_chunk) = translucent_chunk {
                         if let Some(translucent_mesh) = bevy_mesh_greedy_quads(
                             &translucent_chunk,
                             &neighbor_faces,

@@ -1,8 +1,8 @@
 use ahash::AHashMap;
-use infinigen_common::blocks::BlockId;
-use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
+use infinigen_common::blocks::BlockID;
+use infinigen_common::chunks::{Array3Chunk, Chunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
 use infinigen_common::world::{
-    BlockPosition, ChunkBlockId, ChunkPosition, WorldGen, WorldPosition,
+    BlockPosition, ChunkPosition, MappedBlockID, WorldGen, WorldPosition,
 };
 use infinigen_common::zoom::ZoomLevel;
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
@@ -23,13 +23,13 @@ pub struct MountainIslands {
     vertical_scale: f64,
     horizontal_smoothness: f64,
 
-    water: ChunkBlockId,
-    snow: ChunkBlockId,
-    gravel: ChunkBlockId,
-    sand: ChunkBlockId,
-    dirt: ChunkBlockId,
-    grass: ChunkBlockId,
-    stone: ChunkBlockId,
+    water: MappedBlockID,
+    snow: MappedBlockID,
+    gravel: MappedBlockID,
+    sand: MappedBlockID,
+    dirt: MappedBlockID,
+    grass: MappedBlockID,
+    stone: MappedBlockID,
 }
 
 impl MountainIslands {
@@ -87,7 +87,7 @@ const MIN_Y_HEIGHT: i32 = -6;
 
 /// Based on <https://www.youtube.com/watch?v=CSa5O6knuwI>
 impl WorldGen for MountainIslands {
-    fn initialize(&mut self, mappings: AHashMap<BlockId, ChunkBlockId>) {
+    fn initialize(&mut self, mappings: AHashMap<BlockID, MappedBlockID>) {
         self.water = *mappings.get(WATER_BLOCK_ID).unwrap();
         self.snow = *mappings.get(SNOW_BLOCK_ID).unwrap();
         self.gravel = *mappings.get(GRAVEL_BLOCK_ID).unwrap();
@@ -113,7 +113,7 @@ impl WorldGen for MountainIslands {
             (f64::INFINITY, self.snow),
         ];
 
-        let mut chunk = UnpackedChunk::default();
+        let mut chunk = Array3Chunk::default();
         let mut is_empty = true;
         let offset: WorldPosition = pos.into();
         let zoomed_offset = [

@@ -88,7 +88,7 @@ impl ChunkRegistry {
     ) -> ChunkInfo {
         let chunk_info = match chunk {
             Chunk::Empty => ChunkInfo::empty(),
-            Chunk::Unpacked(chunk) => {
+            Chunk::Array3(chunk) => {
                 let faces = extract_faces(&chunk, block_mappings);
                 let chunk = (*chunk).into();
                 ChunkInfo { chunk, faces }

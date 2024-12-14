@@ -3,20 +3,20 @@ use block_mesh::{OrientedBlockFace, RIGHT_HANDED_Y_UP_CONFIG};
 use strum::IntoEnumIterator;
 
 use crate::blocks::BlockVisibility;
-use crate::chunks::{UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_U32};
+use crate::chunks::{Array3Chunk, CHUNK_SIZE, CHUNK_SIZE_U32};
 use crate::mesh::block::VoxelBlock;
 use crate::mesh::shapes;
 use crate::mesh::shapes::{ChunkFace, ChunkFaceShape, PaddedChunk, PaddedChunkShape};
-use crate::world::{BlockPosition, ChunkBlockId};
+use crate::world::{BlockPosition, MappedBlockID};
 
 pub const RHS_FACES: [OrientedBlockFace; 6] = RIGHT_HANDED_Y_UP_CONFIG.faces;
 
 pub trait BlockVisibilityChecker {
-    fn get_visibility(&self, mapped_id: &ChunkBlockId) -> BlockVisibility;
+    fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility;
 }
 
 pub fn extract_faces(
-    chunk: &UnpackedChunk,
+    chunk: &Array3Chunk,
     block_mappings: impl BlockVisibilityChecker,
 ) -> [ChunkFace; 6] {
     let mut faces = [shapes::empty_chunk_face(); 6];
@@ -185,7 +185,7 @@ pub fn extract_faces(
 
 /// Puts `chunk` into a `ChunkShape` with 1-voxel padding around the edges, filled according to the neighbor faces.
 pub fn prepare_padded_chunk(
-    chunk: &UnpackedChunk,
+    chunk: &Array3Chunk,
     neighbor_faces: &[ChunkFace; 6],
     block_mappings: impl BlockVisibilityChecker,
 ) -> PaddedChunk {
@@ -331,7 +331,7 @@ mod tests {
     struct AllOpaque;
 
     impl BlockVisibilityChecker for AllOpaque {
-        fn get_visibility(&self, _mapped_id: &ChunkBlockId) -> BlockVisibility {
+        fn get_visibility(&self, _mapped_id: &MappedBlockID) -> BlockVisibility {
             BlockVisibility::Opaque
         }
     }
