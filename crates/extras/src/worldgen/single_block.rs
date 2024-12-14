@@ -6,14 +6,15 @@ use infinigen_common::zoom::ZoomLevel;
 
 use crate::blocks::GRASS_BLOCK_ID;
 
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
+/// Generates a single block in the middle of every chunk.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct SingleBlock {
-    pub block_mappings: AHashMap<BlockID, MappedBlockID>,
+    grass: MappedBlockID,
 }
 
 impl WorldGen for SingleBlock {
     fn initialize(&mut self, mappings: AHashMap<BlockID, MappedBlockID>) {
-        self.block_mappings = mappings;
+        self.grass = *mappings.get(GRASS_BLOCK_ID).unwrap();
     }
 
     fn get(&self, _pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
@@ -25,7 +26,7 @@ impl WorldGen for SingleBlock {
                 y: 0,
                 z: CHUNK_SIZE / 2,
             },
-            *self.block_mappings.get(GRASS_BLOCK_ID).unwrap(),
+            self.grass,
         );
         chunk.into()
     }
