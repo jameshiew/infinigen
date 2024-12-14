@@ -10,9 +10,9 @@ mod info;
 #[cfg(not(target_family = "wasm"))]
 mod wireframe;
 
-pub struct UiPlugin;
+pub struct DebugPlugin;
 
-impl Plugin for UiPlugin {
+impl Plugin for DebugPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing debug UI plugin");
         app.init_resource::<UiState>()

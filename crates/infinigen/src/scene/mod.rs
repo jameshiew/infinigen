@@ -246,9 +246,9 @@ pub fn update_scene(
     unload_evs.send_batch(to_unload.into_iter().map(UnloadChunkOpEvent));
 }
 
-pub struct Plugin;
+pub struct ScenePlugin;
 
-impl bevy::prelude::Plugin for Plugin {
+impl Plugin for ScenePlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing scene plugin");
         app.init_resource::<SceneView>()
