@@ -13,17 +13,17 @@ pub trait WorldGen {
     fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk;
 }
 
-/// Position of a block within a chunk. We use i8 for coordinates to make arithmetic easier when meshing, which may not be the best reason.
+/// Position of a block within a chunk.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub struct BlockPosition {
-    pub x: i8,
-    pub y: i8,
-    pub z: i8,
+    pub x: u8,
+    pub y: u8,
+    pub z: u8,
 }
 
 impl BlockPosition {
-    pub const MAX_IDX: i8 = CHUNK_SIZE - 1;
-    pub const MIN_IDX: i8 = 0;
+    pub const MAX_IDX: u8 = CHUNK_SIZE - 1;
+    pub const MIN_IDX: u8 = 0;
 }
 
 /// Position of a chunk within a world.

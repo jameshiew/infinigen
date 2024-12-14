@@ -33,7 +33,7 @@ impl WorldGen for Bowl {
         let mut chunk = UnpackedChunk::default();
         for x in 0..CHUNK_SIZE {
             for z in 0..CHUNK_SIZE {
-                let height = ((pos.x.abs() + pos.z.abs()) as i8).min(CHUNK_SIZE - 1);
+                let height = ((pos.x.abs() + pos.z.abs()) as u8).min(CHUNK_SIZE - 1);
                 for y in 0..height {
                     chunk.insert(
                         &BlockPosition { x, y, z },

@@ -53,7 +53,7 @@ impl WorldGen for PerlinNoise {
 
                     if val < -0.3 {
                         let val = val + 0.3;
-                        let depth = (val.abs() * MAX_DEPTH).floor() as i8;
+                        let depth = (val.abs() * MAX_DEPTH).floor() as u8;
                         for y in 0..depth {
                             chunk.insert(
                                 &BlockPosition {
@@ -79,7 +79,7 @@ impl WorldGen for PerlinNoise {
                     ]);
 
                     if val > 0. {
-                        let height = (val * MAX_HEIGHT).floor() as i8;
+                        let height = (val * MAX_HEIGHT).floor() as u8;
                         for y in 0..height {
                             chunk.insert(
                                 &BlockPosition { x, y, z },

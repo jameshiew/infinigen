@@ -34,7 +34,7 @@ impl WorldGen for Random {
         let mut chunk = UnpackedChunk::default();
         for x in 0..CHUNK_SIZE {
             for z in 0..CHUNK_SIZE {
-                let height: i8 = rng.gen_range(0..=2);
+                let height = rng.gen_range(0..=2);
                 for y in 0..height {
                     chunk.insert(
                         &BlockPosition { x, y, z },

@@ -7,7 +7,7 @@ use super::world::ChunkBlockId;
 use crate::world::BlockPosition;
 
 /// The length of one side of a cubic chunk.
-pub const CHUNK_SIZE: i8 = 32;
+pub const CHUNK_SIZE: u8 = 32;
 
 pub const CHUNK_USIZE: usize = CHUNK_SIZE as usize;
 pub const CHUNK_SIZE_U32: u32 = CHUNK_SIZE as u32;

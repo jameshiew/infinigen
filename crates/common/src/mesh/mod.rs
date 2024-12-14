@@ -276,13 +276,13 @@ pub fn mesh_chunk_naive(chunk: UnpackedChunk) -> Vec<LocalPosition> {
                 });
                 let down = chunk.get(&BlockPosition {
                     x: bx,
-                    y: (by - 1).max(0),
+                    y: by - 1,
                     z: bz,
                 });
                 let north = chunk.get(&BlockPosition {
                     x: bx,
                     y: by,
-                    z: (bz - 1).max(0),
+                    z: bz - 1,
                 });
                 let east = chunk.get(&BlockPosition {
                     x: (bx + 1).min(CHUNK_SIZE - 1),
@@ -290,7 +290,7 @@ pub fn mesh_chunk_naive(chunk: UnpackedChunk) -> Vec<LocalPosition> {
                     z: bz,
                 });
                 let west = chunk.get(&BlockPosition {
-                    x: (bx - 1).max(0),
+                    x: bx - 1,
                     y: by,
                     z: bz,
                 });
