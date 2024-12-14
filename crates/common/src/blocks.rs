@@ -1,4 +1,7 @@
+use ahash::AHashMap;
 use serde::{Deserialize, Serialize};
+
+use crate::world::MappedBlockID;
 
 #[derive(
     Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Serialize, Deserialize,
@@ -25,5 +28,15 @@ impl Default for BlockType {
             visibility: BlockVisibility::Opaque,
             color: [255, 255, 255, 255],
         }
+    }
+}
+
+pub struct Palette {
+    pub inner: AHashMap<BlockID, MappedBlockID>,
+}
+
+impl From<AHashMap<BlockID, MappedBlockID>> for Palette {
+    fn from(value: AHashMap<BlockID, MappedBlockID>) -> Self {
+        Self { inner: value }
     }
 }

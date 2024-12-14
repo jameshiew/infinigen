@@ -4,7 +4,7 @@ use ahash::AHashMap;
 use bevy::asset::{Asset, Handle};
 use bevy::pbr::StandardMaterial;
 use bevy::prelude::{Resource, TypePath};
-use infinigen_common::blocks::{BlockColor, BlockID, BlockType, BlockVisibility};
+use infinigen_common::blocks::{BlockColor, BlockID, BlockType, BlockVisibility, Palette};
 use infinigen_common::mesh::faces::BlockVisibilityChecker;
 use infinigen_common::mesh::textures::{Face, TextureMap};
 use infinigen_common::world::MappedBlockID;
@@ -87,6 +87,10 @@ impl BlockMappings {
             .insert(self.next_free_mapped_id, block_definition);
         self.next_free_mapped_id += 1;
         mapped_id
+    }
+
+    pub fn palette(&self) -> Palette {
+        self.by_block_id.clone().into()
     }
 }
 

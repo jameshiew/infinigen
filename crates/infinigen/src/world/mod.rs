@@ -12,14 +12,13 @@ use crate::AppState;
 
 #[derive(Resource)]
 pub struct World {
-    pub generator: Arc<Box<dyn WorldGen + Send + Sync>>,
+    pub generator: Arc<dyn WorldGen + Send + Sync>,
 }
 
 impl Default for World {
     fn default() -> Self {
-        let x: Box<dyn WorldGen + Send + Sync> = Box::<worldgen::flat::Flat>::default();
         Self {
-            generator: Arc::new(x),
+            generator: Arc::new(worldgen::flat::Flat::default()),
         }
     }
 }
@@ -46,9 +45,6 @@ fn init_world(
     config: Res<Config>,
     mut world: ResMut<World>,
 ) {
-    let mut worldgen: Box<dyn infinigen_common::world::WorldGen + Send + Sync> =
-        config.world.into();
-    worldgen.initialize((&registry.block_mappings).into());
-    world.generator = Arc::new(worldgen);
+    world.generator = config.world.as_world_gen(registry.block_mappings.palette());
     next_state.set(AppState::MainGame);
 }

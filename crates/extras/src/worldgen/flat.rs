@@ -1,5 +1,4 @@
-use ahash::AHashMap;
-use infinigen_common::blocks::BlockID;
+use infinigen_common::blocks::Palette;
 use infinigen_common::chunks::Chunk;
 use infinigen_common::world::{ChunkPosition, MappedBlockID, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
@@ -12,11 +11,15 @@ pub struct Flat {
     dirt: MappedBlockID,
 }
 
-impl WorldGen for Flat {
-    fn initialize(&mut self, mappings: AHashMap<BlockID, MappedBlockID>) {
-        self.dirt = *mappings.get(DIRT_BLOCK_ID).unwrap();
+impl From<Palette> for Flat {
+    fn from(palette: Palette) -> Self {
+        Flat {
+            dirt: *palette.inner.get(DIRT_BLOCK_ID).unwrap(),
+        }
     }
+}
 
+impl WorldGen for Flat {
     fn get(&self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
         // zoom level does not change anything
         if pos.y == -1 {
