@@ -1,14 +1,14 @@
 use ahash::AHashMap;
+use infinigen_common::blocks::BlockId;
 use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
 use infinigen_common::world::{
-    BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldBlockPosition, WorldGen,
-    WorldPosition,
+    BlockPosition, ChunkBlockId, ChunkPosition, WorldBlockPosition, WorldGen, WorldPosition,
 };
 use infinigen_common::zoom::ZoomLevel;
 use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 use splines::{Interpolation, Key, Spline};
 
-use crate::block_ids::{
+use crate::blocks::{
     GRASS_BLOCK_ID, GRAVEL_BLOCK_ID, SAND_BLOCK_ID, STONE_BLOCK_ID, WATER_BLOCK_ID,
 };
 

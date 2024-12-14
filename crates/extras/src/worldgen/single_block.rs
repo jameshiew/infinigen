@@ -1,9 +1,10 @@
 use ahash::AHashMap;
+use infinigen_common::blocks::BlockId;
 use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE};
-use infinigen_common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
+use infinigen_common::world::{BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
 
-use crate::block_ids::GRASS_BLOCK_ID;
+use crate::blocks::GRASS_BLOCK_ID;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct SingleBlock {

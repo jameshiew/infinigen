@@ -1,9 +1,10 @@
 use ahash::AHashMap;
+use infinigen_common::blocks::BlockId;
 use infinigen_common::chunks::{Chunk, UnpackedChunk, CHUNK_SIZE, CHUNK_SIZE_I32};
-use infinigen_common::world::{BlockId, BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
+use infinigen_common::world::{BlockPosition, ChunkBlockId, ChunkPosition, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
 
-use crate::block_ids::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID};
+use crate::blocks::{DIRT_BLOCK_ID, GRASS_BLOCK_ID, STONE_BLOCK_ID};
 
 /// Similar to Flat, but with a 1-block high border around each block, and a x+z tower of blocks in the middle. Chunks above the ground chunk have a block centred in the middle.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]

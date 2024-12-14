@@ -1,26 +1,16 @@
 use ahash::AHashMap;
-use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
+use crate::blocks::BlockId;
 use crate::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
 use crate::zoom::ZoomLevel;
 
-pub type BlockId = String;
 pub type ChunkBlockId = u8;
 
 pub trait WorldGen {
     /// Must be called before getting any chunks. If a world gen depends on a [`BlockId`] for which there is no [`ChunkBlockId`] provided, it may panic!
     fn initialize(&mut self, mappings: AHashMap<BlockId, ChunkBlockId>);
     fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk;
-}
-
-#[derive(
-    Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Serialize, Deserialize,
-)]
-pub enum BlockVisibility {
-    #[default]
-    Opaque,
-    Translucent,
 }
 
 /// Position of a block within a chunk. We use i8 for coordinates to make arithmetic easier when meshing, which may not be the best reason.
