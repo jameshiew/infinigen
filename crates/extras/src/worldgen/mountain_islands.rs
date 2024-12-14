@@ -1,5 +1,4 @@
-use ahash::AHashMap;
-use infinigen_common::blocks::BlockID;
+use infinigen_common::blocks::Palette;
 use infinigen_common::chunks::{Array3Chunk, Chunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
 use infinigen_common::world::{
     BlockPosition, ChunkPosition, MappedBlockID, WorldGen, WorldPosition,
@@ -33,8 +32,25 @@ pub struct MountainIslands {
     stone: MappedBlockID,
 }
 
-impl MountainIslands {
-    pub fn new(seed: u32) -> Self {
+impl From<Palette> for MountainIslands {
+    fn from(palette: Palette) -> Self {
+        let mut wgen = Self::default();
+        tracing::debug!(?wgen.heightmap.octaves, wgen.heightmap.frequency, wgen.heightmap.lacunarity, wgen.heightmap.persistence, "MountainIslands initialized");
+
+        wgen.water = *palette.inner.get(WATER_BLOCK_ID).unwrap();
+        wgen.snow = *palette.inner.get(SNOW_BLOCK_ID).unwrap();
+        wgen.gravel = *palette.inner.get(GRAVEL_BLOCK_ID).unwrap();
+        wgen.sand = *palette.inner.get(SAND_BLOCK_ID).unwrap();
+        wgen.dirt = *palette.inner.get(DIRT_BLOCK_ID).unwrap();
+        wgen.grass = *palette.inner.get(GRASS_BLOCK_ID).unwrap();
+        wgen.stone = *palette.inner.get(STONE_BLOCK_ID).unwrap();
+        wgen
+    }
+}
+
+impl Default for MountainIslands {
+    fn default() -> Self {
+        let seed = 0;
         let vspline = Spline::from_vec(vec![
             Key::new(-1., 0.6, Interpolation::Cosine),
             Key::new(-0.9, 0.7, Interpolation::Cosine),
@@ -44,8 +60,7 @@ impl MountainIslands {
             Key::new(0.9, 1., Interpolation::Cosine),
             Key::new(1.1, 1.5, Interpolation::default()), // this last one must be strictly greater than 1 because sometime we may sample with exactly the value 1.
         ]);
-
-        let wgen = Self {
+        Self {
             heightmap: default_heightmap(seed),
             verticality: Perlin::new(seed),
             terrain_variance: default_terrain_variance(seed),
@@ -60,9 +75,7 @@ impl MountainIslands {
             dirt: 5,
             grass: 6,
             stone: 7,
-        };
-        tracing::debug!(?wgen.heightmap.octaves, wgen.heightmap.frequency, wgen.heightmap.lacunarity, wgen.heightmap.persistence, "MountainIslands initialized");
-        wgen
+        }
     }
 }
 
@@ -74,12 +87,6 @@ pub fn default_terrain_variance(seed: u32) -> Fbm<Perlin> {
     Fbm::<Perlin>::new(seed).set_octaves(8).set_persistence(0.7)
 }
 
-impl Default for MountainIslands {
-    fn default() -> Self {
-        Self::new(0)
-    }
-}
-
 const SEA_LEVEL: f64 = 0.;
 
 // we still bound the worldgen on the Y axis to improve performance
@@ -88,16 +95,6 @@ const MIN_Y_HEIGHT: i32 = -6;
 
 /// Based on <https://www.youtube.com/watch?v=CSa5O6knuwI>
 impl WorldGen for MountainIslands {
-    fn initialize(&mut self, mappings: AHashMap<BlockID, MappedBlockID>) {
-        self.water = *mappings.get(WATER_BLOCK_ID).unwrap();
-        self.snow = *mappings.get(SNOW_BLOCK_ID).unwrap();
-        self.gravel = *mappings.get(GRAVEL_BLOCK_ID).unwrap();
-        self.sand = *mappings.get(SAND_BLOCK_ID).unwrap();
-        self.dirt = *mappings.get(DIRT_BLOCK_ID).unwrap();
-        self.grass = *mappings.get(GRASS_BLOCK_ID).unwrap();
-        self.stone = *mappings.get(STONE_BLOCK_ID).unwrap();
-    }
-
     fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
         if pos.y < MIN_Y_HEIGHT {
             return Chunk::Empty;

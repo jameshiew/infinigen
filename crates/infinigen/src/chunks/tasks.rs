@@ -64,7 +64,7 @@ pub fn generate_chunk_async(
     task_pool: &AsyncComputeTaskPool,
     zoom_level: ZoomLevel,
     position: ChunkPosition,
-    worldgen: Arc<Box<dyn WorldGen + Send + Sync>>,
+    worldgen: Arc<dyn WorldGen + Send + Sync>,
 ) -> GenerateChunkTask {
     let zoom_level = zoom_level.to_owned();
     let position = position.to_owned();
