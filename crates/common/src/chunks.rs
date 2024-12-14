@@ -26,7 +26,7 @@ impl fmt::Debug for Chunk {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Chunk::Empty => write!(f, "Chunk::Empty"),
-            Chunk::Unpacked(chunk) => write!(f, "Chunk::Unpacked({})", chunk.count_not_empty()),
+            Chunk::Unpacked(_) => write!(f, "Chunk::Unpacked"),
         }
     }
 }
@@ -83,24 +83,6 @@ impl UnpackedChunk {
 
     pub fn clear(&mut self, pos: &BlockPosition) {
         self.blocks[[pos.x as usize, pos.y as usize, pos.z as usize]] = None;
-    }
-
-    pub fn count_not_empty(&self) -> usize {
-        let mut count = 0;
-        for x in 0..CHUNK_USIZE {
-            for y in 0..CHUNK_USIZE {
-                for z in 0..CHUNK_USIZE {
-                    if self.blocks[[x, y, z]].is_some() {
-                        count += 1;
-                    }
-                }
-            }
-        }
-        count
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.count_not_empty() == 0
     }
 }
 
