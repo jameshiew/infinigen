@@ -2512,7 +2512,6 @@ dependencies = [
  "bevy_egui",
  "bevy_flycam",
  "config",
- "futures-lite",
  "infinigen-common",
  "infinigen-extras",
  "serde",
