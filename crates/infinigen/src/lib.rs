@@ -35,13 +35,13 @@ impl Plugin for AppPlugin {
         app.init_state::<AppState>()
             .insert_resource(self.config.clone())
             .add_plugins((
-                assets::Plugin,
-                scene::Plugin,
+                assets::AssetsPlugin,
+                scene::ScenePlugin,
                 chunks::ChunksPlugin,
                 camera::CameraPlugin,
                 world::WorldPlugin,
                 #[cfg(feature = "debug-ui")]
-                debug::UiPlugin,
+                debug::DebugPlugin,
             ));
     }
 }

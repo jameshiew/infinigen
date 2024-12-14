@@ -13,9 +13,9 @@ use crate::world::World;
 use crate::AppState;
 
 pub mod blocks;
-pub struct Plugin;
+pub struct AssetsPlugin;
 
-impl bevy::prelude::Plugin for Plugin {
+impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing assets plugin");
         app.add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
