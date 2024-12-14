@@ -55,8 +55,7 @@ fn default_block_color() -> BlockColor {
     [255, 255, 255, 255]
 }
 
-/// Maps mapped block IDs (i.e. bytes) <-> block definitions.
-// TODO: overflow checking, safety
+/// Tracks which [`MappedBlockID`]s are being used for which [`BlockDefinition`]s for the currently loaded session.
 #[derive(Debug, Default, Clone)]
 pub struct BlockMappings {
     pub by_mapped_id: AHashMap<MappedBlockID, BlockDefinition>,
