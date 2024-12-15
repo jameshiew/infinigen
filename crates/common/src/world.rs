@@ -3,7 +3,7 @@ use strum::EnumIter;
 use crate::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
 use crate::zoom::ZoomLevel;
 
-/// Chunks work with [`MappedBlockID`]s (u8s), which correspond to [`BlockID`]s (strings).
+/// Chunks work with [`MappedBlockID`]s (u8s), which correspond to [`crate::blocks::BlockID`]s (strings).
 pub type MappedBlockID = u8;
 
 pub trait WorldGen {
