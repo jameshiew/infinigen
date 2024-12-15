@@ -54,20 +54,35 @@ fn check_assets(
     folders: ResMut<AssetFolders>,
     asset_server: Res<AssetServer>,
 ) {
-    let mut block_definitions_loaded = false;
     let blockdef_load_state =
         asset_server.get_recursive_dependency_load_state(&folders.block_definitions);
-    if let Some(RecursiveDependencyLoadState::Loaded) = blockdef_load_state {
+
+    let block_definitions_loaded = match blockdef_load_state {
+        Some(RecursiveDependencyLoadState::Loaded) => true,
+        Some(RecursiveDependencyLoadState::Failed(_)) => {
+            tracing::info!("Couldn't load block definitions, won't use assets");
+            next_state.set(AppState::InitializingRegistry);
+            return;
+        }
+        _ => false,
+    };
+    if block_definitions_loaded {
         tracing::debug!("Finished loading block definitions");
-        block_definitions_loaded = true;
     }
 
-    let mut block_textures_loaded = false;
     let blocktex_load_state =
         asset_server.get_recursive_dependency_load_state(&folders.block_textures);
-    if let Some(RecursiveDependencyLoadState::Loaded) = blocktex_load_state {
+    let block_textures_loaded = match blocktex_load_state {
+        Some(RecursiveDependencyLoadState::Loaded) => true,
+        Some(RecursiveDependencyLoadState::Failed(_)) => {
+            tracing::info!("Couldn't load block textures, won't use assets");
+            next_state.set(AppState::InitializingRegistry);
+            return;
+        }
+        _ => false,
+    };
+    if block_textures_loaded {
         tracing::debug!("Finished loading block textures");
-        block_textures_loaded = true;
     }
 
     if block_definitions_loaded && block_textures_loaded {
