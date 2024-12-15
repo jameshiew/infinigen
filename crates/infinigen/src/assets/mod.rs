@@ -1,5 +1,5 @@
 use ahash::AHashMap;
-use bevy::asset::{LoadedFolder, RecursiveDependencyLoadState};
+use bevy::asset::LoadedFolder;
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use blocks::{BlockDefinition, BlockRegistry, MaterialType};
@@ -39,6 +39,7 @@ pub fn skip_loading_assets(mut next_state: ResMut<NextState<AppState>>) {
     next_state.set(AppState::InitializingRegistry);
 }
 
+#[cfg(not(target_family = "wasm"))]
 fn load_assets(mut folders: ResMut<AssetFolders>, server: Res<AssetServer>) {
     folders.block_textures = server.load_folder("blocks/textures/");
     folders.block_definitions = server.load_folder("blocks/types/");
@@ -49,11 +50,14 @@ fn load_assets(mut folders: ResMut<AssetFolders>, server: Res<AssetServer>) {
     );
 }
 
+#[cfg(not(target_family = "wasm"))]
 fn check_assets(
     mut next_state: ResMut<NextState<AppState>>,
     folders: ResMut<AssetFolders>,
     asset_server: Res<AssetServer>,
 ) {
+    use bevy::asset::RecursiveDependencyLoadState;
+
     let blockdef_load_state =
         asset_server.get_recursive_dependency_load_state(&folders.block_definitions);
 
