@@ -17,7 +17,7 @@ pub fn display_debug_info(
     mut movement_settings: ResMut<MovementSettings>,
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
-    load_ops: Res<scene::LoadOps>,
+    load_ops: Res<scene::LoadChunkRequests>,
     mut update_evs: EventWriter<scene::UpdateSettingsEvent>,
     mut reload_evs: EventWriter<scene::ReloadAllChunksEvent>,
     loaded_chunks: Query<&LoadedChunk>,

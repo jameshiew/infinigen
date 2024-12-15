@@ -59,7 +59,7 @@ pub fn process_load_chunk_ops(
     mut commands: Commands,
     mut chunks: ResMut<ChunkRegistry>,
     world: Res<World>,
-    mut load_ops: ResMut<crate::scene::LoadOps>,
+    mut load_ops: ResMut<crate::scene::LoadChunkRequests>,
     scene_zoom: Res<crate::scene::SceneZoom>,
     mut meshes: ResMut<Assets<Mesh>>,
     registry: Res<BlockRegistry>,

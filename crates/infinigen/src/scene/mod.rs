@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use std::f32::consts::PI;
 
 use ahash::AHashSet;
@@ -8,6 +7,7 @@ use infinigen_common::view;
 use infinigen_common::world::{ChunkPosition, WorldPosition};
 
 use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
+use crate::utils::Queue;
 use crate::AppState;
 
 mod handle;
@@ -18,28 +18,7 @@ pub struct LoadedChunk {
     pub cpos: ChunkPosition,
 }
 
-#[derive(Resource, Default)]
-pub struct LoadOps {
-    deque: VecDeque<ChunkPosition>,
-}
-
-impl LoadOps {
-    pub fn len(&self) -> usize {
-        self.deque.len()
-    }
-
-    pub fn push_back(&mut self, cpos: ChunkPosition) {
-        self.deque.push_back(cpos);
-    }
-
-    pub fn pop_front(&mut self) -> Option<ChunkPosition> {
-        self.deque.pop_front()
-    }
-
-    pub fn clear(&mut self) {
-        self.deque.clear();
-    }
-}
+pub type LoadChunkRequests = Queue<ChunkPosition>;
 
 #[derive(Debug, Default, Resource)]
 pub struct SceneCamera {
@@ -202,7 +181,7 @@ pub fn check_if_should_update_scene(
 pub fn update_scene(
     scene_view: Res<SceneView>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
-    mut load_ops: ResMut<LoadOps>,
+    mut load_ops: ResMut<LoadChunkRequests>,
     mut unload_evs: EventWriter<UnloadChunkOpEvent>,
     mut update_scene_evs: EventReader<UpdateSceneEvent>,
     loaded: Query<&LoadedChunk>,
@@ -269,7 +248,7 @@ impl Plugin for ScenePlugin {
         app.init_resource::<SceneView>()
             .init_resource::<SceneCamera>()
             .init_resource::<SceneZoom>()
-            .init_resource::<LoadOps>()
+            .init_resource::<LoadChunkRequests>()
             .add_systems(
                 OnEnter(AppState::MainGame),
                 (lights::setup, init_scene_from_config),
@@ -288,7 +267,7 @@ impl Plugin for ScenePlugin {
                         update_scene.run_if(on_event::<UpdateSceneEvent>),
                     )
                         .chain(),
-                    handle::process_load_chunk_ops.run_if(resource_changed::<LoadOps>),
+                    handle::process_load_chunk_ops.run_if(resource_changed::<LoadChunkRequests>),
                     handle::process_unload_chunk_ops.run_if(on_event::<UnloadChunkOpEvent>),
                 )
                     .run_if(in_state(AppState::MainGame)),),
