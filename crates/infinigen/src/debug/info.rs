@@ -39,7 +39,7 @@ pub fn display_debug_info(
                 .average()
                 .unwrap_or_default()
         ));
-        ui.label(format!("# queued chunk ops: {}", load_ops.deque.len()));
+        ui.label(format!("# queued chunk ops: {}", load_ops.len()));
         ui.label(format!(
             "# non-empty chunks loaded: {}",
             loaded_chunks.iter().count(),

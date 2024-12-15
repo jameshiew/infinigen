@@ -8,7 +8,6 @@ use crate::assets::blocks::{BlockRegistry, MaterialType};
 use crate::chunks::registry::{ChunkRegistry, ChunkStatus};
 use crate::chunks::tasks::RequestChunkEvent;
 use crate::mesh::utils::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces};
-use crate::scene::RequestChunkOp;
 use crate::world::World;
 
 // bigger chunks means go slower to prevent lag/stutter
@@ -68,10 +67,9 @@ pub fn process_load_chunk_ops(
 ) {
     let scene_zoom_level = scene_zoom.zoom_level.into();
     for _ in 0..CHUNK_OP_RATE {
-        let Some(op) = load_ops.deque.pop_front() else {
+        let Some(cpos) = load_ops.pop_front() else {
             return;
         };
-        let RequestChunkOp(cpos) = op;
 
         match chunks.get_status(scene_zoom_level, &cpos) {
             None => {

@@ -20,7 +20,25 @@ pub struct LoadedChunk {
 
 #[derive(Resource, Default)]
 pub struct LoadOps {
-    pub deque: VecDeque<RequestChunkOp>,
+    deque: VecDeque<ChunkPosition>,
+}
+
+impl LoadOps {
+    pub fn len(&self) -> usize {
+        self.deque.len()
+    }
+
+    pub fn push_back(&mut self, cpos: ChunkPosition) {
+        self.deque.push_back(cpos);
+    }
+
+    pub fn pop_front(&mut self) -> Option<ChunkPosition> {
+        self.deque.pop_front()
+    }
+
+    pub fn clear(&mut self) {
+        self.deque.clear();
+    }
 }
 
 #[derive(Debug, Default, Resource)]
@@ -50,10 +68,6 @@ pub struct SceneZoom {
     pub prev_zoom_level: i8,
     pub zoom_level: i8,
 }
-
-// Prioritizing which chunks to load is important so we can't use events
-#[derive(Debug)]
-pub struct RequestChunkOp(ChunkPosition);
 
 #[derive(Debug, Event)]
 pub struct UnloadChunkOpEvent(ChunkPosition);
@@ -197,7 +211,7 @@ pub fn update_scene(
         return;
     }
     tracing::trace!("Updating scene");
-    load_ops.deque.clear();
+    load_ops.clear();
 
     let (camera, projection) = camera.single();
     let current_cpos: ChunkPosition = WorldPosition {
@@ -241,7 +255,7 @@ pub fn update_scene(
     );
 
     for cpos in to_load {
-        load_ops.deque.push_back(RequestChunkOp(cpos))
+        load_ops.push_back(cpos);
     }
 
     unload_evs.send_batch(to_unload.into_iter().map(UnloadChunkOpEvent));
