@@ -196,6 +196,7 @@ pub fn update_scene(
     if update_scene_evs.read().next().is_none() {
         return;
     }
+    tracing::trace!("Updating scene");
     load_ops.deque.clear();
 
     let (camera, projection) = camera.single();

@@ -1,8 +1,8 @@
 use ahash::AHashMap;
 use bevy::prelude::Resource;
-use infinigen_common::chunks::Chunk;
+use infinigen_common::chunks::{Array3Chunk, Chunk};
 use infinigen_common::mesh::faces::extract_faces;
-use infinigen_common::mesh::shapes::{empty_chunk_face, ChunkFace};
+use infinigen_common::mesh::shapes::{ChunkFace, EMPTY_CHUNK_FACES};
 use infinigen_common::world::{ChunkPosition, Direction};
 use infinigen_common::zoom::ZoomLevel;
 use strum::IntoEnumIterator;
@@ -18,23 +18,15 @@ pub struct ChunkRegistry {
 
 #[derive(Debug, Clone)]
 pub struct ChunkInfo {
-    pub chunk: Chunk,
+    pub chunk: Box<Array3Chunk>,
     pub faces: [ChunkFace; 6],
-}
-
-impl ChunkInfo {
-    pub fn empty() -> Self {
-        Self {
-            chunk: Chunk::Empty,
-            faces: [empty_chunk_face(); 6],
-        }
-    }
 }
 
 #[derive(Debug, Clone)]
 pub enum ChunkStatus {
-    Generated(Box<ChunkInfo>),
     Requested,
+    Generated(Box<ChunkInfo>),
+    Empty,
 }
 
 impl ChunkRegistry {
@@ -62,69 +54,42 @@ impl ChunkRegistry {
         }
     }
 
-    pub fn fetch_and_insert(
-        &mut self,
-        zoom_level: ZoomLevel,
-        position: &ChunkPosition,
-        world: &World,
-        block_mappings: &BlockMappings,
-    ) -> ChunkInfo {
-        let chunk = world.get_chunk(zoom_level, position);
-        self.insert_generated(zoom_level, position, chunk, block_mappings)
-    }
-
     pub fn insert_generated(
         &mut self,
         zoom_level: ZoomLevel,
         position: &ChunkPosition,
         chunk: Chunk,
         block_mappings: &BlockMappings,
-    ) -> ChunkInfo {
-        let chunk_info = match chunk {
-            Chunk::Empty => ChunkInfo::empty(),
-            Chunk::Array3(chunk) => {
-                let faces = extract_faces(&chunk, block_mappings);
-                let chunk = (*chunk).into();
-                ChunkInfo { chunk, faces }
-            }
+    ) {
+        let status = match chunk {
+            Chunk::Empty => ChunkStatus::Empty,
+            Chunk::Array3(ref array3_chunk) => ChunkStatus::Generated(Box::new(ChunkInfo {
+                chunk: array3_chunk.clone(),
+                faces: extract_faces(array3_chunk.as_ref(), block_mappings),
+            })),
         };
-        self.set_status(
-            zoom_level,
-            position,
-            ChunkStatus::Generated(Box::new(chunk_info.clone())),
-        );
-        chunk_info
+        self.set_status(zoom_level, position, status);
     }
 
-    pub fn get_mut(
-        &mut self,
-        zoom_level: ZoomLevel,
-        position: &ChunkPosition,
-        world: &World,
-        block_mappings: &BlockMappings,
-    ) -> Chunk {
-        if let Some(ChunkStatus::Generated(chunk_info)) = self.get_status(zoom_level, position) {
-            let chunk = &chunk_info.chunk;
-            tracing::debug!(?position, "Got cached chunk");
-            return chunk.to_owned();
-        }
-        self.fetch_and_insert(zoom_level, position, world, block_mappings)
-            .chunk
-    }
-
-    pub fn get_faces_mut(
+    fn get_faces_mut(
         &mut self,
         zoom_level: ZoomLevel,
         position: &ChunkPosition,
         world: &World,
         block_mappings: &BlockMappings,
     ) -> [ChunkFace; 6] {
-        if let Some(ChunkStatus::Generated(chunk_info)) = self.get_status(zoom_level, position) {
-            let faces = chunk_info.faces;
-            return faces;
+        match self.get_status(zoom_level, position) {
+            Some(ChunkStatus::Generated(chunk_info)) => return chunk_info.faces,
+            Some(ChunkStatus::Empty) => return EMPTY_CHUNK_FACES,
+            _ => {}
         }
-        self.fetch_and_insert(zoom_level, position, world, block_mappings)
-            .faces
+        let chunk = world.get_chunk(zoom_level, position);
+        self.insert_generated(zoom_level, position, chunk, block_mappings);
+        match self.get_status(zoom_level, position).unwrap() {
+            ChunkStatus::Generated(chunk_info) => chunk_info.faces,
+            ChunkStatus::Empty => EMPTY_CHUNK_FACES,
+            _ => unreachable!(),
+        }
     }
 
     /// Returns the faces of neighboring chunks, in direction order. The bottom face of the chunk above, then the top face of the chunk below, etc.
@@ -135,7 +100,7 @@ impl ChunkRegistry {
         world: &World,
         block_mappings: &BlockMappings,
     ) -> [ChunkFace; 6] {
-        let mut neighbor_faces = [empty_chunk_face(); 6];
+        let mut neighbor_faces = EMPTY_CHUNK_FACES;
         for dir in infinigen_common::world::Direction::iter() {
             let normal: [i32; 3] = dir.into();
             let neighbor_cpos = ChunkPosition {

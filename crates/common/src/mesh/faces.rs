@@ -19,7 +19,7 @@ pub fn extract_faces(
     chunk: &Array3Chunk,
     block_mappings: impl BlockVisibilityChecker,
 ) -> [ChunkFace; 6] {
-    let mut faces = [shapes::empty_chunk_face(); 6];
+    let mut faces = [shapes::EMPTY_CHUNK_FACE; 6];
     for dir in crate::world::Direction::iter() {
         match dir {
             crate::world::Direction::Up => {
@@ -321,11 +321,12 @@ pub fn prepare_padded_chunk(
 #[cfg(test)]
 mod tests {
     use block_mesh::{visible_block_faces, UnitQuadBuffer};
+    use shapes::EMPTY_CHUNK_FACES;
 
     use crate::blocks::BlockVisibility;
     use crate::chunks::{filled_chunk, CHUNK_SIZE_U32};
     use crate::mesh::shapes::{
-        empty_chunk_face, ChunkFace, ChunkFaceShape, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
+        ChunkFace, ChunkFaceShape, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
     };
 
     struct AllOpaque;
@@ -347,7 +348,7 @@ mod tests {
     #[test]
     fn test_prepare_padded_chunk_with_empty_faces() {
         let full = filled_chunk(0);
-        let padded = prepare_padded_chunk(&full, &[empty_chunk_face(); 6], AllOpaque);
+        let padded = prepare_padded_chunk(&full, &EMPTY_CHUNK_FACES, AllOpaque);
         // faces of padded chunk remain empty
         for x in 0..CHUNK_SIZE_U32 + 2 {
             for y in 0..CHUNK_SIZE_U32 + 2 {

@@ -14,6 +14,5 @@ pub type PaddedChunk = [VoxelBlock; PaddedChunkShape::SIZE as usize];
 pub type ChunkFaceShape = ConstShape2u32<CHUNK_SIZE_U32, CHUNK_SIZE_U32>;
 pub type ChunkFace = [VoxelBlock; ChunkFaceShape::SIZE as usize];
 
-pub fn empty_chunk_face() -> ChunkFace {
-    [VoxelBlock::Empty; ChunkFaceShape::SIZE as usize]
-}
+pub const EMPTY_CHUNK_FACE: ChunkFace = [VoxelBlock::Empty; ChunkFaceShape::SIZE as usize];
+pub const EMPTY_CHUNK_FACES: [ChunkFace; 6] = [EMPTY_CHUNK_FACE; 6];

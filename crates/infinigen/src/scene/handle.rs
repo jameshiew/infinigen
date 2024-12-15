@@ -75,18 +75,16 @@ pub fn process_load_chunk_ops(
 
         match chunks.get_status(scene_zoom_level, &cpos) {
             None => {
+                tracing::trace!(?cpos, "Requesting chunk generation");
                 request_chunk_evs.send(RequestChunkEvent {
                     zoom_level: scene_zoom_level,
                     position: cpos,
                 });
             }
             Some(ChunkStatus::Generated(chunk_info)) => {
-                tracing::trace!(?cpos, "Will render chunk");
+                tracing::trace!(?cpos, "Spawning chunk");
 
-                let Chunk::Array3(ref chunk) = chunk_info.chunk else {
-                    tracing::trace!(?cpos, "Empty chunk");
-                    continue;
-                };
+                let chunk = &chunk_info.chunk;
                 let mut opaque_chunk = chunk.to_owned();
                 let opaque_mat = registry.get_material(MaterialType::DenseOpaque);
                 let translucent_mat = registry.get_material(MaterialType::Translucent);
@@ -163,8 +161,6 @@ pub fn process_load_chunk_ops(
                         ))
                         .set_parent(cid);
                 }
-
-                tracing::trace!(?cpos, "Chunk loaded");
             }
             _ => continue,
         }

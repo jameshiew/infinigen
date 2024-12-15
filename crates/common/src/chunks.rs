@@ -52,6 +52,12 @@ pub struct Array3Chunk {
     blocks: Array3<Option<MappedBlockID>>,
 }
 
+impl fmt::Debug for Array3Chunk {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Array3Chunk")
+    }
+}
+
 impl Default for Array3Chunk {
     fn default() -> Self {
         Self {
