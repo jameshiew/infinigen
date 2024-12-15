@@ -12,6 +12,10 @@ impl<T> Queue<T> {
         self.inner.len()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
+    }
+
     pub fn push_back(&mut self, item: T) {
         self.inner.push_back(item);
     }
