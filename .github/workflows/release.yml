@@ -1,0 +1,53 @@
+name: Build release binaries
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Release - ${{ matrix.platform.target }}
+    strategy:
+      matrix:
+        platform:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            features: jemalloc
+          - os: macos-15
+            target: aarch64-apple-darwin
+            features: jemalloc
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
+            features: ''
+          - os: windows-2022
+            target: aarch64-pc-windows-msvc
+            features: ''
+
+    runs-on: ${{ matrix.platform.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: ${{ matrix.platform.target }}
+      - name: Install system packages needed by Bevy
+        if: matrix.platform.os == 'ubuntu-24.04'
+        run: |
+          sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+      - if: matrix.platform.features != ''
+        uses: houseabsolute/actions-rust-cross@v0
+        with:
+          target: ${{ matrix.platform.target }}
+          args: --release --features ${{ matrix.platform.features }}
+      - if: matrix.platform.features == ''
+        uses: houseabsolute/actions-rust-cross@v0
+        with:
+          target: ${{ matrix.platform.target }}
+          args: --release
+      - uses: houseabsolute/actions-rust-release@v0
+        with:
+          executable-name: infinigen
+          changes-file: ''
+          target: ${{ matrix.platform.target }}
