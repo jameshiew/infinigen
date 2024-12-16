@@ -9,6 +9,7 @@ pub mod assets;
 pub mod camera;
 pub mod chunks;
 pub mod debug;
+pub mod global_allocator;
 pub mod mesh;
 pub mod scene;
 pub mod settings;
