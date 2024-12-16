@@ -9,6 +9,11 @@ pub mod assets;
 pub mod camera;
 pub mod chunks;
 pub mod debug;
+#[cfg(all(
+    feature = "jemalloc",
+    not(target_env = "msvc"),
+    not(target_family = "wasm")
+))]
 pub mod global_allocator;
 pub mod mesh;
 pub mod scene;
