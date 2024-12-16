@@ -1,11 +1,12 @@
 run:
     cargo run \
-        --release
+        --release \
+        --features bevy/dynamic_linking
 
 remote:
     cargo run \
         --release \
-        --features remote
+        --features bevy/dynamic_linking,remote
 
 fmt:
     cargo +nightly fmt
