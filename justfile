@@ -2,6 +2,11 @@ run:
     cargo run \
         --release
 
+remote:
+    cargo run \
+        --release \
+        --features remote
+
 fmt:
     cargo +nightly fmt
 
