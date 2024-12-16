@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: rustfmt
@@ -26,22 +28,30 @@ jobs:
     needs: fmt
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install system packages needed by Bevy
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: taiki-e/install-action@cargo-hack
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-hack
       - run: cargo hack test --all-targets --feature-powerset
   docs:
     runs-on: ubuntu-24.04
     needs: fmt
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install system packages needed by Bevy
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: taiki-e/install-action@cargo-hack
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-hack
       - run: RUSTDOCFLAGS="-Dwarnings" cargo hack doc --document-private-items --no-deps --feature-powerset
   clippy:
     runs-on: ${{ matrix.os }}
@@ -54,6 +64,8 @@ jobs:
     needs: fmt
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy
@@ -61,13 +73,17 @@ jobs:
         if: matrix.os == 'ubuntu-24.04'
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: taiki-e/install-action@cargo-hack
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-hack
       - run: cargo hack clippy --all-targets --feature-powerset
   wasm:
     runs-on: ubuntu-24.04
     needs: fmt
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy
