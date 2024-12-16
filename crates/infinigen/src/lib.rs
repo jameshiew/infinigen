@@ -8,7 +8,6 @@ use bevy::remote::RemotePlugin;
 pub mod assets;
 pub mod camera;
 pub mod chunks;
-#[cfg(feature = "debug-ui")]
 pub mod debug;
 pub mod mesh;
 pub mod scene;
@@ -46,7 +45,6 @@ impl Plugin for AppPlugin {
                 chunks::ChunksPlugin,
                 camera::CameraPlugin,
                 world::WorldPlugin,
-                #[cfg(feature = "debug-ui")]
                 debug::DebugPlugin,
                 #[cfg(all(feature = "remote", not(target_family = "wasm")))]
                 RemotePlugin::default(),
