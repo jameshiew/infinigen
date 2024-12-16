@@ -1,5 +1,9 @@
 //! Bevy-specific code and the entrypoint for the application.
 use bevy::prelude::{AppExtStates, Plugin, States};
+#[cfg(all(feature = "remote", not(target_family = "wasm")))]
+use bevy::remote::http::RemoteHttpPlugin;
+#[cfg(all(feature = "remote", not(target_family = "wasm")))]
+use bevy::remote::RemotePlugin;
 
 pub mod assets;
 pub mod camera;
@@ -44,6 +48,10 @@ impl Plugin for AppPlugin {
                 world::WorldPlugin,
                 #[cfg(feature = "debug-ui")]
                 debug::DebugPlugin,
+                #[cfg(all(feature = "remote", not(target_family = "wasm")))]
+                RemotePlugin::default(),
+                #[cfg(all(feature = "remote", not(target_family = "wasm")))]
+                RemoteHttpPlugin::default(),
             ));
     }
 }

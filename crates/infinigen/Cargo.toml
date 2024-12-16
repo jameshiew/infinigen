@@ -43,5 +43,6 @@ tikv-jemallocator = {version = "0.6", optional = true}
 
 [features]
 default = ["debug-ui"]
+remote = ["bevy/bevy_remote"]
 debug-ui = ["dep:bevy_egui", "dep:bevy-inspector-egui"]
 jemalloc = ["dep:tikv-jemallocator"]
