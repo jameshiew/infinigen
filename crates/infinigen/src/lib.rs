@@ -15,7 +15,6 @@ pub mod debug;
     not(target_family = "wasm")
 ))]
 pub mod global_allocator;
-pub mod mesh;
 pub mod scene;
 pub mod settings;
 pub mod utils;

@@ -12,6 +12,7 @@ use crate::AppState;
 
 mod handle;
 pub mod lights;
+mod utils;
 
 #[derive(Component)]
 pub struct LoadedChunk {
