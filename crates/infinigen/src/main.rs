@@ -20,7 +20,7 @@ fn main() -> ExitCode {
         .add_source(config::File::with_name("config"))
         .add_source(config::Environment::with_prefix(CONFIG_PREFIX))
         .build();
-    let cfg: infinigen::settings::Config = match cfg {
+    let cfg: infinigen_plugins::settings::Config = match cfg {
         Ok(settings) => match settings.try_deserialize() {
             Ok(cfg) => cfg,
             Err(err) => {
@@ -33,7 +33,7 @@ fn main() -> ExitCode {
                 "Couldn't load settings, using default configuration: {:?}",
                 err
             );
-            infinigen::settings::Config::default()
+            infinigen_plugins::settings::Config::default()
         }
     };
     match App::new()

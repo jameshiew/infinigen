@@ -3,6 +3,25 @@ members = ["crates/*"]
 resolver = "2"
 
 [workspace.dependencies]
+bevy = { version = "0.15.0", default-features = false, features = [
+    "bevy_asset",
+    "bevy_color",
+    "bevy_core_pipeline",
+    "bevy_pbr",
+    "bevy_render",
+    "bevy_scene",
+    "bevy_sprite",
+    "bevy_state",
+    "bevy_window",
+    "bevy_winit",
+    "hdr",
+    "multi_threaded",
+    "png",
+    "tonemapping_luts",
+    "x11",
+    "wayland",
+    "webgpu",
+] }
 ahash = "0.8.11"
 strum = { version = "0.26.3", features = ["derive"] }
 serde = { version = "1.0.215", features = ["derive"] }

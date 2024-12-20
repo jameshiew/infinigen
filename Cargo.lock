@@ -2667,17 +2667,9 @@ dependencies = [
 name = "infinigen"
 version = "0.0.0"
 dependencies = [
- "ahash",
  "bevy",
- "bevy-inspector-egui",
- "bevy_common_assets",
- "bevy_egui",
- "bevy_flycam",
  "config",
- "infinigen-common",
- "infinigen-extras",
- "serde",
- "strum",
+ "infinigen-plugins",
  "tikv-jemallocator",
  "tracing",
 ]
@@ -2704,9 +2696,25 @@ dependencies = [
  "criterion",
  "infinigen-common",
  "noise",
- "rand",
  "serde",
  "splines",
+ "tracing",
+]
+
+[[package]]
+name = "infinigen-plugins"
+version = "0.0.0"
+dependencies = [
+ "ahash",
+ "bevy",
+ "bevy-inspector-egui",
+ "bevy_common_assets",
+ "bevy_egui",
+ "bevy_flycam",
+ "infinigen-common",
+ "infinigen-extras",
+ "serde",
+ "strum",
  "tracing",
 ]
 

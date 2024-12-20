@@ -1,32 +1,17 @@
 //! Bevy-specific code and the entrypoint for the application.
-use bevy::prelude::{AppExtStates, Plugin, States};
+use bevy::prelude::{AppExtStates, Plugin};
 #[cfg(all(feature = "remote", not(target_family = "wasm")))]
 use bevy::remote::http::RemoteHttpPlugin;
 #[cfg(all(feature = "remote", not(target_family = "wasm")))]
 use bevy::remote::RemotePlugin;
+use infinigen_plugins::{assets, camera, chunks, debug, scene, settings, world, AppState};
 
-pub mod assets;
-pub mod camera;
-pub mod chunks;
-pub mod debug;
 #[cfg(all(
     feature = "jemalloc",
     not(target_env = "msvc"),
     not(target_family = "wasm")
 ))]
 pub mod global_allocator;
-pub mod scene;
-pub mod settings;
-pub mod world;
-
-#[derive(States, Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
-pub enum AppState {
-    #[default]
-    LoadingAssets,
-    InitializingRegistry,
-    InitializingWorld,
-    MainGame,
-}
 
 pub struct AppPlugin {
     config: settings::Config,
