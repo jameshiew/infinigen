@@ -9,7 +9,6 @@ ahash = { workspace = true }
 serde = { workspace = true }
 tracing = { workspace = true }
 
-rand = "0.8.5"
 noise = "0.9.0"
 splines = "4.4.0"
 infinigen-common = { path = "../common" }

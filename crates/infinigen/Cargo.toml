@@ -7,36 +7,10 @@ rust-version = "1.82.0"   # msrv should be at least the msrv of the bevy version
 default-run = "infinigen"
 
 [dependencies]
-bevy = { version = "0.15.0", default-features = false, features = [
-    "bevy_asset",
-    "bevy_color",
-    "bevy_core_pipeline",
-    "bevy_pbr",
-    "bevy_render",
-    "bevy_scene",
-    "bevy_sprite",
-    "bevy_state",
-    "bevy_window",
-    "bevy_winit",
-    "hdr",
-    "multi_threaded",
-    "png",
-    "tonemapping_luts",
-    "x11",
-    "wayland",
-    "webgpu",
-] }
-bevy_common_assets = { version = "0.12.0", features = ["ron"] }
-bevy_egui = { version = "0.31.1" }
-bevy_flycam = "0.15.0"
-bevy-inspector-egui = { version = "0.28.0" }
-infinigen-common = { path = "../common" }
-infinigen-extras = { path = "../extras" }
+bevy = { workspace = true }
+infinigen-plugins = { path = "../plugins" }
 config = { version = "0.14.1", default-features = false, features = ["ron"] }
-serde = { workspace = true }
-strum = { workspace = true }
 tracing = { workspace = true }
-ahash = { workspace = true }
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]
 tikv-jemallocator = { version = "0.6", optional = true }
