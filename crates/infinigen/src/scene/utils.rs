@@ -1,5 +1,7 @@
 //! Converts from our native mesh types to Bevy meshes
 
+use std::collections::VecDeque;
+
 use bevy::prelude::*;
 use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::render::render_asset::RenderAssetUsages;
@@ -66,4 +68,31 @@ pub fn bevy_mesh_greedy_quads(
     let samples = prepare_padded_chunk(chunk, neighbor_faces, block_mappings);
     let mesh = mesh_chunk_greedy_quads(&samples, block_textures);
     mesh.map(to_bevy_mesh)
+}
+
+#[derive(Resource, Default)]
+pub struct Queue<T> {
+    inner: VecDeque<T>,
+}
+
+impl<T> Queue<T> {
+    pub fn len(&self) -> usize {
+        self.inner.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
+    }
+
+    pub fn push_back(&mut self, item: T) {
+        self.inner.push_back(item);
+    }
+
+    pub fn pop_front(&mut self) -> Option<T> {
+        self.inner.pop_front()
+    }
+
+    pub fn clear(&mut self) {
+        self.inner.clear();
+    }
 }
