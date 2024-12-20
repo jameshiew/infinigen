@@ -17,7 +17,6 @@ pub mod debug;
 pub mod global_allocator;
 pub mod scene;
 pub mod settings;
-pub mod utils;
 pub mod world;
 
 #[derive(States, Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]

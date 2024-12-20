@@ -5,9 +5,9 @@ use bevy::prelude::*;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 use infinigen_common::view;
 use infinigen_common::world::{ChunkPosition, WorldPosition};
+use utils::Queue;
 
 use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
-use crate::utils::Queue;
 use crate::AppState;
 
 mod handle;
