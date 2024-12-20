@@ -7,7 +7,7 @@ use super::{LoadedChunk, UnloadChunkOpEvent};
 use crate::assets::blocks::{BlockRegistry, MaterialType};
 use crate::chunks::registry::{ChunkRegistry, ChunkStatus};
 use crate::chunks::tasks::RequestChunkEvent;
-use crate::mesh::utils::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces};
+use crate::scene::utils::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces};
 use crate::world::World;
 
 // bigger chunks means go slower to prevent lag/stutter
