@@ -2671,7 +2671,6 @@ dependencies = [
  "config",
  "infinigen-plugins",
  "tikv-jemallocator",
- "tracing",
 ]
 
 [[package]]
