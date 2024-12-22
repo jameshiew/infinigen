@@ -10,7 +10,10 @@ fn bench_mountain_islands(c: &mut Criterion) {
     let mapping: AHashMap<_, _> = block_types()
         .enumerate()
         .map(|(chunk_block_id, BlockType { id, .. })| {
-            (id, MappedBlockID::from(chunk_block_id as u8))
+            (
+                id,
+                MappedBlockID::try_from(1 + chunk_block_id as u8).unwrap(),
+            )
         })
         .collect();
     let palette: Palette = mapping.into();
