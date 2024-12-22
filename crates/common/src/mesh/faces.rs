@@ -16,6 +16,15 @@ pub trait BlockVisibilityChecker {
     fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility;
 }
 
+impl<T> BlockVisibilityChecker for &T
+where
+    T: BlockVisibilityChecker,
+{
+    fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility {
+        (*self).get_visibility(mapped_id)
+    }
+}
+
 pub fn extract_faces(
     chunk: &Array3Chunk,
     block_mappings: impl BlockVisibilityChecker,

@@ -95,15 +95,9 @@ impl BlockMappings {
     }
 }
 
-impl BlockVisibilityChecker for &BlockMappings {
-    fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility {
-        self.get_by_mapped_id(mapped_id).visibility
-    }
-}
-
 impl BlockVisibilityChecker for BlockMappings {
     fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility {
-        (&self).get_visibility(mapped_id)
+        self.get_by_mapped_id(mapped_id).visibility
     }
 }
 
