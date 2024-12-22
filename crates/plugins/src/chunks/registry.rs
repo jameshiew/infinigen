@@ -5,6 +5,7 @@ use infinigen_common::mesh::faces::extract_faces;
 use infinigen_common::mesh::shapes::{ChunkFace, EMPTY_CHUNK_FACES};
 use infinigen_common::world::{ChunkPosition, Direction};
 use infinigen_common::zoom::ZoomLevel;
+use linearize::StaticCopyMap;
 use strum::IntoEnumIterator;
 
 use crate::assets::blocks::BlockMappings;
@@ -19,7 +20,7 @@ pub struct ChunkRegistry {
 #[derive(Debug, Clone)]
 pub struct ChunkInfo {
     pub chunk: Box<Array3Chunk>,
-    pub faces: [ChunkFace; 6],
+    pub faces: StaticCopyMap<Direction, ChunkFace>,
 }
 
 #[derive(Debug, Clone)]
@@ -73,7 +74,7 @@ impl ChunkRegistry {
         position: &ChunkPosition,
         world: &World,
         block_mappings: &BlockMappings,
-    ) -> [ChunkFace; 6] {
+    ) -> StaticCopyMap<Direction, ChunkFace> {
         match self.get_status(zoom_level, position) {
             Some(ChunkStatus::Generated(chunk_info)) => return chunk_info.faces,
             Some(ChunkStatus::Empty) => return EMPTY_CHUNK_FACES,
@@ -95,7 +96,7 @@ impl ChunkRegistry {
         position: &ChunkPosition,
         world: &World,
         block_mappings: &BlockMappings,
-    ) -> [ChunkFace; 6] {
+    ) -> StaticCopyMap<Direction, ChunkFace> {
         let mut neighbor_faces = EMPTY_CHUNK_FACES;
         for dir in infinigen_common::world::Direction::iter() {
             let normal: [i32; 3] = dir.into();
@@ -105,14 +106,14 @@ impl ChunkRegistry {
                 z: position.z + normal[2],
             };
             let faces = self.get_faces_mut(zoom_level, &neighbor_cpos, world, block_mappings);
-            let i = dir as usize;
-            match dir.opposite() {
-                infinigen_common::world::Direction::Up => neighbor_faces[i] = faces[0],
-                infinigen_common::world::Direction::Down => neighbor_faces[i] = faces[1],
-                infinigen_common::world::Direction::North => neighbor_faces[i] = faces[2],
-                infinigen_common::world::Direction::South => neighbor_faces[i] = faces[3],
-                infinigen_common::world::Direction::East => neighbor_faces[i] = faces[4],
-                infinigen_common::world::Direction::West => neighbor_faces[i] = faces[5],
+            let opposite = dir.opposite();
+            match opposite {
+                Direction::Up => neighbor_faces[dir] = faces[opposite],
+                Direction::Down => neighbor_faces[dir] = faces[opposite],
+                Direction::North => neighbor_faces[dir] = faces[opposite],
+                Direction::South => neighbor_faces[dir] = faces[opposite],
+                Direction::East => neighbor_faces[dir] = faces[opposite],
+                Direction::West => neighbor_faces[dir] = faces[opposite],
             }
         }
         neighbor_faces

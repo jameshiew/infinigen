@@ -26,6 +26,7 @@ ahash = "0.8.11"
 strum = { version = "0.26.3", features = ["derive"] }
 serde = { version = "1.0.215", features = ["derive"] }
 tracing = "0.1.40"
+linearize = { version = "0.1.1", features = ["all"] }
 
 [profile.dev]
 opt-level = 1

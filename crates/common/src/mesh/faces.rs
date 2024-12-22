@@ -1,13 +1,14 @@
 use block_mesh::ndshape::ConstShape;
 use block_mesh::{OrientedBlockFace, RIGHT_HANDED_Y_UP_CONFIG};
+use linearize::StaticCopyMap;
 use strum::IntoEnumIterator;
 
+use super::shapes::EMPTY_CHUNK_FACES;
 use crate::blocks::BlockVisibility;
 use crate::chunks::{Array3Chunk, CHUNK_SIZE, CHUNK_SIZE_U32};
 use crate::mesh::block::VoxelBlock;
-use crate::mesh::shapes;
 use crate::mesh::shapes::{ChunkFace, ChunkFaceShape, PaddedChunk, PaddedChunkShape};
-use crate::world::{BlockPosition, MappedBlockID};
+use crate::world::{BlockPosition, Direction, MappedBlockID};
 
 pub const RHS_FACES: [OrientedBlockFace; 6] = RIGHT_HANDED_Y_UP_CONFIG.faces;
 
@@ -18,11 +19,11 @@ pub trait BlockVisibilityChecker {
 pub fn extract_faces(
     chunk: &Array3Chunk,
     block_mappings: impl BlockVisibilityChecker,
-) -> [ChunkFace; 6] {
-    let mut faces = [shapes::EMPTY_CHUNK_FACE; 6];
-    for dir in crate::world::Direction::iter() {
+) -> StaticCopyMap<Direction, ChunkFace> {
+    let mut faces = EMPTY_CHUNK_FACES;
+    for dir in Direction::iter() {
         match dir {
-            crate::world::Direction::Up => {
+            Direction::Up => {
                 for x in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -44,11 +45,11 @@ pub fn extract_faces(
                             }
                             None => VoxelBlock::Empty,
                         };
-                        faces[dir as usize][j] = block;
+                        faces[dir][j] = block;
                     }
                 }
             }
-            crate::world::Direction::Down => {
+            Direction::Down => {
                 for x in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -70,11 +71,11 @@ pub fn extract_faces(
                             }
                             None => VoxelBlock::Empty,
                         };
-                        faces[dir as usize][j] = block;
+                        faces[dir][j] = block;
                     }
                 }
             }
-            crate::world::Direction::North => {
+            Direction::North => {
                 for x in 0..CHUNK_SIZE {
                     for y in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -96,11 +97,11 @@ pub fn extract_faces(
                             }
                             None => VoxelBlock::Empty,
                         };
-                        faces[dir as usize][j] = block;
+                        faces[dir][j] = block;
                     }
                 }
             }
-            crate::world::Direction::South => {
+            Direction::South => {
                 for x in 0..CHUNK_SIZE {
                     for y in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -122,11 +123,11 @@ pub fn extract_faces(
                             }
                             None => VoxelBlock::Empty,
                         };
-                        faces[dir as usize][j] = block;
+                        faces[dir][j] = block;
                     }
                 }
             }
-            crate::world::Direction::East => {
+            Direction::East => {
                 for y in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -148,11 +149,11 @@ pub fn extract_faces(
                             }
                             None => VoxelBlock::Empty,
                         };
-                        faces[dir as usize][j] = block;
+                        faces[dir][j] = block;
                     }
                 }
             }
-            crate::world::Direction::West => {
+            Direction::West => {
                 for y in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = chunk.get(&BlockPosition {
@@ -174,7 +175,7 @@ pub fn extract_faces(
                             }
                             None => VoxelBlock::Empty,
                         };
-                        faces[dir as usize][j] = block;
+                        faces[dir][j] = block;
                     }
                 }
             }
@@ -186,18 +187,18 @@ pub fn extract_faces(
 /// Puts `chunk` into a `ChunkShape` with 1-voxel padding around the edges, filled according to the neighbor faces.
 pub fn prepare_padded_chunk(
     chunk: &Array3Chunk,
-    neighbor_faces: &[ChunkFace; 6],
+    neighbor_faces: &StaticCopyMap<Direction, ChunkFace>,
     block_mappings: impl BlockVisibilityChecker,
 ) -> PaddedChunk {
     let mut padded = [VoxelBlock::Empty; PaddedChunkShape::SIZE as usize];
     const MIN_PADDED_IDX: u32 = 0;
     const MAX_PADDED_IDX: u32 = CHUNK_SIZE_U32 + 1;
 
-    for dir in crate::world::Direction::iter() {
-        let neighboring_face = neighbor_faces[dir as usize];
+    for dir in Direction::iter() {
+        let neighboring_face = neighbor_faces[dir];
         match dir {
             // bottom face of above chunk
-            crate::world::Direction::Up => {
+            Direction::Up => {
                 for x in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -212,7 +213,7 @@ pub fn prepare_padded_chunk(
                 }
             }
             // top face of below chunk
-            crate::world::Direction::Down => {
+            Direction::Down => {
                 for x in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -227,7 +228,7 @@ pub fn prepare_padded_chunk(
                 }
             }
             // south face of chunk to the north, etc.
-            crate::world::Direction::North => {
+            Direction::North => {
                 for x in 0..CHUNK_SIZE {
                     for y in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -241,7 +242,7 @@ pub fn prepare_padded_chunk(
                     }
                 }
             }
-            crate::world::Direction::South => {
+            Direction::South => {
                 for x in 0..CHUNK_SIZE {
                     for y in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -255,7 +256,7 @@ pub fn prepare_padded_chunk(
                     }
                 }
             }
-            crate::world::Direction::East => {
+            Direction::East => {
                 for y in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -269,7 +270,7 @@ pub fn prepare_padded_chunk(
                     }
                 }
             }
-            crate::world::Direction::West => {
+            Direction::West => {
                 for y in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         let block = neighboring_face
@@ -321,7 +322,7 @@ pub fn prepare_padded_chunk(
 #[cfg(test)]
 mod tests {
     use block_mesh::{visible_block_faces, UnitQuadBuffer};
-    use shapes::EMPTY_CHUNK_FACES;
+    use linearize::static_copy_map;
 
     use crate::blocks::BlockVisibility;
     use crate::chunks::{filled_chunk, CHUNK_SIZE_U32};
@@ -348,7 +349,8 @@ mod tests {
     #[test]
     fn test_prepare_padded_chunk_with_empty_faces() {
         let full = filled_chunk(MappedBlockID::default());
-        let padded = prepare_padded_chunk(&full, &EMPTY_CHUNK_FACES, AllOpaque);
+        let empties = EMPTY_CHUNK_FACES;
+        let padded = prepare_padded_chunk(&full, &empties, AllOpaque);
         // faces of padded chunk remain empty
         for x in 0..CHUNK_SIZE_U32 + 2 {
             for y in 0..CHUNK_SIZE_U32 + 2 {
@@ -395,7 +397,15 @@ mod tests {
     #[test]
     fn test_prepare_padded_chunk_with_full_faces() {
         let full = filled_chunk(MappedBlockID::default());
-        let padded = prepare_padded_chunk(&full, &[full_chunk_face(); 6], AllOpaque);
+        let full_chunk_faces = static_copy_map! {
+            Direction::Up => full_chunk_face(),
+            Direction::Down => full_chunk_face(),
+            Direction::North => full_chunk_face(),
+            Direction::South => full_chunk_face(),
+            Direction::East => full_chunk_face(),
+            Direction::West => full_chunk_face()
+        };
+        let padded = prepare_padded_chunk(&full, &full_chunk_faces, AllOpaque);
 
         // faces of padded chunk are all full, except for corners
         let mut empty: u32 = 0;

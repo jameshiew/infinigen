@@ -234,6 +234,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "arbitrary"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dde20b3d026af13f561bdd0f15edf01fc734f0dafcedbaf42bba506a9517f223"
+
+[[package]]
 name = "arboard"
 version = "3.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2763,6 +2769,7 @@ version = "0.0.0"
 dependencies = [
  "ahash",
  "block-mesh",
+ "linearize",
  "nalgebra",
  "ndarray",
  "rand",
@@ -2797,6 +2804,7 @@ dependencies = [
  "bevy_framepace",
  "infinigen-common",
  "infinigen-extras",
+ "linearize",
  "serde",
  "strum",
  "tracing",
@@ -2953,6 +2961,32 @@ dependencies = [
  "bitflags 2.6.0",
  "libc",
  "redox_syscall 0.5.7",
+]
+
+[[package]]
+name = "linearize"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d89acc2a180a246a6a965bd0492ff20760a70ddadb20ecc23a93b40391b672c7"
+dependencies = [
+ "arbitrary",
+ "bytemuck",
+ "cfg-if",
+ "linearize-derive",
+ "rand",
+ "serde",
+ "version_check",
+]
+
+[[package]]
+name = "linearize-derive"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f3de1938ea3bbbc991a41ec6f24a1b019858bc3d9ddf47fc095d8d5351a1da7"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

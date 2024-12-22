@@ -11,6 +11,8 @@ use infinigen_common::mesh::faces::prepare_padded_chunk;
 use infinigen_common::mesh::shapes::ChunkFace;
 use infinigen_common::mesh::textures::TextureMap;
 use infinigen_common::mesh::{mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces, MeshInfo};
+use infinigen_common::world::Direction;
+use linearize::StaticCopyMap;
 
 use crate::assets::blocks::BlockMappings;
 
@@ -48,7 +50,7 @@ pub fn to_bevy_mesh(
 /// adapted from <https://github.com/bonsairobo/block-mesh-rs/blob/main/examples-crate/render/main.rs>
 pub fn bevy_mesh_visible_block_faces(
     chunk: &Array3Chunk,
-    neighbor_faces: &[ChunkFace; 6],
+    neighbor_faces: &StaticCopyMap<Direction, ChunkFace>,
     block_textures: &TextureMap,
     block_mappings: &BlockMappings,
 ) -> Option<Mesh> {
@@ -61,7 +63,7 @@ pub fn bevy_mesh_visible_block_faces(
 /// adapted from <https://github.com/bonsairobo/block-mesh-rs/blob/main/examples-crate/render/main.rs>
 pub fn bevy_mesh_greedy_quads(
     chunk: &Array3Chunk,
-    neighbor_faces: &[ChunkFace; 6],
+    neighbor_faces: &StaticCopyMap<Direction, ChunkFace>,
     block_textures: &TextureMap,
     block_mappings: &BlockMappings,
 ) -> Option<Mesh> {
