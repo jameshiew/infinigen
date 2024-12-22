@@ -12,6 +12,7 @@ use bevy::remote::RemotePlugin;
 use bevy::tasks::available_parallelism;
 use bevy::window::{Window, WindowPlugin};
 use bevy::DefaultPlugins;
+use clap::{command, Parser};
 use config::Config;
 use infinigen_plugins::AppPlugin;
 #[cfg(all(
@@ -33,7 +34,12 @@ const APP_NAME: &str = "infinigen";
 const CONFIG_PREFIX: &str = "infinigen_";
 const DEFAULT_LOG_FILTER: &str = "info,wgpu_core=warn,wgpu_hal=warn,naga=info";
 
+#[derive(Parser)]
+#[command(version)]
+struct Cli;
+
 fn main() -> ExitCode {
+    let _cli = Cli::parse();
     let cfg = Config::builder()
         .add_source(config::File::with_name("config"))
         .add_source(config::Environment::with_prefix(CONFIG_PREFIX))
