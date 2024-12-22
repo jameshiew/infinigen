@@ -10,7 +10,6 @@ default-run = "infinigen"
 bevy = { workspace = true }
 infinigen-plugins = { path = "../plugins" }
 config = { version = "0.14.1", default-features = false, features = ["ron"] }
-tracing = { workspace = true }
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]
 tikv-jemallocator = { version = "0.6", optional = true }

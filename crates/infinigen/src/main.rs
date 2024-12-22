@@ -5,11 +5,29 @@ use std::process::ExitCode;
 use bevy::core::TaskPoolThreadAssignmentPolicy;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
+#[cfg(all(feature = "remote", not(target_family = "wasm")))]
+use bevy::remote::http::RemoteHttpPlugin;
+#[cfg(all(feature = "remote", not(target_family = "wasm")))]
+use bevy::remote::RemotePlugin;
 use bevy::tasks::available_parallelism;
 use bevy::window::{Window, WindowPlugin};
 use bevy::DefaultPlugins;
 use config::Config;
-use infinigen::AppPlugin;
+use infinigen_plugins::AppPlugin;
+#[cfg(all(
+    feature = "jemalloc",
+    not(target_env = "msvc"),
+    not(target_family = "wasm")
+))]
+use tikv_jemallocator::Jemalloc;
+
+#[cfg(all(
+    feature = "jemalloc",
+    not(target_env = "msvc"),
+    not(target_family = "wasm")
+))]
+#[global_allocator]
+static GLOBAL: Jemalloc = Jemalloc;
 
 const APP_NAME: &str = "infinigen";
 const CONFIG_PREFIX: &str = "infinigen_";
@@ -37,7 +55,7 @@ fn main() -> ExitCode {
         }
     };
     match App::new()
-        .add_plugins(
+        .add_plugins((
             DefaultPlugins
                 .set(LogPlugin {
                     filter: DEFAULT_LOG_FILTER.into(),
@@ -62,7 +80,11 @@ fn main() -> ExitCode {
                     }),
                     ..default()
                 }),
-        )
+            #[cfg(all(feature = "remote", not(target_family = "wasm")))]
+            RemotePlugin::default(),
+            #[cfg(all(feature = "remote", not(target_family = "wasm")))]
+            RemoteHttpPlugin::default(),
+        ))
         .add_plugins((AppPlugin::new(cfg),))
         .run()
     {

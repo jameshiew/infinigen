@@ -35,6 +35,7 @@ impl Plugin for AssetsPlugin {
 }
 
 /// For targets not yet supported for loading assets.
+#[cfg(target_family = "wasm")]
 pub fn skip_loading_assets(mut next_state: ResMut<NextState<AppState>>) {
     next_state.set(AppState::InitializingRegistry);
 }

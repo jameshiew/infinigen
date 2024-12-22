@@ -30,10 +30,6 @@ pub enum ChunkStatus {
 }
 
 impl ChunkRegistry {
-    pub fn clear(&mut self) {
-        self.cached.clear();
-    }
-
     pub fn get_status(&self, zoom_level: ZoomLevel, cpos: &ChunkPosition) -> Option<&ChunkStatus> {
         match self.cached.get(&zoom_level) {
             Some(chunks) => chunks.get(cpos),
