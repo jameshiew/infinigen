@@ -1,7 +1,6 @@
 use std::fmt;
 
 use ndarray::Array3;
-use serde::{Deserialize, Serialize};
 
 use super::world::MappedBlockID;
 use crate::world::BlockPosition;
@@ -47,7 +46,7 @@ impl From<Chunk> for Array3Chunk {
 }
 
 /// Chunk represented as a 3D array of [`MappedBlockID`].
-#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub struct Array3Chunk {
     blocks: Array3<Option<MappedBlockID>>,
 }

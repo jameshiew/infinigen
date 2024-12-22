@@ -4,7 +4,24 @@ use crate::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
 use crate::zoom::ZoomLevel;
 
 /// Chunks work with [`MappedBlockID`]s (u8s), which correspond to [`crate::blocks::BlockID`]s (strings).
-pub type MappedBlockID = u8;
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct MappedBlockID(u8);
+
+impl From<u8> for MappedBlockID {
+    fn from(id: u8) -> Self {
+        Self(id)
+    }
+}
+
+impl MappedBlockID {
+    pub fn next(&self) -> Option<Self> {
+        if self.0 == u8::MAX {
+            None
+        } else {
+            Some(Self(self.0 + 1))
+        }
+    }
+}
 
 pub trait WorldGen {
     fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk;

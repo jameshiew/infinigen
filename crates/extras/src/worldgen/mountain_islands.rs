@@ -68,13 +68,13 @@ impl Default for MountainIslands {
             vertical_scale: CHUNK_SIZE_F64 * 4.,
             horizontal_smoothness: CHUNK_SIZE_F64 * 0.1,
 
-            water: 1,
-            snow: 2,
-            gravel: 3,
-            sand: 4,
-            dirt: 5,
-            grass: 6,
-            stone: 7,
+            water: 1.into(),
+            snow: 2.into(),
+            gravel: 3.into(),
+            sand: 4.into(),
+            dirt: 5.into(),
+            grass: 6.into(),
+            stone: 7.into(),
         }
     }
 }
