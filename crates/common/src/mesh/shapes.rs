@@ -1,7 +1,9 @@
 use block_mesh::ndshape::{ConstShape, ConstShape2u32, ConstShape3u32};
+use linearize::{static_copy_map, StaticCopyMap};
 
 use crate::chunks::CHUNK_SIZE_U32;
 use crate::mesh::block::VoxelBlock;
+use crate::world::Direction;
 
 // 1-voxel boundary padding around the chunk is necessary
 pub const PADDED_CHUNK_SIZE: u32 = CHUNK_SIZE_U32 + 2;
@@ -15,4 +17,7 @@ pub type ChunkFaceShape = ConstShape2u32<CHUNK_SIZE_U32, CHUNK_SIZE_U32>;
 pub type ChunkFace = [VoxelBlock; ChunkFaceShape::SIZE as usize];
 
 pub const EMPTY_CHUNK_FACE: ChunkFace = [VoxelBlock::Empty; ChunkFaceShape::SIZE as usize];
-pub const EMPTY_CHUNK_FACES: [ChunkFace; 6] = [EMPTY_CHUNK_FACE; 6];
+pub const EMPTY_CHUNK_FACES: StaticCopyMap<Direction, ChunkFace> = static_copy_map! {
+    of type Direction:
+    _ => EMPTY_CHUNK_FACE,
+};

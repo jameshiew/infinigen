@@ -1,5 +1,6 @@
 use std::num::NonZeroU8;
 
+use linearize::Linearize;
 use strum::EnumIter;
 
 use crate::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
@@ -120,7 +121,8 @@ impl From<WorldPosition> for ChunkPosition {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, EnumIter)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, EnumIter, Linearize)]
+#[linearize(const)]
 pub enum Direction {
     Up = 0,
     Down,
