@@ -1,24 +1,42 @@
+use std::num::NonZeroU8;
+
 use strum::EnumIter;
 
 use crate::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
 use crate::zoom::ZoomLevel;
 
 /// Chunks work with [`MappedBlockID`]s (u8s), which correspond to [`crate::blocks::BlockID`]s (strings).
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct MappedBlockID(u8);
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct MappedBlockID(NonZeroU8);
 
-impl From<u8> for MappedBlockID {
-    fn from(id: u8) -> Self {
+impl Default for MappedBlockID {
+    fn default() -> Self {
+        Self(unsafe { NonZeroU8::new_unchecked(1) })
+    }
+}
+
+impl From<NonZeroU8> for MappedBlockID {
+    fn from(id: NonZeroU8) -> Self {
         Self(id)
+    }
+}
+
+impl TryFrom<u8> for MappedBlockID {
+    type Error = &'static str;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        NonZeroU8::new(value)
+            .map(Self)
+            .ok_or("mapped block ID cannot be zero")
     }
 }
 
 impl MappedBlockID {
     pub fn next(&self) -> Option<Self> {
-        if self.0 == u8::MAX {
+        if self.0 == NonZeroU8::MAX {
             None
         } else {
-            Some(Self(self.0 + 1))
+            Some(Self(self.0.checked_add(1).unwrap()))
         }
     }
 }
