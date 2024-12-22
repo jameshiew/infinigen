@@ -18,7 +18,7 @@ fn bench_mountain_islands(c: &mut Criterion) {
         .collect();
     let palette: Palette = mapping.into();
     let wgen = MountainIslands::from(palette);
-    const SIZE: i32 = 3;
+    const SIZE: i32 = 4;
     c.bench_function("mountain islands", |b| {
         b.iter(|| {
             for cx in -SIZE..SIZE {

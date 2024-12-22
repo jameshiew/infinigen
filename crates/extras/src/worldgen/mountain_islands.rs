@@ -112,7 +112,6 @@ impl WorldGen for MountainIslands {
         ];
 
         let mut chunk = Array3Chunk::default();
-        let mut is_empty = true;
         let offset: WorldPosition = pos.into();
         let zoomed_offset = [
             offset.x as f64 / zoom,
@@ -120,21 +119,45 @@ impl WorldGen for MountainIslands {
             offset.z as f64 / zoom,
         ];
 
+        // needed for every column
+        let mut wheights = [[0.; CHUNK_USIZE]; CHUNK_USIZE];
+        let mut nxzs = [[(0., 0.); CHUNK_USIZE]; CHUNK_USIZE];
+
+        let mut is_empty = true;
+
+        for x in 0..CHUNK_SIZE {
+            for z in 0..CHUNK_SIZE {
+                let wx = x as f64 / zoom + zoomed_offset[0];
+                let wz = z as f64 / zoom + zoomed_offset[2];
+
+                let nx = wx / (self.horizontal_smoothness * self.vertical_scale);
+                let nz = wz / (self.horizontal_smoothness * self.vertical_scale);
+
+                let mut wheight = self.heightmap.get([nx, nz]);
+                let verticality = self.verticality.get([nx, nz]);
+                wheight *= self.vertical_scale * self.vspline.sample(verticality).unwrap();
+
+                // short circuit if bottom-most layer (y=0) is empty as this world doesn't have things in the sky
+                let wy = zoomed_offset[1];
+                if wy <= wheight || wy <= SEA_LEVEL {
+                    is_empty = false;
+                }
+
+                wheights[x as usize][z as usize] = wheight;
+                nxzs[x as usize][z as usize] = (nx, nz);
+            }
+        }
+        if is_empty {
+            return Chunk::Empty;
+        }
+
         let mut terrain_variances = [[0.; CHUNK_USIZE]; CHUNK_USIZE];
 
         {
             let _span = tracing::debug_span!("worldgen{stage = terrain}").entered();
             for x in 0..CHUNK_SIZE {
                 for z in 0..CHUNK_SIZE {
-                    let wx = x as f64 / zoom + zoomed_offset[0];
-                    let wz = z as f64 / zoom + zoomed_offset[2];
-
-                    let nx = wx / (self.horizontal_smoothness * self.vertical_scale);
-                    let nz = wz / (self.horizontal_smoothness * self.vertical_scale);
-
-                    let mut wheight = self.heightmap.get([nx, nz]);
-                    let verticality = self.verticality.get([nx, nz]);
-                    wheight *= self.vertical_scale * self.vspline.sample(verticality).unwrap();
+                    let wheight = wheights[x as usize][z as usize];
                     for y in 0..CHUNK_SIZE {
                         let wy = y as f64 / zoom + zoomed_offset[1];
 
@@ -162,6 +185,7 @@ impl WorldGen for MountainIslands {
                                 let val = &mut terrain_variances[x as usize][z as usize];
                                 // exactly float zero means it (probably?) wasn't calculated before
                                 if *val == 0. {
+                                    let (nx, nz) = nxzs[x as usize][z as usize];
                                     *val = self.terrain_variance.get([nx, nz]) / 2.0;
                                 }
                                 *val
