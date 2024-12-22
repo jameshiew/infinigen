@@ -39,6 +39,7 @@ impl Plugin for AppPlugin {
                 camera::CameraPlugin,
                 world::WorldPlugin,
                 debug::DebugPlugin,
+                bevy_framepace::FramepacePlugin,
             ));
     }
 }
