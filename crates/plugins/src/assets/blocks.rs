@@ -78,15 +78,16 @@ impl BlockMappings {
         *self.by_block_id.get(block_id).unwrap()
     }
 
-    pub fn add(&mut self, block_definition: BlockDefinition) -> MappedBlockID {
+    /// Adds a block definition to the mappings and returns the mapped ID, or None if no more IDs are available.
+    pub fn add(&mut self, block_definition: BlockDefinition) -> Option<MappedBlockID> {
         let mapped_id = self.next_free_mapped_id;
         tracing::debug!(?block_definition, ?mapped_id, "Mapping block");
         self.by_block_id
             .insert(block_definition.id.clone(), self.next_free_mapped_id);
         self.by_mapped_id
             .insert(self.next_free_mapped_id, block_definition);
-        self.next_free_mapped_id += 1;
-        mapped_id
+        self.next_free_mapped_id = self.next_free_mapped_id.next()?;
+        Some(mapped_id)
     }
 
     pub fn palette(&self) -> Palette {

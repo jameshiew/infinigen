@@ -342,12 +342,12 @@ mod tests {
     const PADDED_CHUNK_MIN_INDEX: u32 = 0;
 
     pub fn full_chunk_face() -> ChunkFace {
-        [VoxelBlock::Opaque(0); ChunkFaceShape::SIZE as usize]
+        [VoxelBlock::Opaque(MappedBlockID::default()); ChunkFaceShape::SIZE as usize]
     }
 
     #[test]
     fn test_prepare_padded_chunk_with_empty_faces() {
-        let full = filled_chunk(0);
+        let full = filled_chunk(MappedBlockID::default());
         let padded = prepare_padded_chunk(&full, &EMPTY_CHUNK_FACES, AllOpaque);
         // faces of padded chunk remain empty
         for x in 0..CHUNK_SIZE_U32 + 2 {
@@ -394,7 +394,7 @@ mod tests {
 
     #[test]
     fn test_prepare_padded_chunk_with_full_faces() {
-        let full = filled_chunk(0);
+        let full = filled_chunk(MappedBlockID::default());
         let padded = prepare_padded_chunk(&full, &[full_chunk_face(); 6], AllOpaque);
 
         // faces of padded chunk are all full, except for corners

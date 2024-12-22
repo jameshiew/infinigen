@@ -191,7 +191,10 @@ fn setup(
         };
 
         let mapped_id = registry.block_mappings.add(block_definition);
-        block_textures.add(mapped_id, faces);
+        block_textures.add(
+            mapped_id.expect("should have been able to map all block IDs"),
+            faces,
+        );
     }
     registry.block_textures = block_textures;
 
