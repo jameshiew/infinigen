@@ -10,7 +10,9 @@ This is a demo for Minecraft-like procedural generation using the [Bevy game eng
 
 ## Quickstart
 
-These commands must be run from within the root directory of the repo, in order to pick up assets.
+Make sure [OS dependencies for Bevy](https://bevyengine.org/learn/quick-start/getting-started/setup/#installing-os-dependencies) are installed.
+
+These commands should be run from within the root directory of the repo in order to pick up assets, otherwise block textures will be replaced with colours.
 
 ```shell
 cargo run --release # best performance
