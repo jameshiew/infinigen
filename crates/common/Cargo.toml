@@ -10,13 +10,13 @@ strum = { workspace = true }
 serde = { workspace = true }
 tracing = { workspace = true }
 
-rand = "0.8.5"
 block-mesh = { git = "https://github.com/bonsairobo/block-mesh-rs", rev = "793c53e82c12b3f7e9502006664c6e81f8b1c78a" }
 ndarray = { version = "0.16.1", features = ["serde"] }
 nalgebra = "0.33.2"
 linearize = { workspace = true }
 
 [dev-dependencies]
+rand = "0.8.5"
 criterion = "0.5.1"
 
 [[bench]]
