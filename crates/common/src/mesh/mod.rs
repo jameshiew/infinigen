@@ -5,7 +5,6 @@ use block_mesh::{
     VoxelVisibility,
 };
 use faces::RHS_FACES;
-use rand::Rng;
 use shapes::{PaddedChunk, PaddedChunkShape, PADDED_CHUNK_MAX_INDEX};
 
 use self::block::VoxelBlock;
@@ -51,7 +50,6 @@ pub fn mesh_chunk_visible_block_faces(
     let mut normals = Vec::with_capacity(num_vertices);
     let mut colors = Vec::with_capacity(num_vertices);
     let mut uvs = Vec::with_capacity(num_vertices);
-    let mut prng = rand::thread_rng();
     for (group, face) in buffer.groups.into_iter().zip(RHS_FACES.into_iter()) {
         for quad in group.into_iter() {
             let uq: UnorientedQuad = quad.into();
@@ -86,11 +84,7 @@ pub fn mesh_chunk_visible_block_faces(
             }
             let mut flip_v = false;
             match block_face {
-                Face::Top => {
-                    // temporary hack to break things up, rotate the top texture randomly
-                    flip_v = prng.gen_bool(0.5);
-                }
-                Face::Bottom => {}
+                Face::Top | Face::Bottom => {}
                 Face::Left | Face::Right | Face::Front | Face::Back => {
                     flip_v = true;
 
@@ -172,7 +166,6 @@ pub fn mesh_chunk_greedy_quads(
     let mut normals = Vec::with_capacity(num_vertices);
     let mut colors = Vec::with_capacity(num_vertices);
     let mut uvs = Vec::with_capacity(num_vertices);
-    let mut prng = rand::thread_rng();
     for (group, face) in buffer.quads.groups.into_iter().zip(RHS_FACES.into_iter()) {
         for quad in group.into_iter() {
             indices.extend_from_slice(&face.quad_mesh_indices(positions.len() as u32));
@@ -212,16 +205,9 @@ pub fn mesh_chunk_greedy_quads(
             let VoxelBlock::Translucent(chunk_block_id) = block else {
                 unimplemented!("only translucent blocks are supported")
             };
-            let mut _flip_v = false;
             match block_face {
-                Face::Top => {
-                    // temporary hack to break things up, rotate the top texture randomly
-                    _flip_v = prng.gen_bool(0.5);
-                }
-                Face::Bottom => {}
+                Face::Top | Face::Bottom => {}
                 Face::Left | Face::Right | Face::Front | Face::Back => {
-                    _flip_v = true;
-
                     // temporary hack to use bottom texture instead of side texture if there is an opaque block on top
                     // only really makes sense for e.g. grass/snow blocks which should use a their bottom dirt texture on the side if occluded on top
                     let above_coord = PaddedChunkShape::linearize([
