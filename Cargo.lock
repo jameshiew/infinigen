@@ -2769,6 +2769,7 @@ version = "0.0.0"
 dependencies = [
  "ahash",
  "block-mesh",
+ "criterion",
  "linearize",
  "nalgebra",
  "ndarray",
