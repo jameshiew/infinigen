@@ -69,10 +69,6 @@ impl BlockDefinitions {
         self.by_mapped_id.get(mapped_id).unwrap()
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (&MappedBlockID, &BlockDefinition)> {
-        self.by_mapped_id.iter()
-    }
-
     /// Adds a block definition to the mappings and returns the mapped ID, or None if no more IDs are available.
     pub fn add(&mut self, block_definition: BlockDefinition) -> Option<MappedBlockID> {
         let mapped_id = self.next_free_mapped_id;
