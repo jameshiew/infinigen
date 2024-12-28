@@ -52,10 +52,10 @@ impl ChunkRegistry {
     ) {
         let status = match chunk {
             Chunk::Empty => ChunkStatus::Empty,
-            Chunk::Array3(ref array3_chunk) => ChunkStatus::Generated(Box::new(ChunkInfo {
-                chunk: array3_chunk.clone(),
-                faces: extract_faces(array3_chunk.as_ref(), block_mappings),
-            })),
+            Chunk::Array3(chunk) => {
+                let faces = extract_faces(chunk.as_ref(), block_mappings);
+                ChunkStatus::Generated(Box::new(ChunkInfo { chunk, faces }))
+            }
         };
         self.set_status(zoom_level, position, status);
     }
