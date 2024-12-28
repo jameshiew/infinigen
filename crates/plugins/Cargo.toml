@@ -19,3 +19,4 @@ tracing = { workspace = true }
 ahash = { workspace = true }
 bevy_framepace = "0.18.0"
 linearize = { workspace = true }
+indexed_priority_queue = "0.3.0"

@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 use infinigen_common::view;
 use infinigen_common::world::{ChunkPosition, WorldPosition};
-use utils::Queue;
+use utils::{ChunkPriority, LoadQueue};
 
 use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
 use crate::AppState;
@@ -19,7 +19,7 @@ pub struct LoadedChunk {
     pub cpos: ChunkPosition,
 }
 
-pub type LoadChunkRequests = Queue<ChunkPosition>;
+pub type LoadChunkRequests = LoadQueue;
 
 #[derive(Debug, Default, Resource)]
 pub struct SceneCamera {
@@ -139,10 +139,12 @@ pub fn handle_update_scene_view(
 #[derive(Event)]
 pub struct UpdateSceneEvent;
 
+#[allow(clippy::too_many_arguments)]
 pub fn check_if_should_update_scene(
     mut commands: Commands,
     mut scene_camera: ResMut<SceneCamera>,
     camera: Single<&Transform, With<Camera>>,
+    mut load_ops: ResMut<LoadChunkRequests>,
     mut reload_evs: EventReader<ReloadAllChunksEvent>,
     mut refresh_evs: EventReader<RefreshChunkOpsQueueEvent>,
     mut update_scene_evs: EventWriter<UpdateSceneEvent>,
@@ -150,9 +152,11 @@ pub fn check_if_should_update_scene(
 ) {
     let mut should_update = false;
     if refresh_evs.read().next().is_some() {
+        load_ops.clear();
         should_update = true;
     }
     if reload_evs.read().next().is_some() {
+        load_ops.clear();
         tracing::info!("Reloading all chunks");
         for loaded_chunk in loaded.iter() {
             commands.entity(loaded_chunk).despawn_recursive();
@@ -191,7 +195,6 @@ pub fn update_scene(
         return;
     }
     tracing::trace!("Updating scene");
-    load_ops.clear();
 
     let (camera, projection) = camera.single();
     let current_cpos: ChunkPosition = WorldPosition {
@@ -210,7 +213,8 @@ pub fn update_scene(
     let near = projection.near;
     let far = projection.far;
 
-    let already_loaded_or_loading: AHashSet<_> = loaded.iter().map(|l| l.cpos).collect();
+    let already_loaded: AHashSet<_> = loaded.iter().map(|l| l.cpos).collect();
+    tracing::debug!(loaded = ?already_loaded.len(), "Chunks already loaded");
 
     let (to_load, to_unload) = view::compute_chunks_delta(
         current_cpos,
@@ -231,11 +235,16 @@ pub fn update_scene(
         fov,
         near,
         far,
-        &already_loaded_or_loading,
+        &already_loaded,
     );
+    tracing::debug!(load = ?to_load.len(), unload = ?to_unload.len(), "Chunks to load/unload");
 
-    for cpos in to_load {
-        load_ops.push_back(cpos);
+    for (i, cpos) in to_load.into_iter().enumerate() {
+        let priority = ChunkPriority { priority: i };
+        load_ops.push(cpos, priority);
+    }
+    for cpos in to_unload.iter() {
+        load_ops.remove(*cpos);
     }
 
     unload_evs.send_batch(to_unload.into_iter().map(UnloadChunkOpEvent));
