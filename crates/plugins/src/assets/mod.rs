@@ -181,7 +181,7 @@ fn setup(
         };
         if let Some(ref texture_file_names) = block_definition.textures {
             let atlas_sources = atlas_sources.as_ref().unwrap();
-            let atlas_layout = atlas_layout.as_ref().unwrap().clone();
+            let atlas_layout = atlas_layout.as_ref().unwrap();
             for face in Face::iter() {
                 // TODO: don't unwrap here
                 let texture_handle = block_texture_handles_by_name
