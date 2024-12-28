@@ -11,10 +11,9 @@ use strum::IntoEnumIterator;
 use crate::assets::blocks::BlockMappings;
 use crate::world::World;
 
-// Responsible for keeping track of chunks.
 #[derive(Default, Resource)]
 pub struct ChunkRegistry {
-    cached: AHashMap<ZoomLevel, AHashMap<ChunkPosition, ChunkStatus>>,
+    chunks: AHashMap<ZoomLevel, AHashMap<ChunkPosition, ChunkStatus>>,
 }
 
 #[derive(Debug, Clone)]
@@ -31,24 +30,17 @@ pub enum ChunkStatus {
 }
 
 impl ChunkRegistry {
-    pub fn get_status(&self, zoom_level: ZoomLevel, cpos: &ChunkPosition) -> Option<&ChunkStatus> {
-        match self.cached.get(&zoom_level) {
-            Some(chunks) => chunks.get(cpos),
-            None => None,
-        }
+    pub fn get_status(&self, zoom_level: ZoomLevel, pos: &ChunkPosition) -> Option<&ChunkStatus> {
+        self.chunks
+            .get(&zoom_level)
+            .and_then(|chunks| chunks.get(pos))
     }
 
-    pub fn set_status(&mut self, zoom_level: ZoomLevel, cpos: &ChunkPosition, status: ChunkStatus) {
-        match self.cached.get_mut(&zoom_level) {
-            Some(chunks) => {
-                chunks.insert(*cpos, status);
-            }
-            None => {
-                let mut chunks = AHashMap::default();
-                chunks.insert(*cpos, status);
-                self.cached.insert(zoom_level, chunks);
-            }
-        }
+    pub fn set_status(&mut self, zoom_level: ZoomLevel, pos: &ChunkPosition, status: ChunkStatus) {
+        self.chunks
+            .entry(zoom_level)
+            .or_default()
+            .insert(*pos, status);
     }
 
     pub fn insert_generated(
@@ -76,20 +68,20 @@ impl ChunkRegistry {
         block_mappings: &BlockMappings,
     ) -> StaticCopyMap<Direction, ChunkFace> {
         match self.get_status(zoom_level, position) {
-            Some(ChunkStatus::Generated(chunk_info)) => return chunk_info.faces,
-            Some(ChunkStatus::Empty) => return EMPTY_CHUNK_FACES,
-            _ => {}
-        }
-        let chunk = world.get_chunk(zoom_level, position);
-        self.insert_generated(zoom_level, position, chunk, block_mappings);
-        match self.get_status(zoom_level, position).unwrap() {
-            ChunkStatus::Generated(chunk_info) => chunk_info.faces,
-            ChunkStatus::Empty => EMPTY_CHUNK_FACES,
-            _ => unreachable!(),
+            Some(ChunkStatus::Generated(chunk_info)) => chunk_info.faces,
+            Some(ChunkStatus::Empty) => EMPTY_CHUNK_FACES,
+            _ => {
+                let chunk = world.get_chunk(zoom_level, position);
+                self.insert_generated(zoom_level, position, chunk, block_mappings);
+                match self.get_status(zoom_level, position).unwrap() {
+                    ChunkStatus::Generated(chunk_info) => chunk_info.faces,
+                    ChunkStatus::Empty => EMPTY_CHUNK_FACES,
+                    _ => unreachable!(),
+                }
+            }
         }
     }
 
-    /// Returns the faces of neighboring chunks, in direction order. The bottom face of the chunk above, then the top face of the chunk below, etc.
     pub fn get_neighboring_faces_mut(
         &mut self,
         zoom_level: ZoomLevel,
@@ -98,23 +90,16 @@ impl ChunkRegistry {
         block_mappings: &BlockMappings,
     ) -> StaticCopyMap<Direction, ChunkFace> {
         let mut neighbor_faces = EMPTY_CHUNK_FACES;
-        for dir in infinigen_common::world::Direction::iter() {
+        for dir in Direction::iter() {
             let normal: [i32; 3] = dir.into();
-            let neighbor_cpos = ChunkPosition {
+            let neighbor_pos = ChunkPosition {
                 x: position.x + normal[0],
                 y: position.y + normal[1],
                 z: position.z + normal[2],
             };
-            let faces = self.get_faces_mut(zoom_level, &neighbor_cpos, world, block_mappings);
+            let faces = self.get_faces_mut(zoom_level, &neighbor_pos, world, block_mappings);
             let opposite = dir.opposite();
-            match opposite {
-                Direction::Up => neighbor_faces[dir] = faces[opposite],
-                Direction::Down => neighbor_faces[dir] = faces[opposite],
-                Direction::North => neighbor_faces[dir] = faces[opposite],
-                Direction::South => neighbor_faces[dir] = faces[opposite],
-                Direction::East => neighbor_faces[dir] = faces[opposite],
-                Direction::West => neighbor_faces[dir] = faces[opposite],
-            }
+            neighbor_faces[dir] = faces[opposite];
         }
         neighbor_faces
     }
@@ -123,7 +108,7 @@ impl ChunkRegistry {
 pub fn get_neighbour_cposes(
     position: &ChunkPosition,
 ) -> impl Iterator<Item = (Direction, ChunkPosition)> + '_ {
-    infinigen_common::world::Direction::iter().map(|dir| {
+    Direction::iter().map(|dir| {
         let normal: [i32; 3] = dir.into();
         (
             dir,
