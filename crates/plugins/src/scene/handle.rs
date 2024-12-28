@@ -90,21 +90,20 @@ pub fn process_load_chunk_ops(
                     scene_zoom_level,
                     &cpos,
                     world.as_ref(), // !!!!
-                    &registry.block_mappings,
+                    &registry.definitions,
                 );
 
                 let mut loads = Vec::with_capacity(1); // most common case - only one mesh needed, for opaque blocks in chunk
 
-                let block_textures = registry.get_block_textures();
+                let block_textures = registry.get_appearances();
 
                 let translucent_chunk_block_ids: Vec<_> = registry
-                    .block_mappings
-                    .by_mapped_id
+                    .definitions
                     .iter()
-                    .filter(|(_, block_definition)| {
-                        block_definition.visibility == BlockVisibility::Translucent
+                    .filter_map(|(chunk_block_id, block_definition)| {
+                        (block_definition.visibility == BlockVisibility::Translucent)
+                            .then_some(*chunk_block_id)
                     })
-                    .map(|(chunk_block_id, _)| *chunk_block_id)
                     .collect();
 
                 for translucent_chunk_block_id in translucent_chunk_block_ids {
@@ -117,7 +116,7 @@ pub fn process_load_chunk_ops(
                             &translucent_chunk,
                             &neighbor_faces,
                             block_textures,
-                            &registry.block_mappings,
+                            &registry.definitions,
                         ) {
                             loads.push((translucent_mesh, translucent_mat.clone_weak()));
                         }
@@ -128,7 +127,7 @@ pub fn process_load_chunk_ops(
                     &opaque_chunk,
                     &neighbor_faces,
                     block_textures,
-                    &registry.block_mappings,
+                    &registry.definitions,
                 ) {
                     loads.push((opaque_mesh, opaque_mat));
                 };

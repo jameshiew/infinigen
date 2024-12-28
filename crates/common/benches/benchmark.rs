@@ -2,7 +2,7 @@ use block_mesh::ndshape::ConstShape;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use infinigen_common::mesh::block::VoxelBlock;
 use infinigen_common::mesh::shapes::{PaddedChunk, PaddedChunkShape};
-use infinigen_common::mesh::textures::TextureMap;
+use infinigen_common::mesh::textures::BlockAppearances;
 use infinigen_common::mesh::{mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces};
 use infinigen_common::world::MappedBlockID;
 use rand::rngs::StdRng;
@@ -29,7 +29,7 @@ where
 
 fn bench_mesh_visible_block_faces(c: &mut Criterion) {
     let padded_chunk = random_padded_chunk(VoxelBlock::Opaque, 0.3);
-    let block_textures = TextureMap::default();
+    let block_textures = BlockAppearances::default();
 
     c.bench_function("mesh_chunk_visible_block_faces", |b| {
         b.iter(|| {
@@ -43,7 +43,7 @@ fn bench_mesh_visible_block_faces(c: &mut Criterion) {
 
 fn bench_mesh_greedy_quads(c: &mut Criterion) {
     let padded_chunk = random_padded_chunk(VoxelBlock::Translucent, 0.3);
-    let block_textures = TextureMap::default();
+    let block_textures = BlockAppearances::default();
 
     c.bench_function("mesh_chunk_greedy_quads", |b| {
         b.iter(|| {

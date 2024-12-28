@@ -45,6 +45,6 @@ fn init_world(
     config: Res<Config>,
     mut world: ResMut<World>,
 ) {
-    world.generator = config.world.as_world_gen(registry.block_mappings.palette());
+    world.generator = config.world.as_world_gen(registry.definitions.palette());
     next_state.set(AppState::MainGame);
 }

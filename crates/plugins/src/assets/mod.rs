@@ -3,7 +3,7 @@ use bevy::asset::LoadedFolder;
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use blocks::{BlockDefinition, BlockRegistry, MaterialType};
-use infinigen_common::mesh::textures::{Face, FaceAppearance, TextureMap};
+use infinigen_common::mesh::textures::{BlockAppearances, Face, FaceAppearance};
 use infinigen_extras::blocks::block_types;
 use linearize::static_copy_map;
 use loading::AssetFolders;
@@ -144,7 +144,7 @@ fn setup(
         (None, None, None)
     };
 
-    let mut block_textures = TextureMap::default();
+    let mut block_textures = BlockAppearances::default();
     if let Some(atlas_layout) = atlas_layout.as_ref() {
         block_textures.size = [atlas_layout.size[0] as usize, atlas_layout.size[1] as usize];
     }
@@ -179,13 +179,13 @@ fn setup(
             Face::Left => color,
             Face::Right => color,
         };
-        if let Some(ref texture_file_names) = block_definition.textures {
+        if let Some(ref texture_paths) = block_definition.textures {
             let atlas_sources = atlas_sources.as_ref().unwrap();
             let atlas_layout = atlas_layout.as_ref().unwrap();
             for face in Face::iter() {
                 // TODO: don't unwrap here
                 let texture_handle = block_texture_handles_by_name
-                    .get(texture_file_names.get(&face).unwrap())
+                    .get(texture_paths.get(&face).unwrap())
                     .unwrap();
                 tracing::debug!(?face, ?block_definition.id, "Found specific texture");
                 let tidx = atlas_sources.texture_index(texture_handle).unwrap();
@@ -199,18 +199,15 @@ fn setup(
             }
         };
 
-        let mapped_id = registry.block_mappings.add(block_definition);
+        let mapped_id = registry.definitions.add(block_definition);
         block_textures.add(
             mapped_id.expect("should have been able to map all block IDs"),
             appearances,
         );
     }
-    registry.block_textures = block_textures;
+    registry.appearances = block_textures;
 
-    tracing::debug!(
-        "Registered all block textures: {:#?}",
-        registry.block_textures
-    );
+    tracing::debug!("Registered all block textures: {:#?}", registry.appearances);
 
     registry.materials[MaterialType::DenseOpaque as usize] = materials.add(StandardMaterial {
         base_color: Color::WHITE,

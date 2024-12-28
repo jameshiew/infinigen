@@ -1,14 +1,13 @@
 use ahash::AHashMap;
 use bevy::prelude::Resource;
 use infinigen_common::chunks::{Array3Chunk, Chunk};
-use infinigen_common::mesh::faces::extract_faces;
+use infinigen_common::mesh::faces::{extract_faces, BlockVisibilityChecker};
 use infinigen_common::mesh::shapes::{ChunkFace, EMPTY_CHUNK_FACES};
 use infinigen_common::world::{ChunkPosition, Direction};
 use infinigen_common::zoom::ZoomLevel;
 use linearize::StaticCopyMap;
 use strum::IntoEnumIterator;
 
-use crate::assets::blocks::BlockMappings;
 use crate::world::World;
 
 #[derive(Default, Resource)]
@@ -48,12 +47,12 @@ impl ChunkRegistry {
         zoom_level: ZoomLevel,
         position: &ChunkPosition,
         chunk: Chunk,
-        block_mappings: &BlockMappings,
+        visibility_checker: impl BlockVisibilityChecker,
     ) {
         let status = match chunk {
             Chunk::Empty => ChunkStatus::Empty,
             Chunk::Array3(chunk) => {
-                let faces = extract_faces(chunk.as_ref(), block_mappings);
+                let faces = extract_faces(chunk.as_ref(), visibility_checker);
                 ChunkStatus::Generated(Box::new(ChunkInfo { chunk, faces }))
             }
         };
@@ -65,14 +64,14 @@ impl ChunkRegistry {
         zoom_level: ZoomLevel,
         position: &ChunkPosition,
         world: &World,
-        block_mappings: &BlockMappings,
+        visibility_checker: impl BlockVisibilityChecker,
     ) -> StaticCopyMap<Direction, ChunkFace> {
         match self.get_status(zoom_level, position) {
             Some(ChunkStatus::Generated(chunk_info)) => chunk_info.faces,
             Some(ChunkStatus::Empty) => EMPTY_CHUNK_FACES,
             _ => {
                 let chunk = world.get_chunk(zoom_level, position);
-                self.insert_generated(zoom_level, position, chunk, block_mappings);
+                self.insert_generated(zoom_level, position, chunk, visibility_checker);
                 match self.get_status(zoom_level, position).unwrap() {
                     ChunkStatus::Generated(chunk_info) => chunk_info.faces,
                     ChunkStatus::Empty => EMPTY_CHUNK_FACES,
@@ -87,7 +86,7 @@ impl ChunkRegistry {
         zoom_level: ZoomLevel,
         position: &ChunkPosition,
         world: &World,
-        block_mappings: &BlockMappings,
+        visibility_checker: impl BlockVisibilityChecker,
     ) -> StaticCopyMap<Direction, ChunkFace> {
         let mut neighbor_faces = EMPTY_CHUNK_FACES;
         for dir in Direction::iter() {
@@ -97,7 +96,7 @@ impl ChunkRegistry {
                 y: position.y + normal[1],
                 z: position.z + normal[2],
             };
-            let faces = self.get_faces_mut(zoom_level, &neighbor_pos, world, block_mappings);
+            let faces = self.get_faces_mut(zoom_level, &neighbor_pos, world, &visibility_checker);
             let opposite = dir.opposite();
             neighbor_faces[dir] = faces[opposite];
         }

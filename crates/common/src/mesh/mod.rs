@@ -8,7 +8,7 @@ use faces::RHS_FACES;
 use shapes::{PaddedChunk, PaddedChunkShape, PADDED_CHUNK_MAX_INDEX};
 
 use self::block::VoxelBlock;
-use self::textures::{Face, TextureMap};
+use self::textures::{BlockAppearances, Face};
 
 pub mod block;
 pub mod faces;
@@ -28,7 +28,7 @@ pub struct MeshInfo {
 /// adapted from <https://github.com/bonsairobo/block-mesh-rs/blob/main/examples-crate/render/main.rs>. Returns `None` if there are no visible faces.
 pub fn mesh_chunk_visible_block_faces(
     padded: &PaddedChunk,
-    block_textures: &TextureMap,
+    block_textures: &BlockAppearances,
 ) -> Option<MeshInfo> {
     let mut buffer = UnitQuadBuffer::new();
     visible_block_faces(
@@ -144,7 +144,7 @@ pub fn mesh_chunk_visible_block_faces(
 /// adapted from <https://github.com/bonsairobo/block-mesh-rs/blob/main/examples-crate/render/main.rs>
 pub fn mesh_chunk_greedy_quads(
     padded: &PaddedChunk,
-    block_textures: &TextureMap,
+    block_textures: &BlockAppearances,
 ) -> Option<MeshInfo> {
     let mut buffer = GreedyQuadsBuffer::new(padded.len());
     greedy_quads(

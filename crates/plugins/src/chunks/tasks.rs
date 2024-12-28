@@ -80,7 +80,7 @@ pub fn handle_chunk_finished_generating(
 ) {
     for (entity, mut task) in generate_chunk_tasks.iter_mut() {
         if let Some((zoom_level, cpos, chunk)) = block_on(poll_once(&mut task.0)) {
-            registry.insert_generated(zoom_level, &cpos, chunk, &assets_registry.block_mappings);
+            registry.insert_generated(zoom_level, &cpos, chunk, &assets_registry.definitions);
             commands.entity(entity).despawn();
         }
     }

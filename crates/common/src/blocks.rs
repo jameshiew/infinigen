@@ -31,6 +31,7 @@ impl Default for BlockType {
     }
 }
 
+#[derive(Debug, Default)]
 pub struct Palette {
     pub inner: AHashMap<BlockID, MappedBlockID>,
 }

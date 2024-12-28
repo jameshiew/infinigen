@@ -7,14 +7,12 @@ use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::render::render_asset::RenderAssetUsages;
 use bevy::render::render_resource::PrimitiveTopology;
 use infinigen_common::chunks::Array3Chunk;
-use infinigen_common::mesh::faces::prepare_padded_chunk;
+use infinigen_common::mesh::faces::{prepare_padded_chunk, BlockVisibilityChecker};
 use infinigen_common::mesh::shapes::ChunkFace;
-use infinigen_common::mesh::textures::TextureMap;
+use infinigen_common::mesh::textures::BlockAppearances;
 use infinigen_common::mesh::{mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces, MeshInfo};
 use infinigen_common::world::Direction;
 use linearize::StaticCopyMap;
-
-use crate::assets::blocks::BlockMappings;
 
 pub fn to_bevy_mesh(
     MeshInfo {
@@ -51,10 +49,10 @@ pub fn to_bevy_mesh(
 pub fn bevy_mesh_visible_block_faces(
     chunk: &Array3Chunk,
     neighbor_faces: &StaticCopyMap<Direction, ChunkFace>,
-    block_textures: &TextureMap,
-    block_mappings: &BlockMappings,
+    block_textures: &BlockAppearances,
+    visibility_checker: impl BlockVisibilityChecker,
 ) -> Option<Mesh> {
-    let samples = prepare_padded_chunk(chunk, neighbor_faces, block_mappings);
+    let samples = prepare_padded_chunk(chunk, neighbor_faces, visibility_checker);
     let mesh = mesh_chunk_visible_block_faces(&samples, block_textures);
     mesh.map(to_bevy_mesh)
 }
@@ -64,10 +62,10 @@ pub fn bevy_mesh_visible_block_faces(
 pub fn bevy_mesh_greedy_quads(
     chunk: &Array3Chunk,
     neighbor_faces: &StaticCopyMap<Direction, ChunkFace>,
-    block_textures: &TextureMap,
-    block_mappings: &BlockMappings,
+    block_textures: &BlockAppearances,
+    visibility_checker: impl BlockVisibilityChecker,
 ) -> Option<Mesh> {
-    let samples = prepare_padded_chunk(chunk, neighbor_faces, block_mappings);
+    let samples = prepare_padded_chunk(chunk, neighbor_faces, visibility_checker);
     let mesh = mesh_chunk_greedy_quads(&samples, block_textures);
     mesh.map(to_bevy_mesh)
 }
