@@ -36,15 +36,6 @@ impl From<Array3Chunk> for Chunk {
     }
 }
 
-impl From<Chunk> for Array3Chunk {
-    fn from(value: Chunk) -> Self {
-        match value {
-            Chunk::Array3(chunk) => *chunk,
-            Chunk::Empty => Array3Chunk::default(),
-        }
-    }
-}
-
 /// Chunk represented as a 3D array of [`MappedBlockID`].
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct Array3Chunk {
