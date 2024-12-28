@@ -6,7 +6,7 @@ use bevy::pbr::StandardMaterial;
 use bevy::prelude::{Resource, TypePath};
 use infinigen_common::blocks::{BlockColor, BlockID, BlockType, BlockVisibility, Palette};
 use infinigen_common::mesh::faces::BlockVisibilityChecker;
-use infinigen_common::mesh::textures::{Face, TextureMap};
+use infinigen_common::mesh::textures::{BlockAppearances, Face};
 use infinigen_common::world::MappedBlockID;
 use serde::{Deserialize, Serialize};
 use strum::EnumCount;
@@ -17,6 +17,8 @@ pub enum MaterialType {
     Translucent,
 }
 
+type TextureFilename = String;
+
 #[derive(
     Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Ord, PartialOrd, TypePath, Asset,
 )]
@@ -26,7 +28,7 @@ pub struct BlockDefinition {
     pub visibility: BlockVisibility,
     #[serde(default = "default_block_color")]
     pub color: BlockColor,
-    pub textures: Option<BTreeMap<Face, String>>,
+    pub textures: Option<BTreeMap<Face, TextureFilename>>,
 }
 
 impl Default for BlockDefinition {
@@ -57,33 +59,24 @@ fn default_block_color() -> BlockColor {
 
 /// Tracks which [`MappedBlockID`]s are being used for which [`BlockDefinition`]s for the currently loaded session.
 #[derive(Debug, Default, Clone)]
-pub struct BlockMappings {
-    pub by_mapped_id: AHashMap<MappedBlockID, BlockDefinition>,
-    by_block_id: AHashMap<BlockID, MappedBlockID>,
+pub struct BlockDefinitions {
+    by_mapped_id: AHashMap<MappedBlockID, BlockDefinition>,
     next_free_mapped_id: MappedBlockID,
 }
 
-impl From<&BlockMappings> for AHashMap<BlockID, MappedBlockID> {
-    fn from(value: &BlockMappings) -> Self {
-        value.by_block_id.clone()
-    }
-}
-
-impl BlockMappings {
-    pub fn get_by_mapped_id(&self, mapped_id: &MappedBlockID) -> &BlockDefinition {
+impl BlockDefinitions {
+    pub fn get(&self, mapped_id: &MappedBlockID) -> &BlockDefinition {
         self.by_mapped_id.get(mapped_id).unwrap()
     }
 
-    pub fn get_by_block_id(&self, block_id: &BlockID) -> MappedBlockID {
-        *self.by_block_id.get(block_id).unwrap()
+    pub fn iter(&self) -> impl Iterator<Item = (&MappedBlockID, &BlockDefinition)> {
+        self.by_mapped_id.iter()
     }
 
     /// Adds a block definition to the mappings and returns the mapped ID, or None if no more IDs are available.
     pub fn add(&mut self, block_definition: BlockDefinition) -> Option<MappedBlockID> {
         let mapped_id = self.next_free_mapped_id;
         tracing::debug!(?block_definition, ?mapped_id, "Mapping block");
-        self.by_block_id
-            .insert(block_definition.id.clone(), self.next_free_mapped_id);
         self.by_mapped_id
             .insert(self.next_free_mapped_id, block_definition);
         self.next_free_mapped_id = self.next_free_mapped_id.next()?;
@@ -91,21 +84,27 @@ impl BlockMappings {
     }
 
     pub fn palette(&self) -> Palette {
-        self.by_block_id.clone().into()
+        let mut palette = Palette::default();
+        for (mapped_id, block_definition) in self.by_mapped_id.iter() {
+            palette
+                .inner
+                .insert(block_definition.id.clone(), *mapped_id);
+        }
+        palette
     }
 }
 
-impl BlockVisibilityChecker for BlockMappings {
+impl BlockVisibilityChecker for BlockDefinitions {
     fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility {
-        self.get_by_mapped_id(mapped_id).visibility
+        self.get(mapped_id).visibility
     }
 }
 
 #[derive(Default, Resource)]
 pub struct BlockRegistry {
     pub materials: [Handle<StandardMaterial>; MaterialType::COUNT],
-    pub block_textures: TextureMap,
-    pub block_mappings: BlockMappings,
+    pub appearances: BlockAppearances,
+    pub definitions: BlockDefinitions,
 }
 
 impl BlockRegistry {
@@ -114,8 +113,7 @@ impl BlockRegistry {
         self.materials[material_type as usize].clone_weak()
     }
 
-    /// Returns a weak handle to the block texture atlas.
-    pub fn get_block_textures(&self) -> &TextureMap {
-        &self.block_textures
+    pub fn get_appearances(&self) -> &BlockAppearances {
+        &self.appearances
     }
 }

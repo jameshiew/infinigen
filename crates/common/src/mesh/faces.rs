@@ -27,7 +27,7 @@ where
 
 pub fn extract_faces(
     chunk: &Array3Chunk,
-    block_mappings: impl BlockVisibilityChecker,
+    visibility_checker: impl BlockVisibilityChecker,
 ) -> StaticCopyMap<Direction, ChunkFace> {
     let mut faces = EMPTY_CHUNK_FACES;
     for dir in Direction::iter() {
@@ -43,7 +43,7 @@ pub fn extract_faces(
                         let j = ChunkFaceShape::linearize([x as u32, z as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_visibility(&chunk_block_id) {
+                                match visibility_checker.get_visibility(&chunk_block_id) {
                                     crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
@@ -69,7 +69,7 @@ pub fn extract_faces(
                         let j = ChunkFaceShape::linearize([x as u32, z as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_visibility(&chunk_block_id) {
+                                match visibility_checker.get_visibility(&chunk_block_id) {
                                     crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
@@ -95,7 +95,7 @@ pub fn extract_faces(
                         let j = ChunkFaceShape::linearize([x as u32, y as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_visibility(&chunk_block_id) {
+                                match visibility_checker.get_visibility(&chunk_block_id) {
                                     crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
@@ -121,7 +121,7 @@ pub fn extract_faces(
                         let j = ChunkFaceShape::linearize([x as u32, y as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_visibility(&chunk_block_id) {
+                                match visibility_checker.get_visibility(&chunk_block_id) {
                                     crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
@@ -147,7 +147,7 @@ pub fn extract_faces(
                         let j = ChunkFaceShape::linearize([y as u32, z as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_visibility(&chunk_block_id) {
+                                match visibility_checker.get_visibility(&chunk_block_id) {
                                     crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
@@ -173,7 +173,7 @@ pub fn extract_faces(
                         let j = ChunkFaceShape::linearize([y as u32, z as u32]) as usize;
                         let block = match block {
                             Some(chunk_block_id) => {
-                                match block_mappings.get_visibility(&chunk_block_id) {
+                                match visibility_checker.get_visibility(&chunk_block_id) {
                                     crate::blocks::BlockVisibility::Opaque => {
                                         VoxelBlock::Opaque(chunk_block_id)
                                     }
@@ -197,7 +197,7 @@ pub fn extract_faces(
 pub fn prepare_padded_chunk(
     chunk: &Array3Chunk,
     neighbor_faces: &StaticCopyMap<Direction, ChunkFace>,
-    block_mappings: impl BlockVisibilityChecker,
+    visibility_checker: impl BlockVisibilityChecker,
 ) -> PaddedChunk {
     let mut padded = [VoxelBlock::Empty; PaddedChunkShape::SIZE as usize];
     const MIN_PADDED_IDX: u32 = 0;
@@ -309,7 +309,7 @@ pub fn prepare_padded_chunk(
                         PaddedChunkShape::linearize([bx as u32 + 1, by as u32 + 1, bz as u32 + 1]);
                     let block = match block {
                         Some(chunk_block_id) => {
-                            match block_mappings.get_visibility(&chunk_block_id) {
+                            match visibility_checker.get_visibility(&chunk_block_id) {
                                 crate::blocks::BlockVisibility::Opaque => {
                                     VoxelBlock::Opaque(chunk_block_id)
                                 }

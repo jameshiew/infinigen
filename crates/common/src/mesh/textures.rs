@@ -25,7 +25,7 @@ pub fn to_tex_coords_raw(
 }
 
 #[derive(Default, Debug, Clone)]
-pub struct TextureMap {
+pub struct BlockAppearances {
     pub size: [usize; 2],
     appearance: AHashMap<MappedBlockID, StaticCopyMap<Face, FaceAppearance>>,
 }
@@ -41,7 +41,7 @@ pub enum FaceAppearanceTransformed {
     Color { r: f32, g: f32, b: f32, a: f32 },
 }
 
-impl TextureMap {
+impl BlockAppearances {
     pub fn add(&mut self, id: MappedBlockID, appearance: StaticCopyMap<Face, FaceAppearance>) {
         tracing::debug!(?id, ?appearance, "Recording appearance for block");
         self.appearance.insert(id, appearance);
