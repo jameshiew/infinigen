@@ -1,7 +1,6 @@
 use bevy::prelude::*;
-use infinigen_common::blocks::BlockVisibility;
-use infinigen_common::chunks::{Array3Chunk, Chunk, CHUNK_SIZE, CHUNK_SIZE_F32};
-use infinigen_common::world::{BlockPosition, MappedBlockID, WorldPosition};
+use infinigen_common::chunks::CHUNK_SIZE_F32;
+use infinigen_common::world::WorldPosition;
 
 use super::{LoadedChunk, UnloadChunkOpEvent};
 use crate::assets::blocks::{BlockRegistry, MaterialType};
@@ -11,34 +10,7 @@ use crate::scene::utils::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces}
 use crate::world::World;
 
 // bigger chunks means go slower to prevent lag/stutter
-const CHUNK_OP_RATE: usize = (16. * (32. / CHUNK_SIZE_F32)) as usize;
-
-/// Split out blocks from this chunk.
-pub fn split(mut chunk: Array3Chunk, chunk_block_id: MappedBlockID) -> (Array3Chunk, Chunk) {
-    let mut split_out = Array3Chunk::default();
-    let mut contained_blocks_to_be_split_out = false;
-
-    for x in 0..CHUNK_SIZE {
-        for y in 0..CHUNK_SIZE {
-            for z in 0..CHUNK_SIZE {
-                if let Some(block) = chunk.get(&BlockPosition { x, y, z }) {
-                    if block == chunk_block_id {
-                        contained_blocks_to_be_split_out = true;
-                        split_out.insert(&BlockPosition { x, y, z }, block);
-                        chunk.clear(&BlockPosition { x, y, z });
-                    }
-                }
-            }
-        }
-    }
-
-    let split_out = if contained_blocks_to_be_split_out {
-        Chunk::Array3(Box::new(split_out))
-    } else {
-        Chunk::Empty
-    };
-    (chunk, split_out)
-}
+const CHUNK_OP_RATE: usize = (32. * (32. / CHUNK_SIZE_F32)) as usize;
 
 pub fn process_unload_chunk_ops(
     mut commands: Commands,
@@ -82,10 +54,8 @@ pub fn process_load_chunk_ops(
             Some(ChunkStatus::Generated(chunk_info)) => {
                 tracing::trace!(?cpos, "Spawning chunk");
 
-                let chunk = &chunk_info.chunk;
-                let mut opaque_chunk = chunk.to_owned();
-                let opaque_mat = registry.get_material(MaterialType::DenseOpaque);
-                let translucent_mat = registry.get_material(MaterialType::Translucent);
+                let chunk_info = chunk_info.clone();
+
                 let neighbor_faces = chunks.get_neighboring_faces_mut(
                     scene_zoom_level,
                     &cpos,
@@ -93,43 +63,37 @@ pub fn process_load_chunk_ops(
                     &registry.definitions,
                 );
 
-                let mut loads = Vec::with_capacity(1); // most common case - only one mesh needed, for opaque blocks in chunk
+                let opaque = chunk_info.opaque.as_ref();
+                let translucents = &chunk_info.translucents;
+
+                let mut loads = vec![];
 
                 let block_textures = registry.get_appearances();
 
-                let translucent_chunk_block_ids: Vec<_> = registry
-                    .definitions
-                    .iter()
-                    .filter_map(|(chunk_block_id, block_definition)| {
-                        (block_definition.visibility == BlockVisibility::Translucent)
-                            .then_some(*chunk_block_id)
-                    })
-                    .collect();
-
-                for translucent_chunk_block_id in translucent_chunk_block_ids {
-                    let (remaining, translucent_chunk) =
-                        split(*opaque_chunk, translucent_chunk_block_id);
-                    opaque_chunk = Box::new(remaining);
-
-                    if let Chunk::Array3(translucent_chunk) = translucent_chunk {
-                        if let Some(translucent_mesh) = bevy_mesh_greedy_quads(
-                            &translucent_chunk,
-                            &neighbor_faces,
-                            block_textures,
-                            &registry.definitions,
-                        ) {
-                            loads.push((translucent_mesh, translucent_mat.clone_weak()));
-                        }
-                    };
+                for translucent in translucents.iter() {
+                    if let Some(translucent_mesh) = bevy_mesh_greedy_quads(
+                        translucent,
+                        &neighbor_faces,
+                        block_textures,
+                        &registry.definitions,
+                    ) {
+                        loads.push((
+                            translucent_mesh,
+                            registry.get_material(MaterialType::Translucent),
+                        ));
+                    }
                 }
 
                 if let Some(opaque_mesh) = bevy_mesh_visible_block_faces(
-                    &opaque_chunk,
+                    opaque,
                     &neighbor_faces,
                     block_textures,
                     &registry.definitions,
                 ) {
-                    loads.push((opaque_mesh, opaque_mat));
+                    loads.push((
+                        opaque_mesh,
+                        registry.get_material(MaterialType::DenseOpaque),
+                    ));
                 };
 
                 if loads.is_empty() {
