@@ -16,12 +16,6 @@ impl Default for MappedBlockID {
     }
 }
 
-impl From<NonZeroU8> for MappedBlockID {
-    fn from(id: NonZeroU8) -> Self {
-        Self(id)
-    }
-}
-
 impl TryFrom<u8> for MappedBlockID {
     type Error = &'static str;
 
