@@ -39,7 +39,7 @@ pub fn process_load_chunk_ops(
 ) {
     let scene_zoom_level = scene_zoom.zoom_level.into();
     for _ in 0..CHUNK_OP_RATE {
-        let Some(cpos) = load_ops.pop_front() else {
+        let Some(cpos) = load_ops.pop() else {
             return;
         };
 
