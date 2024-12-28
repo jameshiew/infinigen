@@ -5,6 +5,7 @@ use bevy_common_assets::ron::RonAssetPlugin;
 use blocks::{BlockDefinition, BlockRegistry, MaterialType};
 use infinigen_common::mesh::textures::{Face, FaceAppearance, TextureMap};
 use infinigen_extras::blocks::block_types;
+use linearize::static_copy_map;
 use loading::AssetFolders;
 use strum::IntoEnumIterator;
 
@@ -164,12 +165,20 @@ fn setup(
     for block_definition in block_definitions {
         tracing::debug!(?block_definition, "Block definition found");
         // default to color in case texture is missing
-        let mut faces = [FaceAppearance::Color {
+        let color = FaceAppearance::Color {
             r: block_definition.color[0] as f32 / 256.,
             g: block_definition.color[1] as f32 / 256.,
             b: block_definition.color[2] as f32 / 256.,
             a: block_definition.color[3] as f32 / 256.,
-        }; 6];
+        };
+        let mut appearances = static_copy_map! {
+            Face::Top => color,
+            Face::Bottom => color,
+            Face::Front => color,
+            Face::Back => color,
+            Face::Left => color,
+            Face::Right => color,
+        };
         if let Some(ref texture_file_names) = block_definition.textures {
             let atlas_sources = atlas_sources.as_ref().unwrap();
             let atlas_layout = atlas_layout.as_ref().unwrap().clone();
@@ -186,14 +195,14 @@ fn setup(
                         atlas_layout.textures[tidx].min[1] as usize,
                     ],
                 };
-                faces[face as usize] = tidx;
+                appearances[face] = tidx;
             }
         };
 
         let mapped_id = registry.block_mappings.add(block_definition);
         block_textures.add(
             mapped_id.expect("should have been able to map all block IDs"),
-            faces,
+            appearances,
         );
     }
     registry.block_textures = block_textures;

@@ -1,4 +1,5 @@
 use ahash::AHashMap;
+use linearize::{Linearize, StaticCopyMap};
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
@@ -25,10 +26,8 @@ pub fn to_tex_coords_raw(
 
 #[derive(Default, Debug, Clone)]
 pub struct TextureMap {
-    /// Size of the texture atlas containing the textures.
     pub size: [usize; 2],
-    /// Top left corner of texture in atlas, indexed by [`Face`].
-    appearance: AHashMap<MappedBlockID, [FaceAppearance; 6]>,
+    appearance: AHashMap<MappedBlockID, StaticCopyMap<Face, FaceAppearance>>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -43,7 +42,7 @@ pub enum FaceAppearanceTransformed {
 }
 
 impl TextureMap {
-    pub fn add(&mut self, id: MappedBlockID, appearance: [FaceAppearance; 6]) {
+    pub fn add(&mut self, id: MappedBlockID, appearance: StaticCopyMap<Face, FaceAppearance>) {
         tracing::debug!(?id, ?appearance, "Recording appearance for block");
         self.appearance.insert(id, appearance);
     }
@@ -55,7 +54,7 @@ impl TextureMap {
         uvs: [[f32; 2]; 4],
     ) -> Option<FaceAppearanceTransformed> {
         let appearances = self.appearance.get(id)?;
-        match appearances[face as usize] {
+        match appearances[face] {
             FaceAppearance::Texture { coords } => Some(FaceAppearanceTransformed::Texture {
                 coords: to_tex_coords_raw(uvs, coords, self.size),
             }),
@@ -66,13 +65,8 @@ impl TextureMap {
     }
 
     pub fn to_color(&self, id: &MappedBlockID, face: Face) -> Option<[f32; 4]> {
-        let tidx = match self.appearance.get(id) {
-            Some(faces) => faces[face as usize],
-            None => {
-                return None;
-            }
-        };
-        match tidx {
+        let appearances = self.appearance.get(id)?;
+        match appearances[face] {
             FaceAppearance::Texture { .. } => None,
             FaceAppearance::Color { r, g, b, a } => Some([r, g, b, a]),
         }
@@ -80,8 +74,20 @@ impl TextureMap {
 }
 
 #[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Ord, PartialOrd, EnumIter,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    Ord,
+    PartialOrd,
+    EnumIter,
+    Linearize,
 )]
+#[linearize(const)]
 pub enum Face {
     Top = 0,
     Bottom,
