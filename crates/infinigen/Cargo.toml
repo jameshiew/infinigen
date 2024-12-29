@@ -9,7 +9,7 @@ default-run = "infinigen"
 [dependencies]
 bevy = { workspace = true }
 infinigen-plugins = { path = "../plugins" }
-config = { version = "0.14.1", default-features = false, features = ["ron"] }
+config = { version = "0.14.1", default-features = false, features = ["yaml"] }
 clap = {version = "4.5.23", features = ["derive"] }
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]

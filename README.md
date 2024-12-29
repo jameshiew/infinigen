@@ -35,7 +35,7 @@ cargo run --features bevy/dynamic_linking  # compiles fastest
 
 ### Configuration
 
-Copy `config.example.ron` to `config.ron` if you want to adjust settings beforehand (e.g. initial start position).
+Copy `config.example.yml` to `config.yml` if you want to adjust settings beforehand (e.g. initial start position).
 
 ## Development
 
