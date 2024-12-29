@@ -1,41 +1,40 @@
-use bevy::prelude::Resource;
-use infinigen_extras::worldgen::WorldGenTypes;
+use config_source::ConfigSource;
 use serde::{Deserialize, Serialize};
 
-pub const DEFAULT_HORIZONTAL_VIEW_DISTANCE: usize = 8;
-pub const DEFAULT_VERTICAL_VIEW_DISTANCE: usize = 8;
+pub const DEFAULT_HORIZONTAL_VIEW_DISTANCE: u64 = 8;
+pub const DEFAULT_VERTICAL_VIEW_DISTANCE: u64 = 8;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Resource)]
-pub struct Config {
-    pub hview_distance: usize,
-    pub vview_distance: usize,
-    pub world: WorldGenTypes,
+#[derive(Debug, Clone, Serialize, Deserialize, ConfigSource)]
+pub struct AppSettings {
+    pub hview_distance: u64,
+    pub vview_distance: u64,
+    pub world: String,
 
     #[serde(default)]
     pub zoom_level: i8,
     #[serde(default)]
-    pub wx: f32,
+    pub wx: f64,
     #[serde(default)]
-    pub wy: f32,
+    pub wy: f64,
     #[serde(default)]
-    pub wz: f32,
+    pub wz: f64,
 
     #[serde(default)]
-    pub rotation_x: f32,
+    pub rotation_x: f64,
     #[serde(default)]
-    pub rotation_y: f32,
+    pub rotation_y: f64,
     #[serde(default)]
-    pub rotation_z: f32,
+    pub rotation_z: f64,
     #[serde(default)]
-    pub rotation_w: f32,
+    pub rotation_w: f64,
 }
 
-impl Default for Config {
+impl Default for AppSettings {
     fn default() -> Self {
         Self {
             hview_distance: DEFAULT_HORIZONTAL_VIEW_DISTANCE,
             vview_distance: DEFAULT_VERTICAL_VIEW_DISTANCE,
-            world: WorldGenTypes::default(),
+            world: "MountainIslands".to_string(),
             zoom_level: 0,
             wx: -1283.,
             wy: 140.,

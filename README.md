@@ -35,7 +35,17 @@ cargo run --features bevy/dynamic_linking  # compiles fastest
 
 ### Configuration
 
-Copy `config.example.yml` to `config.yml` if you want to adjust settings beforehand (e.g. initial start position).
+See `config.example.yml` for what can be configured. Pass the path to a configuration file when launching.
+
+```shell
+cargo run --release -- --config config.example.yml
+```
+
+Specific settings can also be overridden via environment variables.
+
+```shell
+INFINIGEN_WORLD=Flat cargo run --release
+```
 
 ## Development
 

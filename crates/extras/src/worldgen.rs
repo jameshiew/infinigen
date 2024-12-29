@@ -3,12 +3,13 @@ use std::sync::Arc;
 use infinigen_common::blocks::Palette;
 use infinigen_common::world::WorldGen;
 use serde::{Deserialize, Serialize};
+use strum::EnumString;
 
 pub mod flat;
 pub mod mountain_islands;
 pub mod single_block;
 
-#[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, EnumString)]
 pub enum WorldGenTypes {
     Flat,
     #[default]
