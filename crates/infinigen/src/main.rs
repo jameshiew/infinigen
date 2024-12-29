@@ -31,7 +31,7 @@ use tikv_jemallocator::Jemalloc;
 static GLOBAL: Jemalloc = Jemalloc;
 
 const APP_NAME: &str = "infinigen";
-const CONFIG_PREFIX: &str = "infinigen_";
+const CONFIG_PREFIX: &str = "INFINIGEN";
 const DEFAULT_LOG_FILTER: &str = "info,wgpu_core=warn,wgpu_hal=warn,naga=info";
 
 #[derive(Parser)]
@@ -40,9 +40,13 @@ struct Cli;
 
 fn main() -> ExitCode {
     let _cli = Cli::parse();
+    let env = config::Environment::with_prefix(CONFIG_PREFIX)
+        .prefix_separator("_")
+        .separator("__")
+        .try_parsing(true);
     let cfg = Config::builder()
         .add_source(config::File::with_name("config"))
-        .add_source(config::Environment::with_prefix(CONFIG_PREFIX))
+        .add_source(env)
         .build();
     let cfg: infinigen_plugins::settings::Config = match cfg {
         Ok(settings) => match settings.try_deserialize() {
