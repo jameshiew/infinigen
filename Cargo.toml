@@ -3,6 +3,7 @@ members = ["crates/*"]
 resolver = "2"
 
 [workspace.dependencies]
+ahash = "0.8.11"
 bevy = { version = "0.15.0", default-features = false, features = [
     "bevy_asset",
     "bevy_color",
@@ -21,12 +22,11 @@ bevy = { version = "0.15.0", default-features = false, features = [
     "x11",
     "wayland",
     "webgpu",
-] }
-ahash = "0.8.11"
-strum = { version = "0.26.3", features = ["derive"] }
-serde = { version = "1.0.215", features = ["derive"] }
+]}
+linearize = { version = "0.1.1" }
+strum = { version = "0.26.3" }
+serde = { version = "1.0.215" }
 tracing = "0.1.40"
-linearize = { version = "0.1.1", features = ["all"] }
 
 [profile.dev]
 opt-level = 1

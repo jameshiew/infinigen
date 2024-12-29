@@ -7,7 +7,6 @@ use infinigen_common::view;
 use infinigen_common::world::{ChunkPosition, WorldPosition};
 use utils::{ChunkPriority, LoadQueue};
 
-use crate::settings::{Config, DEFAULT_HORIZONTAL_VIEW_DISTANCE, DEFAULT_VERTICAL_VIEW_DISTANCE};
 use crate::AppState;
 
 mod handle;
@@ -36,8 +35,8 @@ pub struct SceneView {
 impl Default for SceneView {
     fn default() -> Self {
         Self {
-            hview_distance: DEFAULT_HORIZONTAL_VIEW_DISTANCE,
-            vview_distance: DEFAULT_VERTICAL_VIEW_DISTANCE,
+            hview_distance: 4,
+            vview_distance: 4,
         }
     }
 }
@@ -49,6 +48,13 @@ pub struct SceneZoom {
     pub zoom_level: i8,
 }
 
+#[derive(Resource)]
+pub struct SceneSettings {
+    pub zoom_level: i8,
+    pub hview_distance: usize,
+    pub vview_distance: usize,
+}
+
 #[derive(Debug, Event)]
 pub struct UnloadChunkOpEvent(ChunkPosition);
 
@@ -57,20 +63,20 @@ pub const FAR: f32 = CHUNK_SIZE_F32 * 64.;
 pub fn init_scene_from_config(
     mut scene_view: ResMut<SceneView>,
     mut scene_zoom: ResMut<SceneZoom>,
-    config: Res<Config>,
+    settings: Res<SceneSettings>,
 ) {
-    scene_view.hview_distance = config.hview_distance;
-    scene_view.vview_distance = config.vview_distance;
-    scene_zoom.prev_zoom_level = config.zoom_level;
-    scene_zoom.zoom_level = config.zoom_level;
+    scene_view.hview_distance = settings.hview_distance;
+    scene_view.vview_distance = settings.vview_distance;
+    scene_zoom.prev_zoom_level = settings.zoom_level;
+    scene_zoom.zoom_level = settings.zoom_level;
 
     // we expect roughly this many chunks to be loaded initially (a cylinder centred around the player)
     let initial_capacity = (PI * scene_view.hview_distance.pow(2) as f32)
         * (scene_view.vview_distance as f32 * 2. + 1.);
     let initial_capacity = initial_capacity.floor() as usize;
     tracing::info!(
-        ?config.hview_distance,
-        ?config.vview_distance,
+        ?settings.hview_distance,
+        ?settings.vview_distance,
         ?initial_capacity,
         "Setting initial capacity for loaded chunks"
     );

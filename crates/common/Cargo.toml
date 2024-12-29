@@ -6,14 +6,14 @@ publish = false
 
 [dependencies]
 ahash = { workspace = true }
-strum = { workspace = true }
-serde = { workspace = true }
+linearize = { workspace = true, features = ["derive"] }
+strum = { workspace = true, features = ["derive"] }
+serde = { workspace = true, features = ["derive"] }
 tracing = { workspace = true }
 
 block-mesh = { git = "https://github.com/bonsairobo/block-mesh-rs", rev = "793c53e82c12b3f7e9502006664c6e81f8b1c78a" }
 ndarray = { version = "0.16.1", features = ["serde"] }
 nalgebra = "0.33.2"
-linearize = { workspace = true }
 
 [dev-dependencies]
 rand = "0.8.5"

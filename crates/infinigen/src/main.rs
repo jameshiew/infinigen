@@ -14,7 +14,7 @@ use bevy::window::{Window, WindowPlugin};
 use bevy::DefaultPlugins;
 use clap::{command, Parser};
 use config::Config;
-use infinigen_plugins::AppPlugin;
+use infinigen::AppPlugin;
 #[cfg(all(
     feature = "jemalloc",
     not(target_env = "msvc"),
@@ -36,19 +36,24 @@ const DEFAULT_LOG_FILTER: &str = "info,wgpu_core=warn,wgpu_hal=warn,naga=info";
 
 #[derive(Parser)]
 #[command(version)]
-struct Cli;
+struct Cli {
+    #[arg(long, help = "Path to a configuration file")]
+    config: Option<String>,
+}
 
 fn main() -> ExitCode {
-    let _cli = Cli::parse();
-    let env = config::Environment::with_prefix(CONFIG_PREFIX)
-        .prefix_separator("_")
-        .separator("__")
-        .try_parsing(true);
-    let cfg = Config::builder()
-        .add_source(config::File::with_name("config"))
-        .add_source(env)
-        .build();
-    let cfg: infinigen_plugins::settings::Config = match cfg {
+    let cli = Cli::parse();
+    let cfg = match cli.config {
+        Some(config_path) => Config::builder().add_source(config::File::with_name(&config_path)),
+        None => Config::builder().add_source(infinigen::settings::AppSettings::default()),
+    }
+    .add_source(
+        config::Environment::with_prefix(CONFIG_PREFIX)
+            .prefix_separator("_")
+            .separator("__")
+            .try_parsing(true),
+    );
+    let cfg: infinigen::settings::AppSettings = match cfg.build() {
         Ok(settings) => match settings.try_deserialize() {
             Ok(cfg) => cfg,
             Err(err) => {
@@ -57,11 +62,8 @@ fn main() -> ExitCode {
             }
         },
         Err(err) => {
-            eprintln!(
-                "Couldn't load settings, using default configuration: {:?}",
-                err
-            );
-            infinigen_plugins::settings::Config::default()
+            eprintln!("Couldn't load settings: {}", err);
+            return ExitCode::from(78);
         }
     };
     match App::new()
@@ -90,6 +92,7 @@ fn main() -> ExitCode {
                     }),
                     ..default()
                 }),
+            bevy_framepace::FramepacePlugin,
             #[cfg(all(feature = "remote", not(target_family = "wasm")))]
             RemotePlugin::default(),
             #[cfg(all(feature = "remote", not(target_family = "wasm")))]

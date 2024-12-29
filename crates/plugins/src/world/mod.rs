@@ -1,13 +1,13 @@
+use std::str::FromStr;
 use std::sync::Arc;
 
 use bevy::prelude::*;
 use infinigen_common::chunks::Chunk;
 use infinigen_common::world::{ChunkPosition, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
-use infinigen_extras::worldgen;
+use infinigen_extras::worldgen::{self, WorldGenTypes};
 
 use crate::assets::blocks::BlockRegistry;
-use crate::settings::Config;
 use crate::AppState;
 
 #[derive(Resource)]
@@ -39,12 +39,19 @@ impl Plugin for WorldPlugin {
     }
 }
 
+#[derive(Resource)]
+pub struct WorldSettings {
+    pub world: String,
+}
+
 fn init_world(
     mut next_state: ResMut<NextState<AppState>>,
     registry: Res<BlockRegistry>,
-    config: Res<Config>,
+    settings: Res<WorldSettings>,
     mut world: ResMut<World>,
 ) {
-    world.generator = config.world.as_world_gen(registry.definitions.palette());
+    let world_gen_type = WorldGenTypes::from_str(&settings.world)
+        .unwrap_or_else(|_| panic!("couldn't parse world gen type from {}", &settings.world));
+    world.generator = world_gen_type.as_world_gen(registry.definitions.palette());
     next_state.set(AppState::MainGame);
 }
