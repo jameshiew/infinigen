@@ -31,6 +31,7 @@ use tikv_jemallocator::Jemalloc;
 static GLOBAL: Jemalloc = Jemalloc;
 
 const APP_NAME: &str = "infinigen";
+#[cfg(not(target_family = "wasm"))]
 const CONFIG_PREFIX: &str = "INFINIGEN";
 const DEFAULT_LOG_FILTER: &str = "info,wgpu_core=warn,wgpu_hal=warn,naga=info";
 
@@ -46,8 +47,9 @@ fn main() -> ExitCode {
     let cfg = match cli.config {
         Some(config_path) => Config::builder().add_source(config::File::with_name(&config_path)),
         None => Config::builder().add_source(infinigen::settings::AppSettings::default()),
-    }
-    .add_source(
+    };
+    #[cfg(not(target_family = "wasm"))]
+    let cfg = cfg.add_source(
         config::Environment::with_prefix(CONFIG_PREFIX)
             .prefix_separator("_")
             .separator("__")
