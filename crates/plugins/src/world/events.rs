@@ -39,7 +39,7 @@ pub fn handle_generate_chunk_request(
     {
         match world.cache.entry((*chunk_position, *zoom_level)) {
             Entry::Occupied(_) => {
-                tracing::debug!(
+                tracing::trace!(
                     ?chunk_position,
                     ?zoom_level,
                     "Ignored request for previously requested chunk"
