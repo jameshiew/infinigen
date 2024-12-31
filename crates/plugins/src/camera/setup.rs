@@ -26,7 +26,6 @@ pub fn setup(mut commands: Commands, settings: Res<CameraSettings>) {
     transform.rotation.z = settings.rotation_z;
     transform.rotation.w = settings.rotation_w;
     transform.rotation = transform.rotation.normalize();
-    dbg!(transform.rotation);
     commands.spawn((
         Name::new("Camera"),
         FlyCam,
