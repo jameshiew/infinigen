@@ -6,7 +6,7 @@ use infinigen_plugins::assets::AssetSettings;
 use infinigen_plugins::camera::setup::CameraSettings;
 use infinigen_plugins::scene::{self, SceneSettings};
 use infinigen_plugins::world::{self, WorldSettings};
-use infinigen_plugins::{assets, camera, chunks, debug, AppState};
+use infinigen_plugins::{assets, camera, debug, mesh, AppState};
 
 pub mod settings;
 
@@ -53,7 +53,7 @@ impl Plugin for AppPlugin {
             .add_plugins((
                 assets::AssetsPlugin,
                 scene::ScenePlugin,
-                chunks::ChunksPlugin,
+                mesh::MeshPlugin,
                 camera::CameraPlugin,
                 world::WorldPlugin,
                 debug::DebugPlugin,

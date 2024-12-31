@@ -1,3 +1,4 @@
+use std::fmt;
 use std::num::NonZeroU8;
 
 use linearize::Linearize;
@@ -59,6 +60,12 @@ pub struct ChunkPosition {
     pub x: i32,
     pub y: i32,
     pub z: i32,
+}
+
+impl fmt::Display for ChunkPosition {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({}, {}, {})", self.x, self.y, self.z)
+    }
 }
 
 /// Absolute position of something within the world (e.g. a camera)

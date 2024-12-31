@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use ahash::AHashMap;
+use ahash::{AHashMap, AHashSet};
 use bevy::asset::{Asset, Handle};
 use bevy::pbr::StandardMaterial;
 use bevy::prelude::{Resource, TypePath};
@@ -87,6 +87,35 @@ impl BlockDefinitions {
                 .insert(block_definition.id.clone(), *mapped_id);
         }
         palette
+    }
+
+    pub fn visibility_checker(&self) -> impl BlockVisibilityChecker {
+        #[derive(Clone)]
+        struct Checker {
+            opaque: AHashSet<MappedBlockID>,
+        }
+        impl BlockVisibilityChecker for Checker {
+            fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility {
+                if self.opaque.contains(mapped_id) {
+                    BlockVisibility::Opaque
+                } else {
+                    BlockVisibility::Translucent
+                }
+            }
+        }
+        Checker {
+            opaque: self
+                .by_mapped_id
+                .iter()
+                .filter_map(|(id, def)| {
+                    if def.visibility == BlockVisibility::Opaque {
+                        Some(*id)
+                    } else {
+                        None
+                    }
+                })
+                .collect(),
+        }
     }
 }
 
