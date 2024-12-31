@@ -12,6 +12,7 @@ tracing = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 
 infinigen-plugins = { path = "../plugins" }
+infinigen-extras = { path = "../extras" }
 
 bevy_framepace = "0.18.0"
 clap = {version = "4.5.23", features = ["derive"] }
