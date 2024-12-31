@@ -1,11 +1,10 @@
-use std::str::FromStr;
 use std::sync::Arc;
 
 use bevy::prelude::*;
+use infinigen_common::blocks::Palette;
 use infinigen_common::chunks::Chunk;
 use infinigen_common::world::{ChunkPosition, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
-use infinigen_extras::worldgen::{self, WorldGenTypes};
 
 use crate::assets::blocks::BlockRegistry;
 use crate::AppState;
@@ -17,8 +16,14 @@ pub struct World {
 
 impl Default for World {
     fn default() -> Self {
+        struct Empty;
+        impl WorldGen for Empty {
+            fn get(&self, _pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
+                Chunk::Empty
+            }
+        }
         Self {
-            generator: Arc::new(worldgen::flat::Flat::default()),
+            generator: Arc::new(Empty),
         }
     }
 }
@@ -41,7 +46,7 @@ impl Plugin for WorldPlugin {
 
 #[derive(Resource)]
 pub struct WorldSettings {
-    pub world: String,
+    pub world: Box<dyn Fn(Palette) -> Arc<dyn WorldGen + Send + Sync> + Send + Sync>,
 }
 
 fn init_world(
@@ -50,8 +55,6 @@ fn init_world(
     settings: Res<WorldSettings>,
     mut world: ResMut<World>,
 ) {
-    let world_gen_type = WorldGenTypes::from_str(&settings.world)
-        .unwrap_or_else(|_| panic!("couldn't parse world gen type from {}", &settings.world));
-    world.generator = world_gen_type.as_world_gen(registry.definitions.palette());
+    world.generator = (*settings.world)(registry.definitions.palette());
     next_state.set(AppState::MainGame);
 }

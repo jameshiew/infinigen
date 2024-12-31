@@ -42,13 +42,13 @@ impl Default for BlockDefinition {
     }
 }
 
-impl From<BlockType> for BlockDefinition {
-    fn from(value: BlockType) -> Self {
+impl From<&BlockType> for BlockDefinition {
+    fn from(value: &BlockType) -> Self {
         Self {
             color: value.color,
-            id: value.id,
+            id: value.id.clone(),
             visibility: value.visibility,
-            ..Default::default()
+            textures: Default::default(),
         }
     }
 }

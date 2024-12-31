@@ -3,8 +3,8 @@ use bevy::asset::LoadedFolder;
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use blocks::{BlockDefinition, BlockRegistry, MaterialType};
+use infinigen_common::blocks::BlockType;
 use infinigen_common::mesh::textures::{BlockAppearances, Face, FaceAppearance};
-use infinigen_extras::blocks::block_types;
 use linearize::static_copy_map;
 use loading::AssetFolders;
 use strum::IntoEnumIterator;
@@ -14,6 +14,11 @@ use crate::AppState;
 pub mod blocks;
 mod loading;
 pub struct AssetsPlugin;
+
+#[derive(Resource)]
+pub struct AssetSettings {
+    pub default_block_types: Vec<BlockType>,
+}
 
 impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
@@ -111,6 +116,7 @@ fn setup(
     loaded_folders: Res<Assets<LoadedFolder>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut textures: ResMut<Assets<Image>>,
+    settings: Res<AssetSettings>,
     block_definitions: Res<Assets<BlockDefinition>>,
 ) {
     // block textures
@@ -156,7 +162,11 @@ fn setup(
         .collect();
     if block_definitions.is_empty() {
         tracing::warn!("No block definition files found, falling back to default definitions");
-        block_definitions = block_types().map(BlockDefinition::from).collect();
+        block_definitions = settings
+            .default_block_types
+            .iter()
+            .map(BlockDefinition::from)
+            .collect();
     }
     // map block definitions in alphabetical order by ID
     // so for the same set of block definitions, we should get the same mapping
