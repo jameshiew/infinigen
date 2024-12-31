@@ -32,25 +32,8 @@ pub struct MountainIslands {
     stone: MappedBlockID,
 }
 
-impl From<Palette> for MountainIslands {
-    fn from(palette: Palette) -> Self {
-        let mut wgen = Self::default();
-        tracing::debug!(?wgen.heightmap.octaves, wgen.heightmap.frequency, wgen.heightmap.lacunarity, wgen.heightmap.persistence, "MountainIslands initialized");
-
-        wgen.water = *palette.inner.get(WATER_BLOCK_ID).unwrap();
-        wgen.snow = *palette.inner.get(SNOW_BLOCK_ID).unwrap();
-        wgen.gravel = *palette.inner.get(GRAVEL_BLOCK_ID).unwrap();
-        wgen.sand = *palette.inner.get(SAND_BLOCK_ID).unwrap();
-        wgen.dirt = *palette.inner.get(DIRT_BLOCK_ID).unwrap();
-        wgen.grass = *palette.inner.get(GRASS_BLOCK_ID).unwrap();
-        wgen.stone = *palette.inner.get(STONE_BLOCK_ID).unwrap();
-        wgen
-    }
-}
-
-impl Default for MountainIslands {
-    fn default() -> Self {
-        let seed = 0;
+impl MountainIslands {
+    pub fn new(seed: u32, palette: Palette) -> Self {
         let vspline = Spline::from_vec(vec![
             Key::new(-1., 0.6, Interpolation::Cosine),
             Key::new(-0.9, 0.7, Interpolation::Cosine),
@@ -60,7 +43,8 @@ impl Default for MountainIslands {
             Key::new(0.9, 1., Interpolation::Cosine),
             Key::new(1.1, 1.5, Interpolation::default()), // this last one must be strictly greater than 1 because sometime we may sample with exactly the value 1.
         ]);
-        Self {
+
+        let wgen = Self {
             heightmap: default_heightmap(seed),
             verticality: Perlin::new(seed),
             terrain_variance: default_terrain_variance(seed),
@@ -68,14 +52,16 @@ impl Default for MountainIslands {
             vertical_scale: CHUNK_SIZE_F64 * 4.,
             horizontal_smoothness: CHUNK_SIZE_F64 * 0.1,
 
-            water: 1.try_into().unwrap(),
-            snow: 2.try_into().unwrap(),
-            gravel: 3.try_into().unwrap(),
-            sand: 4.try_into().unwrap(),
-            dirt: 5.try_into().unwrap(),
-            grass: 6.try_into().unwrap(),
-            stone: 7.try_into().unwrap(),
-        }
+            water: *palette.inner.get(WATER_BLOCK_ID).unwrap(),
+            snow: *palette.inner.get(SNOW_BLOCK_ID).unwrap(),
+            gravel: *palette.inner.get(GRAVEL_BLOCK_ID).unwrap(),
+            sand: *palette.inner.get(SAND_BLOCK_ID).unwrap(),
+            dirt: *palette.inner.get(DIRT_BLOCK_ID).unwrap(),
+            grass: *palette.inner.get(GRASS_BLOCK_ID).unwrap(),
+            stone: *palette.inner.get(STONE_BLOCK_ID).unwrap(),
+        };
+        tracing::debug!(?wgen.heightmap.octaves, wgen.heightmap.frequency, wgen.heightmap.lacunarity, wgen.heightmap.persistence, "MountainIslands initialized");
+        wgen
     }
 }
 

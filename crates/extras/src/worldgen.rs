@@ -18,11 +18,11 @@ pub enum WorldGenTypes {
 }
 
 impl WorldGenTypes {
-    pub fn as_world_gen(&self, palette: Palette) -> Arc<dyn WorldGen + Send + Sync> {
+    pub fn as_world_gen(&self, seed: u32, palette: Palette) -> Arc<dyn WorldGen + Send + Sync> {
         match self {
             WorldGenTypes::Flat => Arc::new(flat::Flat::from(palette)),
             WorldGenTypes::MountainIslands => {
-                Arc::new(mountain_islands::MountainIslands::from(palette))
+                Arc::new(mountain_islands::MountainIslands::new(seed, palette))
             }
             WorldGenTypes::SingleBlock => Arc::new(single_block::SingleBlock::from(palette)),
         }
