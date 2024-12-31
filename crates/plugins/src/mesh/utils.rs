@@ -1,18 +1,15 @@
 //! Converts from our native mesh types to Bevy meshes
 
-use std::cmp::Ordering;
-
 use bevy::prelude::*;
 use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::render::render_asset::RenderAssetUsages;
 use bevy::render::render_resource::PrimitiveTopology;
-use indexed_priority_queue::DefaultMapIPQ;
 use infinigen_common::chunks::Array3Chunk;
 use infinigen_common::mesh::faces::{prepare_padded_chunk, BlockVisibilityChecker};
 use infinigen_common::mesh::shapes::ChunkFace;
 use infinigen_common::mesh::textures::BlockAppearances;
 use infinigen_common::mesh::{mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces, MeshInfo};
-use infinigen_common::world::{ChunkPosition, Direction};
+use infinigen_common::world::Direction;
 use linearize::StaticCopyMap;
 
 pub fn to_bevy_mesh(
@@ -69,50 +66,4 @@ pub fn bevy_mesh_greedy_quads(
     let samples = prepare_padded_chunk(chunk, neighbor_faces, visibility_checker);
     let mesh = mesh_chunk_greedy_quads(&samples, block_textures);
     mesh.map(to_bevy_mesh)
-}
-
-#[derive(Default, Eq, PartialEq, Clone, Copy)]
-pub struct ChunkPriority {
-    pub priority: usize,
-}
-
-impl PartialOrd for ChunkPriority {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for ChunkPriority {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.priority.partial_cmp(&other.priority).unwrap()
-    }
-}
-
-#[derive(Default, Resource)]
-pub struct LoadQueue {
-    inner: DefaultMapIPQ<ChunkPosition, ChunkPriority>,
-}
-
-impl LoadQueue {
-    pub fn push(&mut self, pos: ChunkPosition, priority: ChunkPriority) {
-        self.inner.push(pos, priority);
-    }
-
-    pub fn remove(&mut self, pos: ChunkPosition) {
-        if self.inner.contains(pos) {
-            self.inner.remove(pos);
-        }
-    }
-
-    pub fn clear(&mut self) {
-        self.inner.clear();
-    }
-
-    pub fn pop(&mut self) -> Option<ChunkPosition> {
-        self.inner.pop()
-    }
-
-    pub fn len(&self) -> usize {
-        self.inner.len()
-    }
 }

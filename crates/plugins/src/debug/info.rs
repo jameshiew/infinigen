@@ -17,7 +17,7 @@ pub fn display_debug_info(
     mut movement_settings: ResMut<MovementSettings>,
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
-    load_ops: Res<scene::LoadChunkRequests>,
+    scene_chunks: Res<scene::SceneChunks>,
     mut update_evs: EventWriter<scene::UpdateSettingsEvent>,
     mut reload_evs: EventWriter<scene::ReloadAllChunksEvent>,
     loaded_chunks: Query<&LoadedChunk>,
@@ -39,7 +39,7 @@ pub fn display_debug_info(
                 .average()
                 .unwrap_or_default()
         ));
-        ui.label(format!("# queued chunk ops: {}", load_ops.len()));
+        ui.label(format!("scene chunks: {}", scene_chunks.len()));
         ui.label(format!(
             "# non-empty chunks loaded: {}",
             loaded_chunks.iter().count(),

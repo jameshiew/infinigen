@@ -2,8 +2,8 @@ use bevy::prelude::*;
 
 pub mod assets;
 pub mod camera;
-pub mod chunks;
 pub mod debug;
+pub mod mesh;
 pub mod scene;
 pub mod world;
 

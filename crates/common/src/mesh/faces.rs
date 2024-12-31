@@ -12,7 +12,7 @@ use crate::world::{BlockPosition, Direction, MappedBlockID};
 
 pub const RHS_FACES: [OrientedBlockFace; 6] = RIGHT_HANDED_Y_UP_CONFIG.faces;
 
-pub trait BlockVisibilityChecker {
+pub trait BlockVisibilityChecker: Clone + Send + Sync {
     fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility;
 }
 
@@ -339,6 +339,7 @@ mod tests {
         ChunkFace, ChunkFaceShape, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
     };
 
+    #[derive(Clone)]
     struct AllOpaque;
 
     impl BlockVisibilityChecker for AllOpaque {

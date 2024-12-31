@@ -1,17 +1,37 @@
 use std::sync::Arc;
 
+use ahash::AHashMap;
 use bevy::prelude::*;
+use events::{GenerateChunkRequest, GenerateChunkTask};
 use infinigen_common::blocks::Palette;
-use infinigen_common::chunks::Chunk;
-use infinigen_common::world::{ChunkPosition, WorldGen};
+use infinigen_common::chunks::{Array3Chunk, Chunk};
+use infinigen_common::mesh::shapes::ChunkFace;
+use infinigen_common::world::{ChunkPosition, Direction, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
+use linearize::StaticCopyMap;
 
 use crate::assets::blocks::BlockRegistry;
 use crate::AppState;
 
+pub mod events;
+
 #[derive(Resource)]
 pub struct World {
     pub generator: Arc<dyn WorldGen + Send + Sync>,
+    pub cache: AHashMap<(ChunkPosition, ZoomLevel), ChunkStatus>,
+}
+
+#[derive(Debug, Clone)]
+pub struct ChunkInfo {
+    pub opaque: Box<Array3Chunk>,
+    pub translucents: Vec<Array3Chunk>,
+    pub faces: StaticCopyMap<Direction, ChunkFace>,
+}
+
+pub enum ChunkStatus {
+    Generating,
+    Generated(Arc<ChunkInfo>),
+    Empty,
 }
 
 impl Default for World {
@@ -24,12 +44,13 @@ impl Default for World {
         }
         Self {
             generator: Arc::new(Empty),
+            cache: Default::default(),
         }
     }
 }
 
 impl World {
-    pub fn get_chunk(&self, zoom_level: ZoomLevel, pos: &ChunkPosition) -> Chunk {
+    pub fn generate(&self, zoom_level: ZoomLevel, pos: &ChunkPosition) -> Chunk {
         self.generator.get(pos, zoom_level)
     }
 }
@@ -40,7 +61,17 @@ impl Plugin for WorldPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing world plugin");
         app.init_resource::<World>()
-            .add_systems(OnEnter(AppState::InitializingWorld), init_world);
+            .add_event::<GenerateChunkRequest>()
+            .add_systems(OnEnter(AppState::InitializingWorld), setup)
+            .add_systems(
+                Update,
+                (
+                    events::handle_generate_chunk_request.run_if(on_event::<GenerateChunkRequest>),
+                    events::handle_generate_chunk_task
+                        .run_if(any_with_component::<GenerateChunkTask>),
+                )
+                    .run_if(in_state(AppState::MainGame)),
+            );
     }
 }
 
@@ -49,7 +80,7 @@ pub struct WorldSettings {
     pub world: Box<dyn Fn(Palette) -> Arc<dyn WorldGen + Send + Sync> + Send + Sync>,
 }
 
-fn init_world(
+fn setup(
     mut next_state: ResMut<NextState<AppState>>,
     registry: Res<BlockRegistry>,
     settings: Res<WorldSettings>,

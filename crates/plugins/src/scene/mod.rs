@@ -1,24 +1,82 @@
-use std::f32::consts::PI;
+use std::collections::hash_map::Entry;
 
-use ahash::AHashSet;
+use ahash::{AHashMap, AHashSet};
 use bevy::prelude::*;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 use infinigen_common::view;
 use infinigen_common::world::{ChunkPosition, WorldPosition};
-use utils::{ChunkPriority, LoadQueue};
 
 use crate::AppState;
 
 mod handle;
 pub mod lights;
-mod utils;
 
 #[derive(Component)]
 pub struct LoadedChunk {
     pub cpos: ChunkPosition,
 }
 
-pub type LoadChunkRequests = LoadQueue;
+#[derive(Default, Resource)]
+pub struct SceneChunks {
+    requests: AHashMap<ChunkPosition, SceneChunkStatus>,
+}
+
+#[derive(Clone, Copy)]
+pub enum SceneChunkStatus {
+    LoadRequested,
+    MeshRequested,
+    SpawnRequested,
+}
+
+impl SceneChunks {
+    pub fn add(&mut self, cpos: ChunkPosition, request: SceneChunkStatus) {
+        self.requests.insert(cpos, request);
+    }
+
+    pub fn request_load(&mut self, cpos: ChunkPosition) {
+        match self.requests.entry(cpos) {
+            Entry::Occupied(occupied_entry) => match occupied_entry.get() {
+                SceneChunkStatus::LoadRequested
+                | SceneChunkStatus::MeshRequested
+                | SceneChunkStatus::SpawnRequested => (),
+            },
+            Entry::Vacant(vacant_entry) => {
+                vacant_entry.insert(SceneChunkStatus::LoadRequested);
+            }
+        };
+    }
+
+    pub fn remove(&mut self, cpos: ChunkPosition) {
+        self.requests.remove(&cpos);
+    }
+
+    pub fn get_priority_requests(&self, n: usize) -> Vec<(ChunkPosition, SceneChunkStatus)> {
+        // TODO: should sort by priority to render i.e. closest and in view frustum first
+        let v: Vec<_> = self
+            .requests
+            .iter()
+            .take(n)
+            .map(|(cpos, status)| (*cpos, *status))
+            .collect();
+        v
+    }
+
+    pub fn all_statuses(&self) -> Vec<(ChunkPosition, SceneChunkStatus)> {
+        self.get_priority_requests(usize::MAX)
+    }
+
+    pub fn len(&self) -> usize {
+        self.requests.len()
+    }
+
+    pub fn clear(&mut self) {
+        self.requests.clear();
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.requests.is_empty()
+    }
+}
 
 #[derive(Debug, Default, Resource)]
 pub struct SceneCamera {
@@ -60,7 +118,7 @@ pub struct UnloadChunkOpEvent(ChunkPosition);
 
 pub const FAR: f32 = CHUNK_SIZE_F32 * 64.;
 
-pub fn init_scene_from_config(
+pub fn setup(
     mut scene_view: ResMut<SceneView>,
     mut scene_zoom: ResMut<SceneZoom>,
     settings: Res<SceneSettings>,
@@ -69,17 +127,6 @@ pub fn init_scene_from_config(
     scene_view.vview_distance = settings.vview_distance;
     scene_zoom.prev_zoom_level = settings.zoom_level;
     scene_zoom.zoom_level = settings.zoom_level;
-
-    // we expect roughly this many chunks to be loaded initially (a cylinder centred around the player)
-    let initial_capacity = (PI * scene_view.hview_distance.pow(2) as f32)
-        * (scene_view.vview_distance as f32 * 2. + 1.);
-    let initial_capacity = initial_capacity.floor() as usize;
-    tracing::info!(
-        ?settings.hview_distance,
-        ?settings.vview_distance,
-        ?initial_capacity,
-        "Setting initial capacity for loaded chunks"
-    );
 }
 
 #[derive(Event)]
@@ -150,7 +197,7 @@ pub fn check_if_should_update_scene(
     mut commands: Commands,
     mut scene_camera: ResMut<SceneCamera>,
     camera: Single<&Transform, With<Camera>>,
-    mut load_ops: ResMut<LoadChunkRequests>,
+    mut scene_chunks: ResMut<SceneChunks>,
     mut reload_evs: EventReader<ReloadAllChunksEvent>,
     mut refresh_evs: EventReader<RefreshChunkOpsQueueEvent>,
     mut update_scene_evs: EventWriter<UpdateSceneEvent>,
@@ -158,11 +205,11 @@ pub fn check_if_should_update_scene(
 ) {
     let mut should_update = false;
     if refresh_evs.read().next().is_some() {
-        load_ops.clear();
+        scene_chunks.clear();
         should_update = true;
     }
     if reload_evs.read().next().is_some() {
-        load_ops.clear();
+        scene_chunks.clear();
         tracing::info!("Reloading all chunks");
         for loaded_chunk in loaded.iter() {
             commands.entity(loaded_chunk).despawn_recursive();
@@ -192,7 +239,7 @@ pub fn check_if_should_update_scene(
 pub fn update_scene(
     scene_view: Res<SceneView>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
-    mut load_ops: ResMut<LoadChunkRequests>,
+    mut scene_chunks: ResMut<SceneChunks>,
     mut unload_evs: EventWriter<UnloadChunkOpEvent>,
     mut update_scene_evs: EventReader<UpdateSceneEvent>,
     loaded: Query<&LoadedChunk>,
@@ -245,12 +292,8 @@ pub fn update_scene(
     );
     tracing::debug!(load = ?to_load.len(), unload = ?to_unload.len(), "Chunks to load/unload");
 
-    for (i, cpos) in to_load.into_iter().enumerate() {
-        let priority = ChunkPriority { priority: i };
-        load_ops.push(cpos, priority);
-    }
-    for cpos in to_unload.iter() {
-        load_ops.remove(*cpos);
+    for cpos in to_load.into_iter() {
+        scene_chunks.request_load(cpos);
     }
 
     unload_evs.send_batch(to_unload.into_iter().map(UnloadChunkOpEvent));
@@ -264,11 +307,8 @@ impl Plugin for ScenePlugin {
         app.init_resource::<SceneView>()
             .init_resource::<SceneCamera>()
             .init_resource::<SceneZoom>()
-            .init_resource::<LoadChunkRequests>()
-            .add_systems(
-                OnEnter(AppState::MainGame),
-                (lights::setup, init_scene_from_config),
-            )
+            .init_resource::<SceneChunks>()
+            .add_systems(OnEnter(AppState::MainGame), (lights::setup, setup))
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ReloadAllChunksEvent>()
             .add_event::<RefreshChunkOpsQueueEvent>()
@@ -283,7 +323,12 @@ impl Plugin for ScenePlugin {
                         update_scene.run_if(on_event::<UpdateSceneEvent>),
                     )
                         .chain(),
-                    handle::process_load_chunk_ops.run_if(resource_changed::<LoadChunkRequests>),
+                    (
+                        handle::process_load_requested,
+                        handle::process_mesh_requested,
+                        handle::process_spawn_requested,
+                    )
+                        .chain(),
                     handle::process_unload_chunk_ops.run_if(on_event::<UnloadChunkOpEvent>),
                 )
                     .run_if(in_state(AppState::MainGame)),),

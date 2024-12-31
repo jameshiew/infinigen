@@ -2813,12 +2813,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "indexed_priority_queue"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1523e738b9554395f973adce5c3f9bbb71357c90a3f91e8e37fce9e640726a27"
-
-[[package]]
 name = "indexmap"
 version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2884,7 +2878,6 @@ dependencies = [
  "bevy_common_assets",
  "bevy_egui",
  "bevy_flycam",
- "indexed_priority_queue",
  "infinigen-common",
  "linearize",
  "serde",
