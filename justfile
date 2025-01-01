@@ -3,6 +3,9 @@ run:
         --release \
         --features bevy/dynamic_linking
 
+test:
+    cargo nextest run
+
 remote:
     cargo run \
         --release \
