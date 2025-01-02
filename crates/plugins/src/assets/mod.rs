@@ -31,7 +31,7 @@ impl Plugin for AssetsPlugin {
         #[cfg(not(target_family = "wasm"))]
         app.add_systems(OnEnter(AppState::LoadingAssets), load_assets)
             .add_systems(
-                Update,
+                FixedUpdate,
                 (check_assets.run_if(in_state(AppState::LoadingAssets)),),
             );
 

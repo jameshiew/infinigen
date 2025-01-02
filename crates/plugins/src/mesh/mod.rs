@@ -37,7 +37,7 @@ impl Plugin for MeshPlugin {
             .add_event::<MeshChunkRequest>()
             .add_event::<MeshChunkRerequest>()
             .add_systems(
-                Update,
+                FixedUpdate,
                 (
                     events::handle_mesh_chunk_requests.run_if(on_event::<MeshChunkRequest>),
                     events::handle_mesh_chunk_rerequests.run_if(on_event::<MeshChunkRerequest>),
