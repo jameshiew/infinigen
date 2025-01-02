@@ -64,7 +64,7 @@ impl Plugin for WorldPlugin {
             .add_event::<GenerateChunkRequest>()
             .add_systems(OnEnter(AppState::InitializingWorld), setup)
             .add_systems(
-                Update,
+                FixedUpdate,
                 (
                     events::handle_generate_chunk_request.run_if(on_event::<GenerateChunkRequest>),
                     events::handle_generate_chunk_task

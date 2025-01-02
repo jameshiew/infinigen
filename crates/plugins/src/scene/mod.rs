@@ -315,14 +315,8 @@ impl Plugin for ScenePlugin {
             .add_event::<UnloadChunkOpEvent>()
             .add_event::<UpdateSceneEvent>()
             .add_systems(
-                Update,
+                FixedUpdate,
                 ((
-                    (
-                        handle_update_scene_view.run_if(on_event::<UpdateSettingsEvent>),
-                        check_if_should_update_scene,
-                        update_scene.run_if(on_event::<UpdateSceneEvent>),
-                    )
-                        .chain(),
                     (
                         handle::process_load_requested,
                         handle::process_mesh_requested,
@@ -332,6 +326,16 @@ impl Plugin for ScenePlugin {
                     handle::process_unload_chunk_ops.run_if(on_event::<UnloadChunkOpEvent>),
                 )
                     .run_if(in_state(AppState::MainGame)),),
+            )
+            .add_systems(
+                Update,
+                ((
+                    handle_update_scene_view.run_if(on_event::<UpdateSettingsEvent>),
+                    check_if_should_update_scene,
+                    update_scene.run_if(on_event::<UpdateSceneEvent>),
+                )
+                    .chain())
+                .run_if(in_state(AppState::MainGame)),
             );
     }
 }
