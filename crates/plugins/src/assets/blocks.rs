@@ -1,9 +1,7 @@
 use std::collections::BTreeMap;
 
 use ahash::{AHashMap, AHashSet};
-use bevy::asset::{Asset, Handle};
-use bevy::pbr::StandardMaterial;
-use bevy::prelude::{Resource, TypePath};
+use bevy::prelude::*;
 use infinigen_common::blocks::{BlockColor, BlockID, BlockType, BlockVisibility, Palette};
 use infinigen_common::mesh::faces::BlockVisibilityChecker;
 use infinigen_common::mesh::textures::{BlockAppearances, Face};
