@@ -1,12 +1,16 @@
 # infinigen [![CI](https://github.com/jameshiew/infinigen/actions/workflows/ci.yml/badge.svg)](https://github.com/jameshiew/infinigen/actions/workflows/ci.yml)
 
-This is a demo for Minecraft-like procedural generation using the [Bevy game engine](https://bevyengine.org/).
+Minecraft-like procedural generation using the [Bevy game engine](https://bevyengine.org/).
 
 - chunks along all axes (X, Y and Z)
 - adjustable zoom level for viewing a world at different levels of detail
 
 ![Main screenshot](screenshots/main.webp "Screenshot")
 ![Zoomed out screenshot](screenshots/zoomed_out.webp "Zoomed out")
+
+## Why?
+
+This is a sandbox for experimenting with Bevy and efficient chunk rendering, and trying out different things in Rust. There are no gameplay elements like physics or editing blocks. Eventually I'd like to implement chunk generation and meshing on the GPU and distance based LOD (level of detail) to maximize the number of chunks that can be loaded as fast as possible. At minimum, I'm keeping this code up to date with the latest Bevy version as new versions are released.
 
 ## Quickstart
 
@@ -50,3 +54,5 @@ INFINIGEN_WORLD=Flat cargo run --release
 ## Development
 
 All textures are derived from images generated with [Midjourney](https://midjourney.com).
+
+Simplest way to change how the world generates is to edit [crates/extras/src/worldgen/mountain_islands.rs](crates/extras/src/worldgen/mountain_islands.rs).
