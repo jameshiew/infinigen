@@ -4,11 +4,11 @@ use bevy::pbr::CascadeShadowConfigBuilder;
 use bevy::prelude::*;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 
-use super::FAR;
+use super::{SceneSettings, SceneView, SceneZoom, FAR};
 
 pub const SKY_COLOR: Color = Color::srgb(0.47, 0.66, 1.);
 
-pub fn setup(mut commands: Commands) {
+pub fn setup_lighting(mut commands: Commands) {
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
         brightness: 0.5,
@@ -34,4 +34,15 @@ pub fn setup(mut commands: Commands) {
         }
         .build(),
     ));
+}
+
+pub fn setup(
+    mut scene_view: ResMut<SceneView>,
+    mut scene_zoom: ResMut<SceneZoom>,
+    settings: Res<SceneSettings>,
+) {
+    scene_view.hview_distance = settings.hview_distance;
+    scene_view.vview_distance = settings.vview_distance;
+    scene_zoom.prev_zoom_level = settings.zoom_level;
+    scene_zoom.zoom_level = settings.zoom_level;
 }

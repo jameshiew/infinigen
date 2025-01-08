@@ -9,7 +9,7 @@ use infinigen_common::world::{ChunkPosition, WorldPosition};
 use crate::AppState;
 
 mod handle;
-pub mod lights;
+pub mod setup;
 
 #[derive(Component)]
 pub struct LoadedChunk {
@@ -117,17 +117,6 @@ pub struct SceneSettings {
 pub struct UnloadChunkOpEvent(ChunkPosition);
 
 pub const FAR: f32 = CHUNK_SIZE_F32 * 64.;
-
-pub fn setup(
-    mut scene_view: ResMut<SceneView>,
-    mut scene_zoom: ResMut<SceneZoom>,
-    settings: Res<SceneSettings>,
-) {
-    scene_view.hview_distance = settings.hview_distance;
-    scene_view.vview_distance = settings.vview_distance;
-    scene_zoom.prev_zoom_level = settings.zoom_level;
-    scene_zoom.zoom_level = settings.zoom_level;
-}
 
 #[derive(Event)]
 pub struct RefreshChunkOpsQueueEvent;
@@ -308,7 +297,10 @@ impl Plugin for ScenePlugin {
             .init_resource::<SceneCamera>()
             .init_resource::<SceneZoom>()
             .init_resource::<SceneChunks>()
-            .add_systems(OnEnter(AppState::MainGame), (lights::setup, setup))
+            .add_systems(
+                OnEnter(AppState::MainGame),
+                (setup::setup_lighting, setup::setup),
+            )
             .add_event::<UpdateSettingsEvent>()
             .add_event::<ReloadAllChunksEvent>()
             .add_event::<RefreshChunkOpsQueueEvent>()
