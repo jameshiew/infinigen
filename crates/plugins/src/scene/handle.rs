@@ -1,10 +1,11 @@
 use bevy::prelude::*;
+use infinigen_common::blocks::BlockVisibility;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 use infinigen_common::world::WorldPosition;
 use infinigen_common::zoom::ZoomLevel;
 
 use super::{SceneChunkStatus, SceneChunks, UnloadChunkOpEvent};
-use crate::assets::blocks::{BlockRegistry, MaterialType};
+use crate::assets::blocks::BlockRegistry;
 use crate::mesh::events::MeshChunkRequest;
 use crate::mesh::{MeshStatus, Meshes};
 use crate::scene::LoadedChunk;
@@ -150,7 +151,7 @@ pub fn process_spawn_requested(
                 .spawn((
                     Name::new("Opaque mesh"),
                     Mesh3d(mesh_assets.add(opaque_mesh.clone())),
-                    MeshMaterial3d(registry.get_material(MaterialType::DenseOpaque)),
+                    MeshMaterial3d(registry.get_material(BlockVisibility::Opaque)),
                     Transform::default(),
                     Visibility::default(),
                 ))
@@ -162,7 +163,7 @@ pub fn process_spawn_requested(
                 .spawn((
                     Name::new("Translucent mesh"),
                     Mesh3d(mesh_assets.add(trans_mesh.clone())),
-                    MeshMaterial3d(registry.get_material(MaterialType::Translucent)),
+                    MeshMaterial3d(registry.get_material(BlockVisibility::Translucent)),
                     Transform::default(),
                     Visibility::default(),
                 ))

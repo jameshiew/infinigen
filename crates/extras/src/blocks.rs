@@ -32,11 +32,13 @@ pub fn block_types() -> impl Iterator<Item = BlockType> {
             id: WATER_BLOCK_ID.to_string(),
             visibility: BlockVisibility::Translucent,
             color: [25, 153, 230, 128],
+            ..Default::default()
         },
         BlockType {
             id: LAVA_BLOCK_ID.to_string(),
             visibility: BlockVisibility::Translucent,
             color: [207, 16, 32, 128],
+            ..Default::default()
         },
         BlockType {
             id: SAND_BLOCK_ID.to_string(),

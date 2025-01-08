@@ -4,11 +4,12 @@ use bevy::color::Color;
 use bevy::image::Image;
 use bevy::pbr::StandardMaterial;
 use bevy::prelude::{default, AlphaMode, NextState, Res, ResMut, TextureAtlasBuilder};
-use infinigen_common::mesh::textures::{BlockAppearances, Face, FaceAppearance};
+use infinigen_common::blocks::{BlockVisibility, Face};
+use infinigen_common::mesh::textures::{BlockAppearances, FaceAppearance};
 use linearize::static_copy_map;
 use strum::IntoEnumIterator;
 
-use crate::assets::blocks::{BlockDefinition, BlockRegistry, MaterialType};
+use crate::assets::blocks::{BlockDefinition, BlockRegistry};
 use crate::assets::loading::AssetFolders;
 use crate::assets::DefaultBlockTypes;
 use crate::AppState;
@@ -71,7 +72,7 @@ pub fn setup(
         let DefaultBlockTypes(default_block_types) = &*settings;
         block_definitions = default_block_types
             .iter()
-            .map(BlockDefinition::from)
+            .map(|bt| BlockDefinition::from(bt.clone()))
             .collect();
     }
     // map block definitions in alphabetical order by ID
@@ -82,10 +83,10 @@ pub fn setup(
         tracing::debug!(?block_definition, "Block definition found");
         // default to color in case texture is missing
         let color = FaceAppearance::Color {
-            r: block_definition.color[0] as f32 / 256.,
-            g: block_definition.color[1] as f32 / 256.,
-            b: block_definition.color[2] as f32 / 256.,
-            a: block_definition.color[3] as f32 / 256.,
+            r: block_definition.0.color[0] as f32 / 256.,
+            g: block_definition.0.color[1] as f32 / 256.,
+            b: block_definition.0.color[2] as f32 / 256.,
+            a: block_definition.0.color[3] as f32 / 256.,
         };
         let mut appearances = static_copy_map! {
             Face::Top => color,
@@ -95,7 +96,7 @@ pub fn setup(
             Face::Left => color,
             Face::Right => color,
         };
-        if let Some(ref texture_paths) = block_definition.textures {
+        if let Some(ref texture_paths) = block_definition.0.textures {
             let atlas_sources = atlas_sources.as_ref().unwrap();
             let atlas_layout = atlas_layout.as_ref().unwrap();
             for face in Face::iter() {
@@ -103,7 +104,7 @@ pub fn setup(
                 let texture_handle = block_texture_handles_by_name
                     .get(texture_paths.get(&face).unwrap())
                     .unwrap();
-                tracing::debug!(?face, ?block_definition.id, "Found specific texture");
+                tracing::debug!(?face, block_id = ?block_definition.0.id, "Found specific texture");
                 let tidx = atlas_sources.texture_index(texture_handle).unwrap();
                 let tidx = FaceAppearance::Texture {
                     coords: [
@@ -125,14 +126,14 @@ pub fn setup(
 
     tracing::debug!("Registered all block textures: {:#?}", registry.appearances);
 
-    registry.materials[MaterialType::DenseOpaque as usize] = materials.add(StandardMaterial {
+    registry.materials[BlockVisibility::Opaque as usize] = materials.add(StandardMaterial {
         base_color: Color::WHITE,
         perceptual_roughness: 0.75,
         reflectance: 0.25,
         base_color_texture: texture_atlas,
         ..default()
     });
-    registry.materials[MaterialType::Translucent as usize] = materials.add(StandardMaterial {
+    registry.materials[BlockVisibility::Translucent as usize] = materials.add(StandardMaterial {
         base_color: Color::WHITE,
         alpha_mode: AlphaMode::Blend,
         ..default()
