@@ -93,6 +93,10 @@ fn main() -> ExitCode {
                         ..default()
                     }),
                     ..default()
+                })
+                .set(AssetPlugin {
+                    file_path: "../extras/assets".into(),
+                    ..default()
                 }),
             bevy_framepace::FramepacePlugin,
             #[cfg(all(feature = "remote", not(target_family = "wasm")))]
@@ -101,6 +105,7 @@ fn main() -> ExitCode {
             RemoteHttpPlugin::default(),
         ))
         .add_plugins((AppPlugin::new(cfg),))
+        .add_plugins(infinigen_extras::ExtrasPlugin)
         .run()
     {
         AppExit::Success => ExitCode::SUCCESS,
