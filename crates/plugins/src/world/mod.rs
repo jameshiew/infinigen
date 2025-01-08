@@ -4,7 +4,7 @@ use ahash::AHashMap;
 use bevy::prelude::*;
 use events::{GenerateChunkRequest, GenerateChunkTask};
 use infinigen_common::blocks::Palette;
-use infinigen_common::chunks::{Array3Chunk, Chunk};
+use infinigen_common::chunks::Array3Chunk;
 use infinigen_common::mesh::shapes::ChunkFace;
 use infinigen_common::world::{ChunkPosition, Direction, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
@@ -38,8 +38,8 @@ impl Default for World {
     fn default() -> Self {
         struct Empty;
         impl WorldGen for Empty {
-            fn get(&self, _pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
-                Chunk::Empty
+            fn get(&self, _pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Option<Array3Chunk> {
+                None
             }
         }
         Self {
@@ -50,7 +50,7 @@ impl Default for World {
 }
 
 impl World {
-    pub fn generate(&self, zoom_level: ZoomLevel, pos: &ChunkPosition) -> Chunk {
+    pub fn generate(&self, zoom_level: ZoomLevel, pos: &ChunkPosition) -> Option<Array3Chunk> {
         self.generator.get(pos, zoom_level)
     }
 }

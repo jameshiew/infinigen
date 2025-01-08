@@ -1,5 +1,5 @@
 use infinigen_common::blocks::Palette;
-use infinigen_common::chunks::Chunk;
+use infinigen_common::chunks::Array3Chunk;
 use infinigen_common::world::{ChunkPosition, MappedBlockID, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
 
@@ -20,12 +20,12 @@ impl From<Palette> for Flat {
 }
 
 impl WorldGen for Flat {
-    fn get(&self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
+    fn get(&self, pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Option<Array3Chunk> {
         // zoom level does not change anything
         if pos.y == -1 {
-            infinigen_common::chunks::top_chunk(self.dirt).into()
+            Some(infinigen_common::chunks::top_chunk(self.dirt))
         } else {
-            Chunk::Empty
+            None
         }
     }
 }

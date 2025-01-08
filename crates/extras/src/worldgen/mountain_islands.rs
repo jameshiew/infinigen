@@ -1,5 +1,5 @@
 use infinigen_common::blocks::Palette;
-use infinigen_common::chunks::{Array3Chunk, Chunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
+use infinigen_common::chunks::{Array3Chunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
 use infinigen_common::world::{
     BlockPosition, ChunkPosition, MappedBlockID, WorldGen, WorldPosition,
 };
@@ -81,9 +81,9 @@ const MIN_Y_HEIGHT: i32 = -6;
 
 /// Based on <https://www.youtube.com/watch?v=CSa5O6knuwI>
 impl WorldGen for MountainIslands {
-    fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk {
+    fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Option<Array3Chunk> {
         if pos.y < MIN_Y_HEIGHT {
-            return Chunk::Empty;
+            return None;
         }
         let zoom = zoom_level.as_f64();
         let sand_level = (SEA_LEVEL + (1. / zoom)).floor();
@@ -134,7 +134,7 @@ impl WorldGen for MountainIslands {
             }
         }
         if is_empty {
-            return Chunk::Empty;
+            return None;
         }
 
         let mut terrain_variances = [[0.; CHUNK_USIZE]; CHUNK_USIZE];
@@ -193,10 +193,10 @@ impl WorldGen for MountainIslands {
             }
 
             if is_empty {
-                return Chunk::Empty;
+                return None;
             }
         }
 
-        chunk.into()
+        Some(chunk)
     }
 }

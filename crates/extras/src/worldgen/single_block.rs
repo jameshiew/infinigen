@@ -1,5 +1,5 @@
 use infinigen_common::blocks::Palette;
-use infinigen_common::chunks::{Array3Chunk, Chunk, CHUNK_SIZE};
+use infinigen_common::chunks::{Array3Chunk, CHUNK_SIZE};
 use infinigen_common::world::{BlockPosition, ChunkPosition, MappedBlockID, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
 
@@ -20,7 +20,7 @@ impl From<Palette> for SingleBlock {
 }
 
 impl WorldGen for SingleBlock {
-    fn get(&self, _pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Chunk {
+    fn get(&self, _pos: &ChunkPosition, _zoom_level: ZoomLevel) -> Option<Array3Chunk> {
         // TODO: implement zoom?
         let mut chunk = Array3Chunk::default();
         chunk.insert(
@@ -31,6 +31,6 @@ impl WorldGen for SingleBlock {
             },
             self.grass,
         );
-        chunk.into()
+        Some(chunk)
     }
 }
