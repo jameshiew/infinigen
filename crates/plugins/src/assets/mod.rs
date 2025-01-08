@@ -13,9 +13,7 @@ mod setup;
 pub struct AssetsPlugin;
 
 #[derive(Resource)]
-pub struct AssetSettings {
-    pub default_block_types: Vec<BlockType>,
-}
+pub struct DefaultBlockTypes(pub Vec<BlockType>);
 
 impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {

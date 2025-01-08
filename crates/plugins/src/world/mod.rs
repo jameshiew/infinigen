@@ -75,17 +75,30 @@ impl Plugin for WorldPlugin {
     }
 }
 
+pub type WorldInitializerFn =
+    Box<dyn Fn(&str, u32, Palette) -> Arc<dyn WorldGen + Send + Sync> + Send + Sync>;
+
+#[derive(Resource)]
+pub struct WorldInitializer(pub WorldInitializerFn);
+
 #[derive(Resource)]
 pub struct WorldSettings {
-    pub world: Box<dyn Fn(Palette) -> Arc<dyn WorldGen + Send + Sync> + Send + Sync>,
+    pub world_gen_name: String,
+    pub seed: u32,
 }
 
 fn init_world(
     mut next_state: ResMut<NextState<AppState>>,
     registry: Res<BlockRegistry>,
+    world_initializer: Res<WorldInitializer>,
     settings: Res<WorldSettings>,
     mut world: ResMut<World>,
 ) {
-    world.generator = (*settings.world)(registry.definitions.palette());
+    let WorldInitializer(world_initializer) = &*world_initializer;
+    world.generator = world_initializer(
+        &settings.world_gen_name,
+        settings.seed,
+        registry.definitions.palette(),
+    );
     next_state.set(AppState::MainGame);
 }

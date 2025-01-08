@@ -10,7 +10,7 @@ pub mod mountain_islands;
 pub mod single_block;
 
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, EnumString)]
-pub enum WorldGenTypes {
+pub(crate) enum WorldGenTypes {
     Flat,
     #[default]
     MountainIslands,
@@ -18,7 +18,11 @@ pub enum WorldGenTypes {
 }
 
 impl WorldGenTypes {
-    pub fn as_world_gen(&self, seed: u32, palette: Palette) -> Arc<dyn WorldGen + Send + Sync> {
+    pub(crate) fn as_world_gen(
+        &self,
+        seed: u32,
+        palette: Palette,
+    ) -> Arc<dyn WorldGen + Send + Sync> {
         match self {
             WorldGenTypes::Flat => Arc::new(flat::Flat::from(palette)),
             WorldGenTypes::MountainIslands => {

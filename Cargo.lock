@@ -2859,8 +2859,10 @@ name = "infinigen-extras"
 version = "0.0.0"
 dependencies = [
  "ahash",
+ "bevy",
  "criterion",
  "infinigen-common",
+ "infinigen-plugins",
  "noise",
  "serde",
  "splines",

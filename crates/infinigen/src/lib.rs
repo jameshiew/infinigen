@@ -1,8 +1,4 @@
-use std::str::FromStr;
-
 use bevy::prelude::*;
-use infinigen_extras::worldgen::WorldGenTypes;
-use infinigen_plugins::assets::AssetSettings;
 use infinigen_plugins::camera::setup::CameraSettings;
 use infinigen_plugins::scene::{self, SceneSettings};
 use infinigen_plugins::world::{self, WorldSettings};
@@ -23,14 +19,6 @@ impl AppPlugin {
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing app plugin with config: {:#?}", self.settings);
-        let world_setting = self.settings.world.clone();
-        let seed = self.settings.seed.to_owned() as u32;
-        let world = Box::new(move |palette| {
-            let world_gen_type = WorldGenTypes::from_str(&world_setting).unwrap_or_else(|_| {
-                panic!("couldn't parse world gen type from {}", &world_setting)
-            });
-            world_gen_type.as_world_gen(seed, palette)
-        });
         app.init_state::<AppState>()
             .insert_resource(CameraSettings {
                 zoom_level: self.settings.zoom_level,
@@ -47,9 +35,9 @@ impl Plugin for AppPlugin {
                 vview_distance: self.settings.vview_distance as usize,
                 zoom_level: self.settings.zoom_level,
             })
-            .insert_resource(WorldSettings { world })
-            .insert_resource(AssetSettings {
-                default_block_types: infinigen_extras::blocks::block_types().collect(),
+            .insert_resource(WorldSettings {
+                world_gen_name: self.settings.world.clone(),
+                seed: self.settings.seed as u32,
             })
             .add_plugins((
                 assets::AssetsPlugin,

@@ -10,7 +10,7 @@ use strum::IntoEnumIterator;
 
 use crate::assets::blocks::{BlockDefinition, BlockRegistry, MaterialType};
 use crate::assets::loading::AssetFolders;
-use crate::assets::AssetSettings;
+use crate::assets::DefaultBlockTypes;
 use crate::AppState;
 
 #[allow(clippy::too_many_arguments)]
@@ -22,7 +22,7 @@ pub fn setup(
     loaded_folders: Res<Assets<LoadedFolder>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut textures: ResMut<Assets<Image>>,
-    settings: Res<AssetSettings>,
+    settings: Res<DefaultBlockTypes>,
     block_definitions: Res<Assets<BlockDefinition>>,
 ) {
     // block textures
@@ -68,8 +68,8 @@ pub fn setup(
         .collect();
     if block_definitions.is_empty() {
         tracing::warn!("No block definition files found, falling back to default definitions");
-        block_definitions = settings
-            .default_block_types
+        let DefaultBlockTypes(default_block_types) = &*settings;
+        block_definitions = default_block_types
             .iter()
             .map(BlockDefinition::from)
             .collect();
