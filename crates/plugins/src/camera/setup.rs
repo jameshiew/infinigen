@@ -7,7 +7,7 @@ use bevy_flycam::FlyCam;
 
 #[derive(Resource)]
 pub struct CameraSettings {
-    pub zoom_level: f32,
+    pub zoom_level: i8,
     pub rotation_x: f32,
     pub rotation_y: f32,
     pub rotation_z: f32,
@@ -18,7 +18,7 @@ pub struct CameraSettings {
 }
 
 pub fn setup(mut commands: Commands, settings: Res<CameraSettings>) {
-    let zoom = 2f32.powf(settings.zoom_level);
+    let zoom = 2f32.powf(settings.zoom_level as f32);
     let mut transform =
         Transform::from_xyz(settings.wx * zoom, settings.wy * zoom, settings.wz * zoom);
     transform.rotation.x = settings.rotation_x;

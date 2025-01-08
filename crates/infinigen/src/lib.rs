@@ -33,7 +33,7 @@ impl Plugin for AppPlugin {
         });
         app.init_state::<AppState>()
             .insert_resource(CameraSettings {
-                zoom_level: self.settings.zoom_level as f32,
+                zoom_level: self.settings.zoom_level,
                 rotation_x: self.settings.rotation_x as f32,
                 rotation_y: self.settings.rotation_y as f32,
                 rotation_z: self.settings.rotation_z as f32,
