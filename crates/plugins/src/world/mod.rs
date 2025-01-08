@@ -62,7 +62,7 @@ impl Plugin for WorldPlugin {
         tracing::info!("Initializing world plugin");
         app.init_resource::<World>()
             .add_event::<GenerateChunkRequest>()
-            .add_systems(OnEnter(AppState::InitializingWorld), setup)
+            .add_systems(OnEnter(AppState::InitializingWorld), init_world)
             .add_systems(
                 FixedUpdate,
                 (
@@ -80,7 +80,7 @@ pub struct WorldSettings {
     pub world: Box<dyn Fn(Palette) -> Arc<dyn WorldGen + Send + Sync> + Send + Sync>,
 }
 
-fn setup(
+fn init_world(
     mut next_state: ResMut<NextState<AppState>>,
     registry: Res<BlockRegistry>,
     settings: Res<WorldSettings>,
