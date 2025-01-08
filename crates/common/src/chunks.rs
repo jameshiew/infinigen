@@ -14,28 +14,6 @@ pub const CHUNK_SIZE_I32: i32 = CHUNK_SIZE as i32;
 pub const CHUNK_SIZE_F32: f32 = CHUNK_SIZE as f32;
 pub const CHUNK_SIZE_F64: f64 = CHUNK_SIZE as f64;
 
-#[derive(Default, Clone)]
-pub enum Chunk {
-    #[default]
-    Empty,
-    Array3(Box<Array3Chunk>),
-}
-
-impl fmt::Debug for Chunk {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Chunk::Empty => write!(f, "Chunk::Empty"),
-            Chunk::Array3(_) => write!(f, "Chunk::Array3"),
-        }
-    }
-}
-
-impl From<Array3Chunk> for Chunk {
-    fn from(chunk: Array3Chunk) -> Self {
-        Chunk::Array3(Box::new(chunk))
-    }
-}
-
 /// Chunk represented as a 3D array of [`MappedBlockID`].
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct Array3Chunk {

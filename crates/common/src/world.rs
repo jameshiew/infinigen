@@ -4,7 +4,7 @@ use std::num::NonZeroU8;
 use linearize::Linearize;
 use strum::EnumIter;
 
-use crate::chunks::{Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
+use crate::chunks::{Array3Chunk, CHUNK_SIZE, CHUNK_SIZE_F32, CHUNK_SIZE_I32};
 use crate::zoom::ZoomLevel;
 
 /// Chunks work with [`MappedBlockID`]s (u8s), which correspond to [`crate::blocks::BlockID`]s (strings).
@@ -38,7 +38,8 @@ impl MappedBlockID {
 }
 
 pub trait WorldGen {
-    fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Chunk;
+    /// Should return `None` for empty chunks.
+    fn get(&self, pos: &ChunkPosition, zoom_level: ZoomLevel) -> Option<Array3Chunk>;
 }
 
 /// Position of a block within a chunk.

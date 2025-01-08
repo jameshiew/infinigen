@@ -5,7 +5,7 @@ use ahash::AHashMap;
 use bevy::prelude::*;
 use bevy::tasks::{block_on, poll_once, AsyncComputeTaskPool, Task};
 use infinigen_common::blocks::BlockVisibility;
-use infinigen_common::chunks::{Array3Chunk, Chunk, CHUNK_SIZE};
+use infinigen_common::chunks::{Array3Chunk, CHUNK_SIZE};
 use infinigen_common::mesh::faces::{extract_faces, BlockVisibilityChecker};
 use infinigen_common::world::{BlockPosition, ChunkPosition, MappedBlockID, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
@@ -72,16 +72,16 @@ pub fn generate_chunk_async(
     let position = position.to_owned();
     task_pool.spawn(async move {
         let chunk = worldgen.get(&position, zoom_level);
-        let Chunk::Array3(mut chunk) = chunk else {
+        let Some(mut chunk) = chunk else {
             return (zoom_level, position, None);
         };
-        let faces = extract_faces(chunk.as_ref(), *visibility_checker.clone());
+        let faces = extract_faces(&chunk, *visibility_checker.clone());
         let translucents = split_out_translucent(&mut chunk, *visibility_checker);
         (
             zoom_level,
             position,
             Some(ChunkInfo {
-                opaque: chunk,
+                opaque: Box::new(chunk),
                 faces,
                 translucents: translucents.into_values().collect(),
             }),
