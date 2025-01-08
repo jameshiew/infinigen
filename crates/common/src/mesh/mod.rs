@@ -8,7 +8,8 @@ use faces::RHS_FACES;
 use shapes::{PaddedChunk, PaddedChunkShape, PADDED_CHUNK_MAX_INDEX};
 
 use self::block::VoxelBlock;
-use self::textures::{BlockAppearances, Face};
+use self::textures::BlockAppearances;
+use crate::blocks::Face;
 
 pub mod block;
 pub mod faces;

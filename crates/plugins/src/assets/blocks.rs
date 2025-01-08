@@ -1,58 +1,33 @@
-use std::collections::BTreeMap;
-
 use ahash::{AHashMap, AHashSet};
 use bevy::prelude::*;
-use infinigen_common::blocks::{BlockColor, BlockID, BlockType, BlockVisibility, Palette};
+use infinigen_common::blocks::{BlockType, BlockVisibility, Palette};
 use infinigen_common::mesh::faces::BlockVisibilityChecker;
-use infinigen_common::mesh::textures::{BlockAppearances, Face};
+use infinigen_common::mesh::textures::BlockAppearances;
 use infinigen_common::world::MappedBlockID;
 use serde::{Deserialize, Serialize};
 use strum::EnumCount;
 
-#[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Hash, EnumCount)]
-pub enum MaterialType {
-    DenseOpaque = 0,
-    Translucent,
-}
-
-type TextureFilename = String;
-
 #[derive(
-    Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Ord, PartialOrd, TypePath, Asset,
+    Default,
+    Debug,
+    Serialize,
+    Deserialize,
+    Clone,
+    Ord,
+    PartialOrd,
+    Eq,
+    PartialEq,
+    Hash,
+    TypePath,
+    Asset,
 )]
-pub struct BlockDefinition {
-    pub id: BlockID,
-    #[serde(default)]
-    pub visibility: BlockVisibility,
-    #[serde(default = "default_block_color")]
-    pub color: BlockColor,
-    pub textures: Option<BTreeMap<Face, TextureFilename>>,
-}
+#[serde(transparent)]
+pub struct BlockDefinition(pub BlockType);
 
-impl Default for BlockDefinition {
-    fn default() -> Self {
-        BlockDefinition {
-            color: default_block_color(),
-            id: "infinigen:default".to_string(),
-            visibility: BlockVisibility::Opaque,
-            textures: None,
-        }
+impl From<BlockType> for BlockDefinition {
+    fn from(value: BlockType) -> Self {
+        BlockDefinition(value)
     }
-}
-
-impl From<&BlockType> for BlockDefinition {
-    fn from(value: &BlockType) -> Self {
-        Self {
-            color: value.color,
-            id: value.id.clone(),
-            visibility: value.visibility,
-            textures: Default::default(),
-        }
-    }
-}
-
-fn default_block_color() -> BlockColor {
-    [255, 255, 255, 255]
 }
 
 /// Tracks which [`MappedBlockID`]s are being used for which [`BlockDefinition`]s for the currently loaded session.
@@ -82,7 +57,7 @@ impl BlockDefinitions {
         for (mapped_id, block_definition) in self.by_mapped_id.iter() {
             palette
                 .inner
-                .insert(block_definition.id.clone(), *mapped_id);
+                .insert(block_definition.0.id.clone(), *mapped_id);
         }
         palette
     }
@@ -106,7 +81,7 @@ impl BlockDefinitions {
                 .by_mapped_id
                 .iter()
                 .filter_map(|(id, def)| {
-                    if def.visibility == BlockVisibility::Opaque {
+                    if def.0.visibility == BlockVisibility::Opaque {
                         Some(*id)
                     } else {
                         None
@@ -119,24 +94,19 @@ impl BlockDefinitions {
 
 impl BlockVisibilityChecker for BlockDefinitions {
     fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility {
-        self.get(mapped_id).visibility
+        self.get(mapped_id).0.visibility
     }
 }
 
 #[derive(Default, Resource)]
 pub struct BlockRegistry {
-    pub materials: [Handle<StandardMaterial>; MaterialType::COUNT],
+    pub materials: [Handle<StandardMaterial>; BlockVisibility::COUNT],
     pub appearances: BlockAppearances,
     pub definitions: BlockDefinitions,
 }
 
 impl BlockRegistry {
-    /// Returns a weak handle to a material.
-    pub fn get_material(&self, material_type: MaterialType) -> Handle<StandardMaterial> {
-        self.materials[material_type as usize].clone_weak()
-    }
-
-    pub fn get_appearances(&self) -> &BlockAppearances {
-        &self.appearances
+    pub fn get_material(&self, visibility: BlockVisibility) -> Handle<StandardMaterial> {
+        self.materials[visibility as usize].clone_weak()
     }
 }

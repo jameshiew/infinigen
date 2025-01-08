@@ -52,7 +52,6 @@ pub fn handle_mesh_chunk_requests(
     mut meshes: ResMut<Meshes>,
     registry: Res<BlockRegistry>,
 ) {
-    let block_textures = registry.get_appearances();
     for (
         MeshChunkRequest {
             chunk_position,
@@ -140,7 +139,7 @@ pub fn handle_mesh_chunk_requests(
             if let Some(translucent_mesh) = bevy_mesh_greedy_quads(
                 translucent,
                 &neighbour_faces,
-                block_textures,
+                &registry.appearances,
                 &registry.definitions,
             ) {
                 mesh_info.translucents.push(translucent_mesh);
@@ -150,7 +149,7 @@ pub fn handle_mesh_chunk_requests(
         mesh_info.opaque = bevy_mesh_visible_block_faces(
             &chunk_info.opaque,
             &neighbour_faces,
-            block_textures,
+            &registry.appearances,
             &registry.definitions,
         );
 

@@ -1,8 +1,7 @@
 use ahash::AHashMap;
-use linearize::{Linearize, StaticCopyMap};
-use serde::{Deserialize, Serialize};
-use strum::EnumIter;
+use linearize::StaticCopyMap;
 
+use crate::blocks::Face;
 use crate::world::MappedBlockID;
 
 const TEXTURE_SIZE: usize = 64;
@@ -71,28 +70,4 @@ impl BlockAppearances {
             FaceAppearance::Color { r, g, b, a } => Some([r, g, b, a]),
         }
     }
-}
-
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-    Serialize,
-    Deserialize,
-    Ord,
-    PartialOrd,
-    EnumIter,
-    Linearize,
-)]
-#[linearize(const)]
-pub enum Face {
-    Top = 0,
-    Bottom,
-    Left,
-    Right,
-    Front,
-    Back,
 }
