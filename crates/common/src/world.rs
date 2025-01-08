@@ -76,38 +76,12 @@ pub struct WorldPosition {
     pub z: f32,
 }
 
-/// Absolute position of a block in the world.
-#[derive(Debug, Clone, Copy)]
-pub struct WorldBlockPosition {
-    pub x: i32,
-    pub y: i32,
-    pub z: i32,
-}
-
-// Position of something relative to its own space. i.e. not the entire world
-#[derive(Debug, Clone, Copy)]
-pub struct LocalPosition {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-}
-
 impl From<&ChunkPosition> for WorldPosition {
     fn from(cpos: &ChunkPosition) -> Self {
         Self {
             x: (cpos.x * CHUNK_SIZE_I32) as f32,
             y: (cpos.y * CHUNK_SIZE_I32) as f32,
             z: (cpos.z * CHUNK_SIZE_I32) as f32,
-        }
-    }
-}
-
-impl From<&ChunkPosition> for WorldBlockPosition {
-    fn from(cpos: &ChunkPosition) -> Self {
-        Self {
-            x: cpos.x * CHUNK_SIZE_I32,
-            y: cpos.y * CHUNK_SIZE_I32,
-            z: cpos.z * CHUNK_SIZE_I32,
         }
     }
 }
