@@ -2,6 +2,7 @@
 name = "infinigen-extras"
 version = "0.0.0"
 edition = "2021"
+rust-version = "1.83.0"
 publish = false
 
 [dependencies]
