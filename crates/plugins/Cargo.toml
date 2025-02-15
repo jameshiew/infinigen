@@ -3,7 +3,7 @@ name = "infinigen-plugins"
 version = "0.0.0"
 edition = "2021"
 publish = false
-rust-version = "1.82.0"    # msrv should be at least the msrv of the bevy version used
+rust-version = "1.83.0"
 
 [dependencies]
 ahash = { workspace = true }
