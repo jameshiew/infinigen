@@ -14,9 +14,9 @@ serde = { workspace = true, features = ["derive"] }
 infinigen-plugins = { path = "../plugins" }
 infinigen-extras = { path = "../extras" }
 
-bevy_framepace = "0.18.0"
-clap = {version = "4.5.23", features = ["derive"] }
-config = { version = "0.15.4", default-features = false, features = ["yaml"] }
+bevy_framepace = "0.18.1"
+clap = {version = "4.5.29", features = ["derive"] }
+config = { version = "0.15.8", default-features = false, features = ["yaml"] }
 config-source = "0.1.1"
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]
