@@ -16,7 +16,7 @@ where
     let mut padded = [VoxelBlock::Empty; PaddedChunkShape::USIZE];
 
     for voxel in padded.iter_mut() {
-        let roll: f32 = rng.gen();
+        let roll: f32 = rng.random();
         if roll < fill_prob {
             *voxel = block_constructor(MappedBlockID::default());
         } else {
