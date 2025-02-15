@@ -23,7 +23,7 @@ bevy = { version = "0.15.2", default-features = false, features = [
     "wayland",
     "webgpu",
 ] }
-linearize = { version = "0.1.1" }
+linearize = { version = "0.1.4" }
 strum = { version = "0.26.3" }
 serde = { version = "1.0.215" }
 tracing = "0.1.40"
