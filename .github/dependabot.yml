@@ -4,3 +4,9 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+  - package-ecosystem: "cargo"
+    directory: "/" # the workspace Cargo.toml is located at the root
+    schedule:
+      interval: "monthly"
+    allow:
+      - dependency-name: "bevy"
