@@ -3,10 +3,10 @@ use std::sync::Arc;
 
 use ahash::AHashMap;
 use bevy::prelude::*;
-use bevy::tasks::{block_on, poll_once, AsyncComputeTaskPool, Task};
+use bevy::tasks::{AsyncComputeTaskPool, Task, block_on, poll_once};
 use infinigen_common::blocks::BlockVisibility;
 use infinigen_common::chunks::{Array3Chunk, CHUNK_SIZE};
-use infinigen_common::mesh::faces::{extract_faces, BlockVisibilityChecker};
+use infinigen_common::mesh::faces::{BlockVisibilityChecker, extract_faces};
 use infinigen_common::world::{BlockPosition, ChunkPosition, MappedBlockID, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
 

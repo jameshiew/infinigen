@@ -1,11 +1,11 @@
 //! This module is concerned with meshing chunks, and not with rendering.
 use block_mesh::ndshape::ConstShape;
 use block_mesh::{
-    greedy_quads, visible_block_faces, GreedyQuadsBuffer, UnitQuadBuffer, UnorientedQuad, Voxel,
-    VoxelVisibility,
+    GreedyQuadsBuffer, UnitQuadBuffer, UnorientedQuad, Voxel, VoxelVisibility, greedy_quads,
+    visible_block_faces,
 };
 use faces::RHS_FACES;
-use shapes::{PaddedChunk, PaddedChunkShape, PADDED_CHUNK_MAX_INDEX};
+use shapes::{PADDED_CHUNK_MAX_INDEX, PaddedChunk, PaddedChunkShape};
 
 use self::block::VoxelBlock;
 use self::textures::BlockAppearances;

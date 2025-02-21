@@ -1,5 +1,5 @@
 use block_mesh::ndshape::ConstShape;
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use infinigen_common::mesh::block::VoxelBlock;
 use infinigen_common::mesh::shapes::{PaddedChunk, PaddedChunkShape};
 use infinigen_common::mesh::textures::BlockAppearances;

@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-use self::info::{display_debug_info, toggle_debug_info, UiState};
+use self::info::{UiState, display_debug_info, toggle_debug_info};
 use crate::AppState;
 
 mod info;

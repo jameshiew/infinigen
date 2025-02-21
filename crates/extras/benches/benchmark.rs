@@ -1,5 +1,5 @@
 use ahash::AHashMap;
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use infinigen_common::blocks::{BlockType, Palette};
 use infinigen_common::world::{ChunkPosition, MappedBlockID, WorldGen};
 use infinigen_common::zoom::ZoomLevel;

@@ -62,7 +62,7 @@ impl BlockDefinitions {
         palette
     }
 
-    pub fn visibility_checker(&self) -> impl BlockVisibilityChecker {
+    pub fn visibility_checker(&self) -> impl BlockVisibilityChecker + 'static {
         #[derive(Clone)]
         struct Checker {
             opaque: AHashSet<MappedBlockID>,

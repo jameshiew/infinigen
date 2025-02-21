@@ -2,17 +2,17 @@
 #![deny(unused_features)]
 use std::process::ExitCode;
 
+use bevy::DefaultPlugins;
 use bevy::core::TaskPoolThreadAssignmentPolicy;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
 #[cfg(all(feature = "remote", not(target_family = "wasm")))]
-use bevy::remote::http::RemoteHttpPlugin;
-#[cfg(all(feature = "remote", not(target_family = "wasm")))]
 use bevy::remote::RemotePlugin;
+#[cfg(all(feature = "remote", not(target_family = "wasm")))]
+use bevy::remote::http::RemoteHttpPlugin;
 use bevy::tasks::available_parallelism;
 use bevy::window::{Window, WindowPlugin};
-use bevy::DefaultPlugins;
-use clap::{command, Parser};
+use clap::{Parser, command};
 use config::Config;
 use infinigen::AppPlugin;
 #[cfg(all(
