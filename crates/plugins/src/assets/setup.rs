@@ -3,16 +3,16 @@ use bevy::asset::{AssetServer, Assets, LoadedFolder};
 use bevy::color::Color;
 use bevy::image::Image;
 use bevy::pbr::StandardMaterial;
-use bevy::prelude::{default, AlphaMode, NextState, Res, ResMut, TextureAtlasBuilder};
+use bevy::prelude::{AlphaMode, NextState, Res, ResMut, TextureAtlasBuilder, default};
 use infinigen_common::blocks::{BlockVisibility, Face};
 use infinigen_common::mesh::textures::{BlockAppearances, FaceAppearance};
 use linearize::static_copy_map;
 use strum::IntoEnumIterator;
 
+use crate::AppState;
+use crate::assets::DefaultBlockTypes;
 use crate::assets::blocks::{BlockDefinition, BlockRegistry};
 use crate::assets::loading::AssetFolders;
-use crate::assets::DefaultBlockTypes;
-use crate::AppState;
 
 #[allow(clippy::too_many_arguments)]
 pub fn setup(

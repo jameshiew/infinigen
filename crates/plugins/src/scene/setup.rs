@@ -4,7 +4,7 @@ use bevy::pbr::CascadeShadowConfigBuilder;
 use bevy::prelude::*;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 
-use super::{SceneSettings, SceneView, SceneZoom, FAR};
+use super::{FAR, SceneSettings, SceneView, SceneZoom};
 
 pub const SKY_COLOR: Color = Color::srgb(0.47, 0.66, 1.);
 

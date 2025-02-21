@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use infinigen_plugins::camera::setup::CameraSettings;
 use infinigen_plugins::scene::{self, SceneSettings};
 use infinigen_plugins::world::{self, WorldSettings};
-use infinigen_plugins::{assets, camera, debug, mesh, AppState};
+use infinigen_plugins::{AppState, assets, camera, debug, mesh};
 
 pub mod settings;
 

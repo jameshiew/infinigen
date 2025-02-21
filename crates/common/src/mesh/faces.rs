@@ -330,11 +330,11 @@ pub fn prepare_padded_chunk(
 
 #[cfg(test)]
 mod tests {
-    use block_mesh::{visible_block_faces, UnitQuadBuffer};
+    use block_mesh::{UnitQuadBuffer, visible_block_faces};
     use linearize::static_copy_map;
 
     use crate::blocks::BlockVisibility;
-    use crate::chunks::{filled_chunk, CHUNK_SIZE_U32};
+    use crate::chunks::{CHUNK_SIZE_U32, filled_chunk};
     use crate::mesh::shapes::{
         ChunkFace, ChunkFaceShape, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
     };

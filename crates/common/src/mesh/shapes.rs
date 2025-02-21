@@ -1,5 +1,5 @@
 use block_mesh::ndshape::{ConstShape, ConstShape2u32, ConstShape3u32};
-use linearize::{static_copy_map, StaticCopyMap};
+use linearize::{StaticCopyMap, static_copy_map};
 
 use crate::chunks::CHUNK_SIZE_U32;
 use crate::mesh::block::VoxelBlock;

@@ -5,10 +5,10 @@ use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::render::render_asset::RenderAssetUsages;
 use bevy::render::render_resource::PrimitiveTopology;
 use infinigen_common::chunks::Array3Chunk;
-use infinigen_common::mesh::faces::{prepare_padded_chunk, BlockVisibilityChecker};
+use infinigen_common::mesh::faces::{BlockVisibilityChecker, prepare_padded_chunk};
 use infinigen_common::mesh::shapes::ChunkFace;
 use infinigen_common::mesh::textures::BlockAppearances;
-use infinigen_common::mesh::{mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces, MeshInfo};
+use infinigen_common::mesh::{MeshInfo, mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces};
 use infinigen_common::world::Direction;
 use linearize::StaticCopyMap;
 

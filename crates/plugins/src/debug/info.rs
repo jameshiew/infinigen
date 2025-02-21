@@ -2,8 +2,8 @@ use bevy::diagnostic::{
     DiagnosticsStore, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
 };
 use bevy::prelude::*;
-use bevy_egui::egui::{self, Slider};
 use bevy_egui::EguiContexts;
+use bevy_egui::egui::{self, Slider};
 use bevy_flycam::MovementSettings;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 
