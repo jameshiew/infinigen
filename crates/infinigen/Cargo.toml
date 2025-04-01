@@ -15,8 +15,8 @@ infinigen-plugins = { path = "../plugins" }
 infinigen-extras = { path = "../extras" }
 
 bevy_framepace = "0.18.1"
-clap = { version = "4.5.31", features = ["derive"] }
-config = { version = "0.15.8", default-features = false, features = ["yaml"] }
+clap = { version = "4.5.34", features = ["derive"] }
+config = { version = "0.15.11", default-features = false, features = ["yaml"] }
 config-source = "0.1.1"
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]
