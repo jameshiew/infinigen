@@ -15,7 +15,7 @@ infinigen-plugins = { path = "../plugins" }
 infinigen-extras = { path = "../extras" }
 
 bevy_framepace = "0.18.1"
-clap = { version = "4.5.34", features = ["derive"] }
+clap = { version = "4.5.37", features = ["derive"] }
 config = { version = "0.15.11", default-features = false, features = ["yaml"] }
 config-source = "0.1.1"
 
