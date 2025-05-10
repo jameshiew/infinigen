@@ -21,12 +21,12 @@ pub fn handle_input(
             CursorGrabMode::None => {
                 primary_window.cursor_options.grab_mode = CursorGrabMode::Confined;
                 primary_window.cursor_options.visible = false;
-                camera_events.send(CameraEvent::EnableControls);
+                camera_events.write(CameraEvent::EnableControls);
             }
             _ => {
                 primary_window.cursor_options.grab_mode = CursorGrabMode::None;
                 primary_window.cursor_options.visible = true;
-                camera_events.send(CameraEvent::DisableControls);
+                camera_events.write(CameraEvent::DisableControls);
             }
         }
     }

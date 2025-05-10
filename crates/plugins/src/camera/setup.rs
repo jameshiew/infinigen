@@ -2,7 +2,6 @@ use bevy::core_pipeline::contrast_adaptive_sharpening::ContrastAdaptiveSharpenin
 use bevy::core_pipeline::experimental::taa::TemporalAntiAliasing;
 use bevy::pbr::ScreenSpaceAmbientOcclusion;
 use bevy::prelude::*;
-use bevy::render::view::GpuCulling;
 use smooth_bevy_cameras::controllers::fps::{FpsCameraBundle, FpsCameraController};
 
 #[derive(Resource)]
@@ -43,6 +42,5 @@ pub fn setup(mut commands: Commands, settings: Res<CameraSettings>) {
         ScreenSpaceAmbientOcclusion::default(),
         TemporalAntiAliasing::default(),
         Msaa::Off,
-        GpuCulling,
     ));
 }
