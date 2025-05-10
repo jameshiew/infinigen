@@ -17,8 +17,10 @@ impl Plugin for DebugPlugin {
         tracing::info!("Initializing debug UI plugin");
         app.init_resource::<UiState>()
             .add_plugins((
-                EguiPlugin,
-                FrameTimeDiagnosticsPlugin,
+                EguiPlugin {
+                    enable_multipass_for_primary_context: false,
+                },
+                FrameTimeDiagnosticsPlugin::default(),
                 EntityCountDiagnosticsPlugin,
                 WorldInspectorPlugin::default().run_if(resource_equals(UiState {
                     show_debug_info: true,
@@ -38,7 +40,7 @@ impl Plugin for DebugPlugin {
         {
             use bevy::pbr::wireframe::WireframePlugin;
 
-            app.add_plugins((WireframePlugin,)).add_systems(
+            app.add_plugins((WireframePlugin::default(),)).add_systems(
                 Update,
                 wireframe::toggle.run_if(
                     in_state(AppState::MainGame).and(resource_changed::<ButtonInput<KeyCode>>),

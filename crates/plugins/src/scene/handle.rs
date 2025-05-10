@@ -22,7 +22,7 @@ pub fn process_unload_chunk_ops(
     for (UnloadChunkOpEvent(cpos), _) in unload_evs.par_read() {
         for (eid, LoadedChunk { cpos: loaded_cpos }) in loaded.iter() {
             if loaded_cpos == cpos {
-                commands.entity(eid).despawn_recursive();
+                commands.entity(eid).despawn();
             }
         }
     }
@@ -52,7 +52,7 @@ pub fn process_load_requested(
     for cpos in should_check {
         match meshes.meshes.get(&(cpos, zoom_level)) {
             None => {
-                mesh_chunk_reqs.send(MeshChunkRequest {
+                mesh_chunk_reqs.write(MeshChunkRequest {
                     chunk_position: cpos,
                     zoom_level,
                 });
@@ -155,7 +155,7 @@ pub fn process_spawn_requested(
                     Transform::default(),
                     Visibility::default(),
                 ))
-                .set_parent(chunk_entity);
+                .insert(ChildOf(chunk_entity));
         }
 
         for trans_mesh in &mesh_info.translucents {
@@ -167,7 +167,7 @@ pub fn process_spawn_requested(
                     Transform::default(),
                     Visibility::default(),
                 ))
-                .set_parent(chunk_entity);
+                .insert(ChildOf(chunk_entity));
         }
         scene_chunks.remove(cpos);
     }

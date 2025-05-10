@@ -148,7 +148,7 @@ pub fn handle_update_scene_view(
                     hview_distance
                 );
                 scene_view.hview_distance = *hview_distance;
-                refresh_evs.send(RefreshChunkOpsQueueEvent);
+                refresh_evs.write(RefreshChunkOpsQueueEvent);
             }
             UpdateSettingsEvent::VerticalViewDistance(vview_distance) => {
                 tracing::info!(
@@ -157,7 +157,7 @@ pub fn handle_update_scene_view(
                     vview_distance
                 );
                 scene_view.vview_distance = *vview_distance;
-                refresh_evs.send(RefreshChunkOpsQueueEvent);
+                refresh_evs.write(RefreshChunkOpsQueueEvent);
             }
             UpdateSettingsEvent::ZoomLevel(zoom_level) => {
                 tracing::info!(
@@ -172,7 +172,7 @@ pub fn handle_update_scene_view(
                 camera.translation.x *= 2f32.powf(dzoom);
                 camera.translation.y *= 2f32.powf(dzoom);
                 camera.translation.z *= 2f32.powf(dzoom);
-                reload_evs.send(ReloadAllChunksEvent);
+                reload_evs.write(ReloadAllChunksEvent);
             }
         }
     }
@@ -201,7 +201,7 @@ pub fn check_if_should_update_scene(
         scene_chunks.clear();
         tracing::info!("Reloading all chunks");
         for loaded_chunk in loaded.iter() {
-            commands.entity(loaded_chunk).despawn_recursive();
+            commands.entity(loaded_chunk).despawn();
         }
         should_update = true;
     }
@@ -221,7 +221,7 @@ pub fn check_if_should_update_scene(
     if !should_update {
         return;
     }
-    update_scene_evs.send(UpdateSceneEvent);
+    update_scene_evs.write(UpdateSceneEvent);
 }
 
 // Updated `update_scene` system that uses the new helper function
@@ -238,7 +238,7 @@ pub fn update_scene(
     }
     tracing::trace!("Updating scene");
 
-    let (camera, projection) = camera.single();
+    let (camera, projection) = camera.single().unwrap();
     let current_cpos: ChunkPosition = WorldPosition {
         x: camera.translation.x,
         y: camera.translation.y,
@@ -285,7 +285,7 @@ pub fn update_scene(
         scene_chunks.request_load(cpos);
     }
 
-    unload_evs.send_batch(to_unload.into_iter().map(UnloadChunkOpEvent));
+    unload_evs.write_batch(to_unload.into_iter().map(UnloadChunkOpEvent));
 }
 
 pub struct ScenePlugin;
