@@ -37,7 +37,7 @@ pub fn handle_mesh_chunk_rerequests(
         _,
     ) in mesh_chunk_rerequests.par_read()
     {
-        mesh_chunk_requests.send(MeshChunkRequest {
+        mesh_chunk_requests.write(MeshChunkRequest {
             chunk_position: *chunk_position,
             zoom_level: *zoom_level,
         });
@@ -62,11 +62,11 @@ pub fn handle_mesh_chunk_requests(
     {
         let Some(status) = world.cache.get(&(*chunk_position, *zoom_level)) else {
             // chunk not available yet, request generation and check to mesh later
-            generate_chunk_reqs.send(GenerateChunkRequest {
+            generate_chunk_reqs.write(GenerateChunkRequest {
                 chunk_position: *chunk_position,
                 zoom_level: *zoom_level,
             });
-            mesh_chunk_rerequests.send(MeshChunkRerequest {
+            mesh_chunk_rerequests.write(MeshChunkRerequest {
                 chunk_position: *chunk_position,
                 zoom_level: *zoom_level,
             });
@@ -74,7 +74,7 @@ pub fn handle_mesh_chunk_requests(
         };
         let chunk_info = match status {
             ChunkStatus::Generating => {
-                mesh_chunk_rerequests.send(MeshChunkRerequest {
+                mesh_chunk_rerequests.write(MeshChunkRerequest {
                     chunk_position: *chunk_position,
                     zoom_level: *zoom_level,
                 });
@@ -105,7 +105,7 @@ pub fn handle_mesh_chunk_requests(
                     all_neighbours_present = false;
                     // request chunk generation but not mesh, as we might not need it
                     // mesh requests should be driven by the active scene
-                    generate_chunk_reqs.send(GenerateChunkRequest {
+                    generate_chunk_reqs.write(GenerateChunkRequest {
                         chunk_position: neighbour_cpos,
                         zoom_level: *zoom_level,
                     });
@@ -115,7 +115,7 @@ pub fn handle_mesh_chunk_requests(
         }
         if !all_neighbours_present {
             // not all neighbours available yet, check again later
-            mesh_chunk_rerequests.send(MeshChunkRerequest {
+            mesh_chunk_rerequests.write(MeshChunkRerequest {
                 chunk_position: *chunk_position,
                 zoom_level: *zoom_level,
             });

@@ -45,7 +45,7 @@ pub fn display_debug_info(
             loaded_chunks.iter().count(),
         ));
         if ui.button("Clear and reload all chunks").clicked() {
-            reload_evs.send(scene::ReloadAllChunksEvent);
+            reload_evs.write(scene::ReloadAllChunksEvent);
         }
     });
 
@@ -80,7 +80,7 @@ pub fn display_debug_info(
         if ui.add(Slider::new(&mut hview_distance, 1..=64)).changed()
             && hview_distance != scene_view.hview_distance
         {
-            update_evs.send(scene::UpdateSettingsEvent::HorizontalViewDistance(
+            update_evs.write(scene::UpdateSettingsEvent::HorizontalViewDistance(
                 hview_distance,
             ));
         };
@@ -88,7 +88,7 @@ pub fn display_debug_info(
         if ui.add(Slider::new(&mut vview_distance, 1..=64)).changed()
             && vview_distance != scene_view.vview_distance
         {
-            update_evs.send(scene::UpdateSettingsEvent::VerticalViewDistance(
+            update_evs.write(scene::UpdateSettingsEvent::VerticalViewDistance(
                 vview_distance,
             ));
         };
@@ -98,7 +98,7 @@ pub fn display_debug_info(
         if ui.add(Slider::new(&mut zoom_level, -5..=5)).changed()
             && scene_zoom.zoom_level != zoom_level
         {
-            update_evs.send(scene::UpdateSettingsEvent::ZoomLevel(zoom_level));
+            update_evs.write(scene::UpdateSettingsEvent::ZoomLevel(zoom_level));
         };
 
         ui.label("Camera speed");
