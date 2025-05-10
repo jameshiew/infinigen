@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use infinigen_plugins::camera::setup::CameraSettings;
 use infinigen_plugins::scene::{self, SceneSettings};
 use infinigen_plugins::world::{self, WorldSettings};
-use infinigen_plugins::{AppState, assets, camera, debug, mesh};
+use infinigen_plugins::{AppState, assets, camera, controls, debug, mesh};
 
 pub mod settings;
 
@@ -22,10 +22,9 @@ impl Plugin for AppPlugin {
         app.init_state::<AppState>()
             .insert_resource(CameraSettings {
                 zoom_level: self.settings.zoom_level,
-                rotation_x: self.settings.rotation_x as f32,
-                rotation_y: self.settings.rotation_y as f32,
-                rotation_z: self.settings.rotation_z as f32,
-                rotation_w: self.settings.rotation_w as f32,
+                target_x: self.settings.target_x as f32,
+                target_y: self.settings.target_y as f32,
+                target_z: self.settings.target_z as f32,
                 wx: self.settings.wx as f32,
                 wy: self.settings.wy as f32,
                 wz: self.settings.wz as f32,
@@ -46,6 +45,7 @@ impl Plugin for AppPlugin {
                 camera::CameraPlugin,
                 world::WorldPlugin,
                 debug::DebugPlugin,
+                controls::ControlsPlugin,
             ));
     }
 }

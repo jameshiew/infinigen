@@ -4,10 +4,11 @@ resolver = "2"
 
 [workspace.dependencies]
 ahash = "0.8.11"
-bevy = { version = "0.15.3", default-features = false, features = [
+bevy = { version = "0.16.0", default-features = false, features = [
     "bevy_asset",
     "bevy_color",
     "bevy_core_pipeline",
+    "bevy_log",
     "bevy_pbr",
     "bevy_render",
     "bevy_scene",

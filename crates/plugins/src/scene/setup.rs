@@ -12,6 +12,7 @@ pub fn setup_lighting(mut commands: Commands) {
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
         brightness: 0.5,
+        affects_lightmapped_meshes: true,
     });
     commands.insert_resource(ClearColor(SKY_COLOR));
 

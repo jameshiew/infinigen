@@ -20,13 +20,11 @@ pub struct AppSettings {
     pub wz: f64,
 
     #[serde(default)]
-    pub rotation_x: f64,
+    pub target_x: f64,
     #[serde(default)]
-    pub rotation_y: f64,
+    pub target_y: f64,
     #[serde(default)]
-    pub rotation_z: f64,
-    #[serde(default)]
-    pub rotation_w: f64,
+    pub target_z: f64,
 
     #[serde(default)]
     pub seed: u64,
@@ -42,10 +40,9 @@ impl Default for AppSettings {
             wx: -1283.,
             wy: 140.,
             wz: -1752.,
-            rotation_x: -0.08,
-            rotation_y: -0.9,
-            rotation_z: -0.4,
-            rotation_w: 0.18,
+            target_x: -1300.,
+            target_y: 6.,
+            target_z: -1615.,
             seed: 0,
         }
     }

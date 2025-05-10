@@ -3,7 +3,7 @@
 use std::process::ExitCode;
 
 use bevy::DefaultPlugins;
-use bevy::core::TaskPoolThreadAssignmentPolicy;
+use bevy::app::TaskPoolThreadAssignmentPolicy;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
 #[cfg(all(feature = "remote", not(target_family = "wasm")))]
@@ -82,6 +82,8 @@ fn main() -> ExitCode {
                             min_threads: available_parallelism(),
                             max_threads: usize::MAX,
                             percent: 1.0,
+                            on_thread_spawn: None,
+                            on_thread_destroy: None,
                         },
                         ..default()
                     },

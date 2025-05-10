@@ -4,8 +4,8 @@ use bevy::diagnostic::{
 use bevy::prelude::*;
 use bevy_egui::EguiContexts;
 use bevy_egui::egui::{self, Slider};
-use bevy_flycam::MovementSettings;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
+use smooth_bevy_cameras::controllers::fps::FpsCameraController;
 
 use crate::scene::{self, LoadedChunk};
 
@@ -14,7 +14,7 @@ pub fn display_debug_info(
     mut egui: EguiContexts,
     diagnostics: Res<DiagnosticsStore>,
     camera_wpos: Single<&Transform, With<Camera>>,
-    mut movement_settings: ResMut<MovementSettings>,
+    mut fps_camera_controller: Single<&mut FpsCameraController>,
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
     scene_chunks: Res<scene::SceneChunks>,
@@ -45,7 +45,7 @@ pub fn display_debug_info(
             loaded_chunks.iter().count(),
         ));
         if ui.button("Clear and reload all chunks").clicked() {
-            reload_evs.send(scene::ReloadAllChunksEvent);
+            reload_evs.write(scene::ReloadAllChunksEvent);
         }
     });
 
@@ -80,7 +80,7 @@ pub fn display_debug_info(
         if ui.add(Slider::new(&mut hview_distance, 1..=64)).changed()
             && hview_distance != scene_view.hview_distance
         {
-            update_evs.send(scene::UpdateSettingsEvent::HorizontalViewDistance(
+            update_evs.write(scene::UpdateSettingsEvent::HorizontalViewDistance(
                 hview_distance,
             ));
         };
@@ -88,7 +88,7 @@ pub fn display_debug_info(
         if ui.add(Slider::new(&mut vview_distance, 1..=64)).changed()
             && vview_distance != scene_view.vview_distance
         {
-            update_evs.send(scene::UpdateSettingsEvent::VerticalViewDistance(
+            update_evs.write(scene::UpdateSettingsEvent::VerticalViewDistance(
                 vview_distance,
             ));
         };
@@ -98,11 +98,14 @@ pub fn display_debug_info(
         if ui.add(Slider::new(&mut zoom_level, -5..=5)).changed()
             && scene_zoom.zoom_level != zoom_level
         {
-            update_evs.send(scene::UpdateSettingsEvent::ZoomLevel(zoom_level));
+            update_evs.write(scene::UpdateSettingsEvent::ZoomLevel(zoom_level));
         };
 
         ui.label("Camera speed");
-        ui.add(Slider::new(&mut movement_settings.speed, 1.0..=100.0));
+        ui.add(Slider::new(
+            &mut fps_camera_controller.translate_sensitivity,
+            1.0..=100.0,
+        ));
     });
 }
 
