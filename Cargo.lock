@@ -776,15 +776,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_flycam"
-version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83039a8e4f7e92c96c97b0b3ac738a54781f77ce5086d3ae39698219586a7f1d"
-dependencies = [
- "bevy",
-]
-
-[[package]]
 name = "bevy_framepace"
 version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3027,10 +3018,10 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_common_assets",
  "bevy_egui",
- "bevy_flycam",
  "infinigen-common",
  "linearize",
  "serde",
+ "smooth-bevy-cameras",
  "strum",
  "tracing",
 ]
@@ -3204,7 +3195,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc2f4eb4bc735547cfed7c0a4922cbd04a4655978c09b54f1f7b228750664c34"
 dependencies = [
  "cfg-if",
- "windows-targets 0.48.5",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -4727,6 +4718,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd538fb6910ac1099850255cf94a94df6551fbdd602454387d0adb2d1ca6dead"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "smooth-bevy-cameras"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "28a7c53f442c193a5d73a6b4f0b2456328c85497525847df9156cc719f6f18b5"
+dependencies = [
+ "approx",
+ "bevy",
 ]
 
 [[package]]
