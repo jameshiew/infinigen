@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 pub mod assets;
 pub mod camera;
+pub mod controls;
 pub mod debug;
 pub mod mesh;
 pub mod scene;
@@ -14,4 +15,5 @@ pub enum AppState {
     InitializingRegistry,
     InitializingWorld,
     MainGame,
+    Paused,
 }
