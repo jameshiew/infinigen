@@ -3,7 +3,7 @@ use bevy::asset::{AssetServer, Assets, LoadedFolder};
 use bevy::color::Color;
 use bevy::image::Image;
 use bevy::pbr::StandardMaterial;
-use bevy::prelude::{AlphaMode, NextState, Res, ResMut, TextureAtlasBuilder, default};
+use bevy::prelude::{AlphaMode, NextState, Res, ResMut, TextureAtlasBuilder, default, *};
 use infinigen_common::blocks::{BlockVisibility, Face};
 use infinigen_common::mesh::textures::{BlockAppearances, FaceAppearance};
 use linearize::static_copy_map;
@@ -25,37 +25,36 @@ pub fn setup(
     mut textures: ResMut<Assets<Image>>,
     settings: Res<DefaultBlockTypes>,
     block_definitions: Res<Assets<BlockDefinition>>,
-) {
+) -> Result {
     // block textures
     let mut block_texture_handles_by_name = AHashMap::default();
     let mut block_tatlas_builder = TextureAtlasBuilder::default();
-    let (atlas_sources, atlas_layout, texture_atlas) = if let Some(block_texture_folder) =
-        loaded_folders.get(&folders.block_textures)
-    {
-        for handle in block_texture_folder.handles.iter() {
-            let handle = handle.clone_weak().typed();
-            let path = asset_server.get_path(handle.id());
-            if let Some(texture) = textures.get(&handle) {
-                tracing::debug!(?path, "Texture found");
-                let path = path.unwrap();
-                let name = path.path().file_name().unwrap().to_str().unwrap();
-                let name = name.trim_end_matches(".png");
+    let (atlas_sources, atlas_layout, texture_atlas) =
+        if let Some(block_texture_folder) = loaded_folders.get(&folders.block_textures) {
+            for handle in block_texture_folder.handles.iter() {
+                let handle = handle.clone_weak().typed();
+                let path = asset_server.get_path(handle.id());
+                if let Some(texture) = textures.get(&handle) {
+                    tracing::debug!(?path, "Texture found");
+                    let path = path.unwrap();
+                    let name = path.path().file_name().unwrap().to_str().unwrap();
+                    let name = name.trim_end_matches(".png");
 
-                block_texture_handles_by_name.insert(name.to_owned(), handle.clone_weak());
-                block_tatlas_builder.add_texture(Some(handle.id()), texture);
-            } else {
-                tracing::error!("{:?} did not resolve to an `Image` asset.", path,);
-                panic!();
-            };
-        }
-        let (atlas_layout, atlas_sources, texture_atlas) = block_tatlas_builder.build().unwrap();
-        tracing::debug!(?atlas_layout.size, ?atlas_layout.textures, "Stitched texture atlas");
-        let texture_atlas = textures.add(texture_atlas);
-        (Some(atlas_sources), Some(atlas_layout), Some(texture_atlas))
-    } else {
-        tracing::warn!("Block textures were not loaded, falling back to colours");
-        (None, None, None)
-    };
+                    block_texture_handles_by_name.insert(name.to_owned(), handle.clone_weak());
+                    block_tatlas_builder.add_texture(Some(handle.id()), texture);
+                } else {
+                    tracing::error!("{:?} did not resolve to an `Image` asset.", path,);
+                    panic!();
+                };
+            }
+            let (atlas_layout, atlas_sources, texture_atlas) = block_tatlas_builder.build()?;
+            tracing::debug!(?atlas_layout.size, ?atlas_layout.textures, "Stitched texture atlas");
+            let texture_atlas = textures.add(texture_atlas);
+            (Some(atlas_sources), Some(atlas_layout), Some(texture_atlas))
+        } else {
+            tracing::warn!("Block textures were not loaded, falling back to colours");
+            (None, None, None)
+        };
 
     let mut block_textures = BlockAppearances::default();
     if let Some(atlas_layout) = atlas_layout.as_ref() {
@@ -140,4 +139,5 @@ pub fn setup(
     });
 
     next_state.set(AppState::InitializingWorld);
+    Ok(())
 }
