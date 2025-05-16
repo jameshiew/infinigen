@@ -231,13 +231,13 @@ pub fn update_scene(
     mut unload_evs: EventWriter<UnloadChunkOpEvent>,
     mut update_scene_evs: EventReader<UpdateSceneEvent>,
     loaded: Query<&LoadedChunk>,
-) {
+) -> Result {
     if update_scene_evs.read().next().is_none() {
-        return;
+        return Ok(());
     }
     tracing::trace!("Updating scene");
 
-    let (camera, projection) = camera.single().unwrap();
+    let (camera, projection) = camera.single()?;
     let current_cpos: ChunkPosition = WorldPosition {
         x: camera.translation.x,
         y: camera.translation.y,
@@ -285,6 +285,7 @@ pub fn update_scene(
     }
 
     unload_evs.write_batch(to_unload.into_iter().map(UnloadChunkOpEvent));
+    Ok(())
 }
 
 pub struct ScenePlugin;
