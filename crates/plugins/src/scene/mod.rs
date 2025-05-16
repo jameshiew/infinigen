@@ -224,7 +224,6 @@ pub fn check_if_should_update_scene(
     update_scene_evs.write(UpdateSceneEvent);
 }
 
-// Updated `update_scene` system that uses the new helper function
 pub fn update_scene(
     scene_view: Res<SceneView>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
