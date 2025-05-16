@@ -88,7 +88,7 @@ jobs:
         with:
           components: clippy
           target: wasm32-unknown-unknown
-          rustflags: "-D warnings --cfg web_sys_unstable_apis"
+          rustflags: '-D warnings --cfg=web_sys_unstable_apis --cfg=getrandom_backend="wasm_js"'
       - name: Install system packages needed by Bevy
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
