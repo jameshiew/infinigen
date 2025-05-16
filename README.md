@@ -10,7 +10,7 @@ Minecraft-like procedural generation using the [Bevy game engine](https://bevyen
 
 ## Why?
 
-This is a sandbox for experimenting with Bevy and efficient chunk rendering, and trying out different things in Rust. There are no gameplay elements like physics or editing blocks. Eventually I'd like to implement chunk generation and meshing on the GPU and distance based LOD (level of detail) to maximize the number of chunks that can be loaded as fast as possible. At minimum, I'm keeping this code up to date with the latest Bevy version as new versions are released.
+This is a sandbox for experimenting with Bevy and efficient chunk rendering, and trying out different things in Rust. There are no gameplay elements like physics or editing blocks. I'm keeping this code up to date with the latest Bevy version as new versions are released.
 
 ## Quickstart
 
