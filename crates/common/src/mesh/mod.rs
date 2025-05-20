@@ -26,6 +26,7 @@ pub struct MeshInfo {
 }
 
 /// Returns a mesh of all visible block faces in the chunk.
+///
 /// adapted from <https://github.com/bonsairobo/block-mesh-rs/blob/main/examples-crate/render/main.rs>. Returns `None` if there are no visible faces.
 pub fn mesh_chunk_visible_block_faces(
     padded: &PaddedChunk,

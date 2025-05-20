@@ -28,3 +28,6 @@ getrandom = { version = "0.3", features = ["wasm_js"] }
 default = []
 remote = ["bevy/bevy_remote"]
 jemalloc = ["dep:tikv-jemallocator"]
+
+[lints]
+workspace = true

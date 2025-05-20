@@ -26,7 +26,7 @@ pub struct BlockDefinition(pub BlockType);
 
 impl From<BlockType> for BlockDefinition {
     fn from(value: BlockType) -> Self {
-        BlockDefinition(value)
+        Self(value)
     }
 }
 

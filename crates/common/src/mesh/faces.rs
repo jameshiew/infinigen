@@ -41,19 +41,16 @@ pub fn extract_faces(
                             z,
                         });
                         let j = ChunkFaceShape::linearize([x as u32, z as u32]) as usize;
-                        let block = match block {
-                            Some(chunk_block_id) => {
-                                match visibility_checker.get_visibility(&chunk_block_id) {
-                                    crate::blocks::BlockVisibility::Opaque => {
-                                        VoxelBlock::Opaque(chunk_block_id)
-                                    }
-                                    crate::blocks::BlockVisibility::Translucent => {
-                                        VoxelBlock::Translucent(chunk_block_id)
-                                    }
+                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
+                            match visibility_checker.get_visibility(&chunk_block_id) {
+                                crate::blocks::BlockVisibility::Opaque => {
+                                    VoxelBlock::Opaque(chunk_block_id)
+                                }
+                                crate::blocks::BlockVisibility::Translucent => {
+                                    VoxelBlock::Translucent(chunk_block_id)
                                 }
                             }
-                            None => VoxelBlock::Empty,
-                        };
+                        });
                         faces[dir][j] = block;
                     }
                 }
@@ -67,19 +64,16 @@ pub fn extract_faces(
                             z,
                         });
                         let j = ChunkFaceShape::linearize([x as u32, z as u32]) as usize;
-                        let block = match block {
-                            Some(chunk_block_id) => {
-                                match visibility_checker.get_visibility(&chunk_block_id) {
-                                    crate::blocks::BlockVisibility::Opaque => {
-                                        VoxelBlock::Opaque(chunk_block_id)
-                                    }
-                                    crate::blocks::BlockVisibility::Translucent => {
-                                        VoxelBlock::Translucent(chunk_block_id)
-                                    }
+                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
+                            match visibility_checker.get_visibility(&chunk_block_id) {
+                                crate::blocks::BlockVisibility::Opaque => {
+                                    VoxelBlock::Opaque(chunk_block_id)
+                                }
+                                crate::blocks::BlockVisibility::Translucent => {
+                                    VoxelBlock::Translucent(chunk_block_id)
                                 }
                             }
-                            None => VoxelBlock::Empty,
-                        };
+                        });
                         faces[dir][j] = block;
                     }
                 }
@@ -93,19 +87,16 @@ pub fn extract_faces(
                             z: BlockPosition::MIN_IDX,
                         });
                         let j = ChunkFaceShape::linearize([x as u32, y as u32]) as usize;
-                        let block = match block {
-                            Some(chunk_block_id) => {
-                                match visibility_checker.get_visibility(&chunk_block_id) {
-                                    crate::blocks::BlockVisibility::Opaque => {
-                                        VoxelBlock::Opaque(chunk_block_id)
-                                    }
-                                    crate::blocks::BlockVisibility::Translucent => {
-                                        VoxelBlock::Translucent(chunk_block_id)
-                                    }
+                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
+                            match visibility_checker.get_visibility(&chunk_block_id) {
+                                crate::blocks::BlockVisibility::Opaque => {
+                                    VoxelBlock::Opaque(chunk_block_id)
+                                }
+                                crate::blocks::BlockVisibility::Translucent => {
+                                    VoxelBlock::Translucent(chunk_block_id)
                                 }
                             }
-                            None => VoxelBlock::Empty,
-                        };
+                        });
                         faces[dir][j] = block;
                     }
                 }
@@ -119,19 +110,16 @@ pub fn extract_faces(
                             z: BlockPosition::MAX_IDX,
                         });
                         let j = ChunkFaceShape::linearize([x as u32, y as u32]) as usize;
-                        let block = match block {
-                            Some(chunk_block_id) => {
-                                match visibility_checker.get_visibility(&chunk_block_id) {
-                                    crate::blocks::BlockVisibility::Opaque => {
-                                        VoxelBlock::Opaque(chunk_block_id)
-                                    }
-                                    crate::blocks::BlockVisibility::Translucent => {
-                                        VoxelBlock::Translucent(chunk_block_id)
-                                    }
+                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
+                            match visibility_checker.get_visibility(&chunk_block_id) {
+                                crate::blocks::BlockVisibility::Opaque => {
+                                    VoxelBlock::Opaque(chunk_block_id)
+                                }
+                                crate::blocks::BlockVisibility::Translucent => {
+                                    VoxelBlock::Translucent(chunk_block_id)
                                 }
                             }
-                            None => VoxelBlock::Empty,
-                        };
+                        });
                         faces[dir][j] = block;
                     }
                 }
@@ -145,19 +133,16 @@ pub fn extract_faces(
                             z,
                         });
                         let j = ChunkFaceShape::linearize([y as u32, z as u32]) as usize;
-                        let block = match block {
-                            Some(chunk_block_id) => {
-                                match visibility_checker.get_visibility(&chunk_block_id) {
-                                    crate::blocks::BlockVisibility::Opaque => {
-                                        VoxelBlock::Opaque(chunk_block_id)
-                                    }
-                                    crate::blocks::BlockVisibility::Translucent => {
-                                        VoxelBlock::Translucent(chunk_block_id)
-                                    }
+                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
+                            match visibility_checker.get_visibility(&chunk_block_id) {
+                                crate::blocks::BlockVisibility::Opaque => {
+                                    VoxelBlock::Opaque(chunk_block_id)
+                                }
+                                crate::blocks::BlockVisibility::Translucent => {
+                                    VoxelBlock::Translucent(chunk_block_id)
                                 }
                             }
-                            None => VoxelBlock::Empty,
-                        };
+                        });
                         faces[dir][j] = block;
                     }
                 }
@@ -171,19 +156,16 @@ pub fn extract_faces(
                             z,
                         });
                         let j = ChunkFaceShape::linearize([y as u32, z as u32]) as usize;
-                        let block = match block {
-                            Some(chunk_block_id) => {
-                                match visibility_checker.get_visibility(&chunk_block_id) {
-                                    crate::blocks::BlockVisibility::Opaque => {
-                                        VoxelBlock::Opaque(chunk_block_id)
-                                    }
-                                    crate::blocks::BlockVisibility::Translucent => {
-                                        VoxelBlock::Translucent(chunk_block_id)
-                                    }
+                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
+                            match visibility_checker.get_visibility(&chunk_block_id) {
+                                crate::blocks::BlockVisibility::Opaque => {
+                                    VoxelBlock::Opaque(chunk_block_id)
+                                }
+                                crate::blocks::BlockVisibility::Translucent => {
+                                    VoxelBlock::Translucent(chunk_block_id)
                                 }
                             }
-                            None => VoxelBlock::Empty,
-                        };
+                        });
                         faces[dir][j] = block;
                     }
                 }
@@ -307,19 +289,17 @@ pub fn prepare_padded_chunk(
                 if block.is_some() {
                     let i =
                         PaddedChunkShape::linearize([bx as u32 + 1, by as u32 + 1, bz as u32 + 1]);
-                    let block = match block {
-                        Some(chunk_block_id) => {
-                            match visibility_checker.get_visibility(&chunk_block_id) {
-                                crate::blocks::BlockVisibility::Opaque => {
-                                    VoxelBlock::Opaque(chunk_block_id)
-                                }
-                                crate::blocks::BlockVisibility::Translucent => {
-                                    VoxelBlock::Translucent(chunk_block_id)
-                                }
+                    let block =
+                        block.map_or(VoxelBlock::Empty, |chunk_block_id| match visibility_checker
+                            .get_visibility(&chunk_block_id)
+                        {
+                            crate::blocks::BlockVisibility::Opaque => {
+                                VoxelBlock::Opaque(chunk_block_id)
                             }
-                        }
-                        None => VoxelBlock::Empty,
-                    };
+                            crate::blocks::BlockVisibility::Translucent => {
+                                VoxelBlock::Translucent(chunk_block_id)
+                            }
+                        });
                     padded[i as usize] = block;
                 }
             }

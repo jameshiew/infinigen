@@ -1,11 +1,11 @@
 use infinigen_extras::worldgen::WorldGenTypes;
 use serde::{Deserialize, Serialize};
 
-fn default_horizontal_view_distance() -> u64 {
+const fn default_horizontal_view_distance() -> u64 {
     8
 }
 
-fn default_vertical_view_distance() -> u64 {
+const fn default_vertical_view_distance() -> u64 {
     8
 }
 
@@ -13,27 +13,27 @@ fn default_world() -> String {
     WorldGenTypes::MountainIslands.to_string()
 }
 
-fn default_wx() -> f64 {
+const fn default_wx() -> f64 {
     -1283.
 }
 
-fn default_wy() -> f64 {
+const fn default_wy() -> f64 {
     140.
 }
 
-fn default_wz() -> f64 {
+const fn default_wz() -> f64 {
     -1752.
 }
 
-fn default_target_x() -> f64 {
+const fn default_target_x() -> f64 {
     -1300.
 }
 
-fn default_target_y() -> f64 {
+const fn default_target_y() -> f64 {
     6.
 }
 
-fn default_target_z() -> f64 {
+const fn default_target_z() -> f64 {
     -1615.
 }
 

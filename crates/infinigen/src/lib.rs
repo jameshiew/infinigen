@@ -11,7 +11,7 @@ pub struct AppPlugin {
 }
 
 impl AppPlugin {
-    pub fn new(settings: settings::AppSettings) -> Self {
+    pub const fn new(settings: settings::AppSettings) -> Self {
         Self { settings }
     }
 }

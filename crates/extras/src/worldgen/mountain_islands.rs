@@ -90,10 +90,10 @@ impl WorldGen for MountainIslands {
         // let snow_level: f64 = (SEA_LEVEL + self.vertical_scale) * zoom;
 
         let block_ranges = [
-            (SEA_LEVEL + (-3. * zoom + 1.), self.sand),
-            (SEA_LEVEL + (9. * zoom + 1.), self.dirt),
-            (SEA_LEVEL + (285. * zoom + 1.), self.grass),
-            (SEA_LEVEL + (300. * zoom + 1.), self.stone),
+            (SEA_LEVEL + (-3.0f64).mul_add(zoom, 1.), self.sand),
+            (SEA_LEVEL + 9.0f64.mul_add(zoom, 1.), self.dirt),
+            (SEA_LEVEL + 285.0f64.mul_add(zoom, 1.), self.grass),
+            (SEA_LEVEL + 300.0f64.mul_add(zoom, 1.), self.stone),
             (f64::INFINITY, self.snow),
         ];
 
@@ -180,7 +180,7 @@ impl WorldGen for MountainIslands {
                             // Assign block type based on the height and noise.
                             let mut block_id = block_ranges[0].1;
                             for &(threshold, id) in &block_ranges {
-                                if wy + next_band_chance * self.vertical_scale < threshold {
+                                if next_band_chance.mul_add(self.vertical_scale, wy) < threshold {
                                     block_id = id;
                                     break;
                                 }

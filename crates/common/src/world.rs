@@ -109,14 +109,14 @@ pub enum Direction {
 }
 
 impl Direction {
-    pub fn opposite(&self) -> Self {
+    pub const fn opposite(&self) -> Self {
         match self {
-            Direction::Up => Direction::Down,
-            Direction::Down => Direction::Up,
-            Direction::North => Direction::South,
-            Direction::South => Direction::North,
-            Direction::East => Direction::West,
-            Direction::West => Direction::East,
+            Self::Up => Self::Down,
+            Self::Down => Self::Up,
+            Self::North => Self::South,
+            Self::South => Self::North,
+            Self::East => Self::West,
+            Self::West => Self::East,
         }
     }
 }

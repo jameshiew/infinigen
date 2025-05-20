@@ -11,9 +11,10 @@ pub struct Flat {
     dirt: MappedBlockID,
 }
 
+#[allow(clippy::fallible_impl_from)]
 impl From<Palette> for Flat {
     fn from(palette: Palette) -> Self {
-        Flat {
+        Self {
             dirt: *palette.inner.get(DIRT_BLOCK_ID).unwrap(),
         }
     }

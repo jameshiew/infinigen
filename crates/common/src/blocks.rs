@@ -44,7 +44,7 @@ pub struct BlockType {
 
 impl Default for BlockType {
     fn default() -> Self {
-        BlockType {
+        Self {
             color: default_block_color(),
             id: "default".to_string(),
             visibility: BlockVisibility::Opaque,
@@ -53,7 +53,7 @@ impl Default for BlockType {
     }
 }
 
-fn default_block_color() -> BlockColor {
+const fn default_block_color() -> BlockColor {
     [255, 255, 255, 255]
 }
 
