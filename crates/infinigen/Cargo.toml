@@ -17,7 +17,6 @@ infinigen-extras = { path = "../extras" }
 bevy_framepace = "0.19.1"
 clap = { version = "4.5.38", features = ["derive"] }
 config = { version = "0.15.11", default-features = false, features = ["yaml"] }
-config-source = "0.1.1"
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]
 tikv-jemallocator = { version = "0.6", optional = true }
