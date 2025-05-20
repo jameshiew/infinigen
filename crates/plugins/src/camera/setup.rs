@@ -37,6 +37,10 @@ pub fn setup(mut commands: Commands, settings: Res<CameraSettings>) {
             target.translation,
             Vec3::Y,
         ),
+        Camera {
+            hdr: true,
+            ..Camera::default()
+        },
         Camera3d::default(),
         ContrastAdaptiveSharpening::default(),
         ScreenSpaceAmbientOcclusion::default(),
