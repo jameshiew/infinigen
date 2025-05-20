@@ -10,6 +10,7 @@ bevy = { version = "0.16.0", default-features = false, features = [
     "bevy_core_pipeline",
     "bevy_log",
     "bevy_pbr",
+    "bevy_picking",
     "bevy_render",
     "bevy_scene",
     "bevy_sprite",
