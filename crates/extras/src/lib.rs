@@ -1,3 +1,5 @@
+#![allow(clippy::tuple_array_conversions)] // gives false positives
+
 //! Default world generators and block definitions.
 use std::str::FromStr;
 

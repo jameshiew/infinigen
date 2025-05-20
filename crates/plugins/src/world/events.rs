@@ -96,10 +96,10 @@ pub fn handle_generate_chunk_task(
 ) {
     for (entity, mut task) in generate_chunk_tasks.iter_mut() {
         if let Some((zoom_level, cpos, chunk)) = block_on(poll_once(&mut task.0)) {
-            let status = match chunk {
-                None => ChunkStatus::Empty,
-                Some(chunk_info) => ChunkStatus::Generated(Arc::new(chunk_info)),
-            };
+            let status = chunk.map_or_else(
+                || ChunkStatus::Empty,
+                |chunk_info| ChunkStatus::Generated(Arc::new(chunk_info)),
+            );
             match world.cache.insert((cpos, zoom_level), status) {
                 Some(status) => match status {
                     ChunkStatus::Generating => (),

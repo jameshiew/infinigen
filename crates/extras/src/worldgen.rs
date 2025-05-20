@@ -26,11 +26,11 @@ impl WorldGenTypes {
         palette: Palette,
     ) -> Arc<dyn WorldGen + Send + Sync> {
         match self {
-            WorldGenTypes::Flat => Arc::new(flat::Flat::from(palette)),
-            WorldGenTypes::MountainIslands => {
+            Self::Flat => Arc::new(flat::Flat::from(palette)),
+            Self::MountainIslands => {
                 Arc::new(mountain_islands::MountainIslands::new(seed, palette))
             }
-            WorldGenTypes::SingleBlock => Arc::new(single_block::SingleBlock::from(palette)),
+            Self::SingleBlock => Arc::new(single_block::SingleBlock::from(palette)),
         }
     }
 }

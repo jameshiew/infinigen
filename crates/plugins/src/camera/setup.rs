@@ -18,7 +18,7 @@ pub struct CameraSettings {
 }
 
 pub fn setup(mut commands: Commands, settings: Res<CameraSettings>) {
-    let zoom = 2f32.powf(settings.zoom_level as f32);
+    let zoom = (settings.zoom_level as f32).exp2();
 
     let eye = Transform::from_xyz(settings.wx * zoom, settings.wy * zoom, settings.wz * zoom);
     let target = Transform::from_xyz(

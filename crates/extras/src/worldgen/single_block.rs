@@ -11,9 +11,10 @@ pub struct SingleBlock {
     grass: MappedBlockID,
 }
 
+#[allow(clippy::fallible_impl_from)]
 impl From<Palette> for SingleBlock {
     fn from(palette: Palette) -> Self {
-        SingleBlock {
+        Self {
             grass: *palette.inner.get(GRASS_BLOCK_ID).unwrap(),
         }
     }

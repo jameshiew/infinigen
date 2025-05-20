@@ -169,9 +169,9 @@ pub fn handle_update_scene_view(
                 scene_zoom.zoom_level = *zoom_level;
 
                 let dzoom = (scene_zoom.zoom_level - scene_zoom.prev_zoom_level) as f32;
-                camera.translation.x *= 2f32.powf(dzoom);
-                camera.translation.y *= 2f32.powf(dzoom);
-                camera.translation.z *= 2f32.powf(dzoom);
+                camera.translation.x *= dzoom.exp2();
+                camera.translation.y *= dzoom.exp2();
+                camera.translation.z *= dzoom.exp2();
                 reload_evs.write(ReloadAllChunksEvent);
             }
         }
@@ -192,19 +192,19 @@ pub fn check_if_should_update_scene(
     mut update_scene_evs: EventWriter<UpdateSceneEvent>,
     loaded: Query<Entity, With<LoadedChunk>>,
 ) {
-    let mut should_update = false;
-    if refresh_evs.read().next().is_some() {
+    let mut should_update = if refresh_evs.read().next().is_some() {
         scene_chunks.clear();
-        should_update = true;
-    }
-    if reload_evs.read().next().is_some() {
+        true
+    } else if reload_evs.read().next().is_some() {
         scene_chunks.clear();
         tracing::info!("Reloading all chunks");
         for loaded_chunk in loaded.iter() {
             commands.entity(loaded_chunk).despawn();
         }
-        should_update = true;
-    }
+        true
+    } else {
+        false
+    };
 
     let current_cpos: ChunkPosition = WorldPosition {
         x: camera.translation.x,

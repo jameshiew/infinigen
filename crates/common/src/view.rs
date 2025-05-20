@@ -38,7 +38,10 @@ pub struct Plane {
 }
 
 pub fn normalize_plane(plane: Vector4<f32>) -> Plane {
-    let magnitude = (plane.x * plane.x + plane.y * plane.y + plane.z * plane.z).sqrt();
+    let magnitude = plane
+        .z
+        .mul_add(plane.z, plane.x.mul_add(plane.x, plane.y * plane.y))
+        .sqrt();
     Plane {
         normal: Unit::new_normalize(Vector4::new(plane.x, plane.y, plane.z, 0.0)),
         constant: plane.w / magnitude,

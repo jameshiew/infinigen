@@ -12,9 +12,9 @@ pub enum VoxelBlock {
 impl Voxel for VoxelBlock {
     fn get_visibility(&self) -> VoxelVisibility {
         match self {
-            VoxelBlock::Opaque(_) => VoxelVisibility::Opaque,
-            VoxelBlock::Translucent(_) => VoxelVisibility::Translucent,
-            VoxelBlock::Empty => VoxelVisibility::Empty,
+            Self::Opaque(_) => VoxelVisibility::Opaque,
+            Self::Translucent(_) => VoxelVisibility::Translucent,
+            Self::Empty => VoxelVisibility::Empty,
         }
     }
 }

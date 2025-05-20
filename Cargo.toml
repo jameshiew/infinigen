@@ -45,3 +45,6 @@ strip = "debuginfo"
 [profile.profiling]
 inherits = "release"
 debug = "line-tables-only"
+
+[workspace.lints.clippy]
+nursery = "warn"
