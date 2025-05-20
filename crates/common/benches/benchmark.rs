@@ -1,5 +1,7 @@
+use std::hint::black_box;
+
 use block_mesh::ndshape::ConstShape;
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use criterion::{Criterion, criterion_group, criterion_main};
 use infinigen_common::mesh::block::VoxelBlock;
 use infinigen_common::mesh::shapes::{PaddedChunk, PaddedChunkShape};
 use infinigen_common::mesh::textures::BlockAppearances;

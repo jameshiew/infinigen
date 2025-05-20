@@ -1,5 +1,7 @@
+use std::hint::black_box;
+
 use ahash::AHashMap;
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use criterion::{Criterion, criterion_group, criterion_main};
 use infinigen_common::blocks::{BlockType, Palette};
 use infinigen_common::world::{ChunkPosition, MappedBlockID, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
