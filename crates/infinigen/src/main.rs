@@ -44,9 +44,9 @@ struct Cli {
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
-    let cfg = match cli.config {
-        Some(config_path) => Config::builder().add_source(config::File::with_name(&config_path)),
-        None => Config::builder().add_source(infinigen::settings::AppSettings::default()),
+    let mut cfg = Config::builder();
+    if let Some(config_path) = cli.config {
+        cfg = cfg.add_source(config::File::with_name(&config_path));
     };
     #[cfg(not(target_family = "wasm"))]
     let cfg = cfg.add_source(
