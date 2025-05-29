@@ -3,6 +3,11 @@ run:
         --release \
         --features bevy/dynamic_linking
 
+check:
+    cargo +nightly fmt --all -- --check
+    cargo check \
+        --features bevy/dynamic_linking
+
 test:
     cargo nextest run
 
