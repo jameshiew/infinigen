@@ -439,7 +439,7 @@ mod tests {
                 }
             }
         }
-        println!("empty: {}, full: {}", empty, full);
+        println!("empty: {empty}, full: {full}");
         // edges are empty
         assert_eq!(
             empty,
