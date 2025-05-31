@@ -14,7 +14,7 @@ use bevy::tasks::available_parallelism;
 use bevy::window::{Window, WindowPlugin};
 use clap::{Parser, command};
 use config::Config;
-use infinigen::AppPlugin;
+use infinigen_plugins::AppPlugin;
 #[cfg(all(
     feature = "jemalloc",
     not(target_env = "msvc"),
@@ -55,7 +55,7 @@ fn main() -> ExitCode {
             .separator("__")
             .try_parsing(true),
     );
-    let cfg: infinigen::settings::AppSettings = match cfg.build() {
+    let cfg: infinigen_plugins::settings::AppSettings = match cfg.build() {
         Ok(settings) => match settings.try_deserialize() {
             Ok(cfg) => cfg,
             Err(err) => {
