@@ -5,6 +5,7 @@ use bevy::prelude::*;
 use bevy_egui::EguiContexts;
 use bevy_egui::egui::{self, Slider};
 use infinigen_common::chunks::CHUNK_SIZE_F32;
+use leafwing_input_manager::prelude::*;
 use smooth_bevy_cameras::controllers::fps::FpsCameraController;
 
 use crate::scene::{self, LoadedChunk};
@@ -122,11 +123,20 @@ impl Default for UiState {
     }
 }
 
-pub fn toggle_debug_info(keys: Res<ButtonInput<KeyCode>>, mut ui_state: ResMut<UiState>) {
-    for key in keys.get_just_pressed() {
-        if key == &KeyCode::F7 {
-            ui_state.show_debug_info = !ui_state.show_debug_info;
-            tracing::info!(%ui_state.show_debug_info, "Debug UI toggled");
-        }
+#[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
+pub enum Action {
+    ToggleDebugUI,
+}
+
+pub fn setup_actions(mut commands: Commands) {
+    // Describes how to convert from player inputs into those actions
+    let input_map = InputMap::new([(Action::ToggleDebugUI, KeyCode::F7)]);
+    commands.spawn(input_map);
+}
+
+pub fn handle_actions(action_state: Single<&ActionState<Action>>, mut ui_state: ResMut<UiState>) {
+    if action_state.just_pressed(&Action::ToggleDebugUI) {
+        ui_state.show_debug_info = !ui_state.show_debug_info;
+        tracing::info!(%ui_state.show_debug_info, "Debug UI toggled");
     }
 }
