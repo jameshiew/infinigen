@@ -14,6 +14,8 @@ env:
 jobs:
   fmt:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,6 +27,8 @@ jobs:
       - run: cargo +nightly fmt --all -- --check
   test:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     needs: fmt
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +44,8 @@ jobs:
       - run: cargo hack test --all-targets --feature-powerset
   docs:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     needs: fmt
     steps:
       - uses: actions/checkout@v4
@@ -55,6 +61,8 @@ jobs:
       - run: RUSTDOCFLAGS="-Dwarnings" cargo hack doc --document-private-items --no-deps --feature-powerset
   clippy:
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
@@ -79,6 +87,8 @@ jobs:
       - run: cargo hack clippy --all-targets --feature-powerset
   wasm:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     needs: fmt
     steps:
       - uses: actions/checkout@v4
