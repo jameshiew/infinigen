@@ -11,6 +11,11 @@ check:
 test:
     cargo nextest run
 
+fix:
+    cargo fix \
+        --features bevy/dynamic_linking \
+        --all-targets
+
 remote:
     cargo run \
         --release \
