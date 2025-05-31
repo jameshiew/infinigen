@@ -19,11 +19,8 @@ impl Plugin for ExtrasPlugin {
         app.insert_resource(DefaultBlockTypes(crate::blocks::block_types().collect()))
             .insert_resource(WorldInitializer(Box::new(
                 move |world_gen_name: &str, seed, palette| {
-                    let world_gen_type =
-                        WorldGenTypes::from_str(world_gen_name).unwrap_or_else(|_| {
-                            panic!("couldn't parse world gen type from {world_gen_name}")
-                        });
-                    world_gen_type.as_world_gen(seed, palette)
+                    let world_gen_type = WorldGenTypes::from_str(world_gen_name)?;
+                    Ok(world_gen_type.as_world_gen(seed, palette))
                 },
             )));
     }

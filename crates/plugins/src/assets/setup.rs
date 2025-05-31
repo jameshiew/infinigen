@@ -43,8 +43,9 @@ pub fn setup(
                     block_texture_handles_by_name.insert(name.to_owned(), handle.clone_weak());
                     block_tatlas_builder.add_texture(Some(handle.id()), texture);
                 } else {
-                    tracing::error!("{:?} did not resolve to an `Image` asset.", path,);
-                    panic!();
+                    return Err(BevyError::from(format!(
+                        "{path:?} did not resolve to an `Image` asset.",
+                    )));
                 };
             }
             let (atlas_layout, atlas_sources, texture_atlas) = block_tatlas_builder.build()?;

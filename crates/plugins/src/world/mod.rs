@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use ahash::AHashMap;
+use anyhow::Context;
 use bevy::prelude::*;
 use events::{GenerateChunkRequest, GenerateChunkTask};
 use infinigen_common::blocks::Palette;
@@ -75,8 +76,9 @@ impl Plugin for WorldPlugin {
     }
 }
 
-pub type WorldInitializerFn =
-    Box<dyn Fn(&str, u32, Palette) -> Arc<dyn WorldGen + Send + Sync> + Send + Sync>;
+pub type WorldInitializerFn = Box<
+    dyn Fn(&str, u32, Palette) -> anyhow::Result<Arc<dyn WorldGen + Send + Sync>> + Send + Sync,
+>;
 
 #[derive(Resource)]
 pub struct WorldInitializer(pub WorldInitializerFn);
@@ -93,12 +95,15 @@ fn init_world(
     world_initializer: Res<WorldInitializer>,
     settings: Res<WorldSettings>,
     mut world: ResMut<World>,
-) {
+) -> Result {
     let WorldInitializer(world_initializer) = &*world_initializer;
+    let world_gen_name = &settings.world_gen_name;
     world.generator = world_initializer(
-        &settings.world_gen_name,
+        world_gen_name,
         settings.seed,
         registry.definitions.palette(),
-    );
+    )
+    .with_context(|| format!("No world generator found for '{world_gen_name}'"))?;
     next_state.set(AppState::MainGame);
+    Ok(())
 }
