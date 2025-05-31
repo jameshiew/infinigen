@@ -1,4 +1,3 @@
-use infinigen_extras::worldgen::WorldGenTypes;
 use serde::{Deserialize, Serialize};
 
 const fn default_horizontal_view_distance() -> u64 {
@@ -10,7 +9,7 @@ const fn default_vertical_view_distance() -> u64 {
 }
 
 fn default_world() -> String {
-    WorldGenTypes::MountainIslands.to_string()
+    "MountainIslands".to_string() // TODO: remove this implicit dependency on infinigen_extras crate
 }
 
 const fn default_wx() -> f64 {
