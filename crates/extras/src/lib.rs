@@ -21,7 +21,7 @@ impl Plugin for ExtrasPlugin {
                 move |world_gen_name: &str, seed, palette| {
                     let world_gen_type =
                         WorldGenTypes::from_str(world_gen_name).unwrap_or_else(|_| {
-                            panic!("couldn't parse world gen type from {}", world_gen_name)
+                            panic!("couldn't parse world gen type from {world_gen_name}")
                         });
                     world_gen_type.as_world_gen(seed, palette)
                 },
