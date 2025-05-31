@@ -71,7 +71,7 @@ pub fn mesh_chunk_visible_block_faces(
                 [0., -1., 0.] => Face::Bottom,
                 [1., 0., 0.] => Face::Right,
                 [-1., 0., 0.] => Face::Left,
-                _ => panic!("unexpected value for normal"),
+                _ => unreachable!("unexpected value for normal"),
             };
 
             let mut padded_chunk_coord = [
@@ -188,7 +188,7 @@ pub fn mesh_chunk_greedy_quads(
                 [0., -1., 0.] => Face::Bottom,
                 [1., 0., 0.] => Face::Right,
                 [-1., 0., 0.] => Face::Left,
-                _ => panic!("unexpected value for normal"),
+                _ => unreachable!("unexpected value for normal"),
             };
 
             let mut padded_chunk_coord = [
