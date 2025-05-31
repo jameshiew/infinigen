@@ -59,12 +59,12 @@ fn main() -> ExitCode {
         Ok(settings) => match settings.try_deserialize() {
             Ok(cfg) => cfg,
             Err(err) => {
-                eprintln!("Couldn't parse settings: {}", err);
+                eprintln!("Couldn't parse settings: {err}");
                 return ExitCode::from(78);
             }
         },
         Err(err) => {
-            eprintln!("Couldn't load settings: {}", err);
+            eprintln!("Couldn't load settings: {err}");
             return ExitCode::from(78);
         }
     };

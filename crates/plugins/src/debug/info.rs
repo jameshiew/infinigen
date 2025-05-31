@@ -66,14 +66,14 @@ pub fn display_debug_info(
             (camera_wpos.translation.y / CHUNK_SIZE_F32).floor() as i32,
             (camera_wpos.translation.z / CHUNK_SIZE_F32).floor() as i32,
         ];
-        ui.label(format!("Chunk: {:?}", chunk_pos));
+        ui.label(format!("Chunk: {chunk_pos:?}"));
 
         let block_pos = [
             camera_wpos.translation.x.floor() as i32,
             camera_wpos.translation.y.floor() as i32,
             camera_wpos.translation.z.floor() as i32,
         ];
-        ui.label(format!("Block: {:?}", block_pos));
+        ui.label(format!("Block: {block_pos:?}"));
 
         let (mut hview_distance, mut vview_distance) =
             (scene_view.hview_distance, scene_view.vview_distance);
