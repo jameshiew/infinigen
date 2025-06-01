@@ -3195,9 +3195,7 @@ dependencies = [
  "getrandom 0.3.3",
  "infinigen-extras",
  "infinigen-plugins",
- "serde",
  "tikv-jemallocator",
- "tracing",
 ]
 
 [[package]]

@@ -8,8 +8,6 @@ default-run = "infinigen"
 
 [dependencies]
 bevy = { workspace = true }
-tracing = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
 
 infinigen-plugins = { path = "../plugins" }
 infinigen-extras = { path = "../extras" }
