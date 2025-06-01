@@ -1,6 +1,9 @@
 run:
     cargo run \
-        --release \
+        --release
+
+debug:
+    cargo run \
         --features bevy/dynamic_linking
 
 check:
