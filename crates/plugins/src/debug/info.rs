@@ -6,6 +6,7 @@ use bevy_egui::EguiContexts;
 use bevy_egui::egui::{self, Slider};
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 use leafwing_input_manager::prelude::*;
+use smooth_bevy_cameras::LookTransform;
 use smooth_bevy_cameras::controllers::fps::FpsCameraController;
 
 use crate::scene::{self, LoadedChunk};
@@ -16,6 +17,7 @@ pub fn display_debug_info(
     diagnostics: Res<DiagnosticsStore>,
     camera_wpos: Single<&Transform, With<Camera>>,
     mut fps_camera_controller: Single<&mut FpsCameraController>,
+    look_transform: Single<&LookTransform>,
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
     scene_chunks: Res<scene::SceneChunks>,
@@ -55,11 +57,10 @@ pub fn display_debug_info(
         ui.label(format!("X: {:.2}", camera_wpos.translation.x));
         ui.label(format!("Y: {:.2}", camera_wpos.translation.y));
         ui.label(format!("Z: {:.2}", camera_wpos.translation.z));
-        ui.label("Rotation");
-        ui.label(format!("X: {:.2}", camera_wpos.rotation.x));
-        ui.label(format!("Y: {:.2}", camera_wpos.rotation.y));
-        ui.label(format!("Z: {:.2}", camera_wpos.rotation.z));
-        ui.label(format!("W: {:.2}", camera_wpos.rotation.w));
+        ui.label("Looking at");
+        ui.label(format!("X: {:.2}", look_transform.target.x));
+        ui.label(format!("Y: {:.2}", look_transform.target.y));
+        ui.label(format!("Z: {:.2}", look_transform.target.z));
 
         let chunk_pos = [
             (camera_wpos.translation.x / CHUNK_SIZE_F32).floor() as i32,
