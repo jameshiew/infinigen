@@ -2,11 +2,11 @@ use bevy::prelude::*;
 
 pub mod assets;
 pub mod camera;
-pub mod controls;
 pub mod debug;
 pub mod mesh;
 pub mod scene;
 pub mod settings;
+pub mod window;
 pub mod world;
 
 use crate::camera::setup::CameraSettings;
@@ -62,7 +62,7 @@ impl Plugin for AppPlugin {
                 camera::CameraPlugin,
                 world::WorldPlugin,
                 debug::DebugPlugin,
-                controls::ControlsPlugin,
+                window::ControlsPlugin,
             ));
     }
 }
