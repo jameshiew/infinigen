@@ -12,6 +12,18 @@ env:
   CARGO_TERM_VERBOSE: true
 
 jobs:
+  deps:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+      - uses: bnjbvr/cargo-machete@main
   fmt:
     runs-on: ubuntu-24.04
     permissions:
@@ -29,7 +41,9 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
-    needs: fmt
+    needs:
+      - fmt
+      - deps
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,7 +60,9 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
-    needs: fmt
+    needs:
+      - fmt
+      - deps
     steps:
       - uses: actions/checkout@v4
         with:
@@ -69,7 +85,9 @@ jobs:
           - windows-2022
           - macos-15
           - ubuntu-24.04
-    needs: fmt
+    needs:
+      - fmt
+      - deps
     steps:
       - uses: actions/checkout@v4
         with:
@@ -89,7 +107,9 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
-    needs: fmt
+    needs:
+      - fmt
+      - deps
     steps:
       - uses: actions/checkout@v4
         with:
