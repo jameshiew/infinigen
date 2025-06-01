@@ -4,7 +4,7 @@ use infinigen_common::chunks::CHUNK_SIZE_F32;
 use infinigen_common::world::WorldPosition;
 use infinigen_common::zoom::ZoomLevel;
 
-use super::{SceneChunkStatus, SceneChunks, UnloadChunkOpEvent};
+use super::{ChunkRequests, SceneChunkStatus, UnloadChunkOpEvent};
 use crate::assets::blocks::BlockRegistry;
 use crate::mesh::events::MeshChunkRequest;
 use crate::mesh::{MeshStatus, Meshes};
@@ -29,14 +29,14 @@ pub fn process_unload_chunk_ops(
 }
 
 pub fn process_load_requested(
-    mut scene_chunks: ResMut<SceneChunks>,
+    mut chunk_requests: ResMut<ChunkRequests>,
     scene_zoom: Res<crate::scene::SceneZoom>,
     meshes: Res<Meshes>,
     mut mesh_chunk_reqs: EventWriter<MeshChunkRequest>,
 ) {
     let zoom_level: ZoomLevel = scene_zoom.zoom_level.into();
 
-    let statuses: Vec<_> = scene_chunks.all_statuses();
+    let statuses: Vec<_> = chunk_requests.all_statuses();
     let should_check: Vec<_> = statuses
         .into_iter()
         .filter_map(|(cpos, status)| {
@@ -56,29 +56,29 @@ pub fn process_load_requested(
                     chunk_position: cpos,
                     zoom_level,
                 });
-                scene_chunks.add(cpos, SceneChunkStatus::MeshRequested);
+                chunk_requests.add(cpos, SceneChunkStatus::MeshRequested);
             }
             Some(MeshStatus::Meshing) => {
-                scene_chunks.add(cpos, SceneChunkStatus::MeshRequested);
+                chunk_requests.add(cpos, SceneChunkStatus::MeshRequested);
             }
             Some(MeshStatus::Empty) => {
-                scene_chunks.remove(cpos);
+                chunk_requests.remove(cpos);
             }
             Some(MeshStatus::Meshed(_)) => {
-                scene_chunks.add(cpos, SceneChunkStatus::SpawnRequested);
+                chunk_requests.add(cpos, SceneChunkStatus::SpawnRequested);
             }
         }
     }
 }
 
 pub fn process_mesh_requested(
-    mut scene_chunks: ResMut<SceneChunks>,
+    mut chunk_requests: ResMut<ChunkRequests>,
     scene_zoom: Res<crate::scene::SceneZoom>,
     meshes: Res<Meshes>,
 ) {
     let zoom_level: ZoomLevel = scene_zoom.zoom_level.into();
 
-    let statuses: Vec<_> = scene_chunks.all_statuses();
+    let statuses: Vec<_> = chunk_requests.all_statuses();
     let should_check: Vec<_> = statuses
         .into_iter()
         .filter_map(|(cpos, status)| {
@@ -96,17 +96,17 @@ pub fn process_mesh_requested(
             None => continue,
             Some(MeshStatus::Meshing) => continue,
             Some(MeshStatus::Empty) => {
-                scene_chunks.remove(cpos);
+                chunk_requests.remove(cpos);
             }
             Some(MeshStatus::Meshed(_)) => {
-                scene_chunks.add(cpos, SceneChunkStatus::SpawnRequested);
+                chunk_requests.add(cpos, SceneChunkStatus::SpawnRequested);
             }
         }
     }
 }
 
 pub fn process_spawn_requested(
-    mut scene_chunks: ResMut<SceneChunks>,
+    mut chunk_requests: ResMut<ChunkRequests>,
     mut commands: Commands,
     scene_zoom: Res<crate::scene::SceneZoom>,
     meshes: Res<Meshes>,
@@ -114,7 +114,7 @@ pub fn process_spawn_requested(
     mut mesh_assets: ResMut<Assets<Mesh>>,
 ) {
     let zoom_level: ZoomLevel = scene_zoom.zoom_level.into();
-    let statuses: Vec<_> = scene_chunks.all_statuses();
+    let statuses: Vec<_> = chunk_requests.all_statuses();
     let should_spawn = statuses
         .into_iter()
         .filter_map(|(cpos, status)| {
@@ -169,6 +169,6 @@ pub fn process_spawn_requested(
                 ))
                 .insert(ChildOf(chunk_entity));
         }
-        scene_chunks.remove(cpos);
+        chunk_requests.remove(cpos);
     }
 }
