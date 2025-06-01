@@ -17,7 +17,7 @@ pub struct LoadedChunk {
 }
 
 #[derive(Default, Resource)]
-pub struct SceneChunks {
+pub struct ChunkRequests {
     requests: AHashMap<ChunkPosition, SceneChunkStatus>,
 }
 
@@ -28,7 +28,7 @@ pub enum SceneChunkStatus {
     SpawnRequested,
 }
 
-impl SceneChunks {
+impl ChunkRequests {
     pub fn add(&mut self, cpos: ChunkPosition, request: SceneChunkStatus) {
         self.requests.insert(cpos, request);
     }
@@ -180,17 +180,17 @@ pub fn check_if_should_update_scene(
     mut commands: Commands,
     mut scene_camera: ResMut<SceneCamera>,
     camera: Single<&Transform, With<Camera>>,
-    mut scene_chunks: ResMut<SceneChunks>,
+    mut chunk_requests: ResMut<ChunkRequests>,
     mut reload_evs: EventReader<ReloadAllChunksEvent>,
     mut refresh_evs: EventReader<RefreshChunkOpsQueueEvent>,
     mut update_scene_evs: EventWriter<UpdateSceneEvent>,
     loaded: Query<Entity, With<LoadedChunk>>,
 ) {
     let mut should_update = if refresh_evs.read().next().is_some() {
-        scene_chunks.clear();
+        chunk_requests.clear();
         true
     } else if reload_evs.read().next().is_some() {
-        scene_chunks.clear();
+        chunk_requests.clear();
         tracing::info!("Reloading all chunks");
         for loaded_chunk in loaded.iter() {
             commands.entity(loaded_chunk).despawn();
@@ -221,7 +221,7 @@ pub fn check_if_should_update_scene(
 pub fn update_scene(
     scene_view: Res<SceneView>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
-    mut scene_chunks: ResMut<SceneChunks>,
+    mut chunk_requests: ResMut<ChunkRequests>,
     mut unload_evs: EventWriter<UnloadChunkOpEvent>,
     mut update_scene_evs: EventReader<UpdateSceneEvent>,
     loaded: Query<&LoadedChunk>,
@@ -275,7 +275,7 @@ pub fn update_scene(
     tracing::debug!(load = ?to_load.len(), unload = ?to_unload.len(), "Chunks to load/unload");
 
     for cpos in to_load.into_iter() {
-        scene_chunks.request_load(cpos);
+        chunk_requests.request_load(cpos);
     }
 
     unload_evs.write_batch(to_unload.into_iter().map(UnloadChunkOpEvent));
@@ -290,7 +290,7 @@ impl Plugin for ScenePlugin {
         app.init_resource::<SceneView>()
             .init_resource::<SceneCamera>()
             .init_resource::<SceneZoom>()
-            .init_resource::<SceneChunks>()
+            .init_resource::<ChunkRequests>()
             .add_systems(
                 OnEnter(AppState::MainGame),
                 (setup::setup_lighting, setup::setup),
