@@ -14,8 +14,11 @@ impl Plugin for CameraPlugin {
         tracing::info!("Initializing camera plugin");
         app.add_plugins(LookTransformPlugin)
             .add_plugins(FpsCameraPlugin::default())
-            .add_systems(OnEnter(AppState::MainGame), setup::setup)
-            .add_systems(Update, events::handle_camera_events)
+            .add_systems(OnEnter(AppState::InitializingWorld), setup::setup)
+            .add_systems(
+                Update,
+                events::handle_camera_events.run_if(in_state(AppState::MainGame)),
+            )
             .add_event::<events::CameraEvent>();
     }
 }
