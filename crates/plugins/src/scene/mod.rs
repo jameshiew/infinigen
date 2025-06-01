@@ -134,7 +134,6 @@ pub enum UpdateSettingsEvent {
 pub fn handle_update_scene_view(
     mut scene_view: ResMut<SceneView>,
     mut scene_zoom: ResMut<SceneZoom>,
-    mut camera: Single<&mut Transform, With<Camera>>,
     mut update_evs: EventReader<UpdateSettingsEvent>,
     mut refresh_evs: EventWriter<RefreshChunkOpsQueueEvent>,
     mut reload_evs: EventWriter<ReloadAllChunksEvent>,
@@ -167,11 +166,6 @@ pub fn handle_update_scene_view(
                 );
                 scene_zoom.prev_zoom_level = scene_zoom.zoom_level;
                 scene_zoom.zoom_level = *zoom_level;
-
-                let dzoom = (scene_zoom.zoom_level - scene_zoom.prev_zoom_level) as f32;
-                camera.translation.x *= dzoom.exp2();
-                camera.translation.y *= dzoom.exp2();
-                camera.translation.z *= dzoom.exp2();
                 reload_evs.write(ReloadAllChunksEvent);
             }
         }
