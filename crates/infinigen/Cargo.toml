@@ -23,7 +23,6 @@ tikv-jemallocator = { version = "0.6", optional = true }
 getrandom = { version = "0.3", features = ["wasm_js"] }
 
 [features]
-default = []
 remote = ["bevy/bevy_remote"]
 jemalloc = ["dep:tikv-jemallocator"]
 

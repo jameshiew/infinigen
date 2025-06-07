@@ -12,31 +12,6 @@ env:
   CARGO_TERM_VERBOSE: true
 
 jobs:
-  deps:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          toolchain: stable
-      - uses: bnjbvr/cargo-machete@main
-  audit:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-audit
-      - run: cargo audit
   fmt:
     runs-on: ubuntu-24.04
     permissions:
@@ -49,7 +24,37 @@ jobs:
         with:
           components: rustfmt
           toolchain: nightly
-      - run: cargo +nightly fmt --all -- --check
+      - uses: taiki-e/install-action@just
+      - run: just check-fmt
+  deps:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: taiki-e/install-action@just
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-machete
+      - run: just machete
+  audit:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: taiki-e/install-action@just
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+      - run: just audit
+
   test:
     runs-on: ubuntu-24.04
     permissions:
@@ -62,15 +67,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install system packages needed by Bevy
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+      - uses: taiki-e/install-action@just
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: taiki-e/install-action@v2
         with:
-          tool: cargo-hack
-      - run: cargo hack test --all-targets --feature-powerset
-  docs:
+          tool: cargo-nextest
+      - run: just test
+  doc:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -82,14 +88,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install system packages needed by Bevy
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-hack
-      - run: RUSTDOCFLAGS="-Dwarnings" cargo hack doc --document-private-items --no-deps --feature-powerset
+      - uses: taiki-e/install-action@just
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: just doc
   clippy:
     runs-on: ${{ matrix.os }}
     permissions:
@@ -108,35 +112,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          components: clippy
       - name: Install system packages needed by Bevy
         if: matrix.os == 'ubuntu-24.04'
         run: |
           sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-hack
-      - run: cargo hack clippy --all-targets --feature-powerset
-  wasm:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-    needs:
-      - fmt
-      - deps
-      - audit
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+      - uses: taiki-e/install-action@just
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy
           target: wasm32-unknown-unknown
-          rustflags: '-D warnings --cfg=web_sys_unstable_apis --cfg=getrandom_backend="wasm_js"'
-      - name: Install system packages needed by Bevy
-        run: |
-          sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - run: cargo clippy --target wasm32-unknown-unknown
+          rustflags: ""
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-hack
+      - run: just clippy
