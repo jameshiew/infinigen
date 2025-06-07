@@ -40,18 +40,6 @@ impl Plugin for DebugPlugin {
                     .run_if(in_state(AppState::MainGame)),
             );
         #[cfg(not(target_family = "wasm"))]
-        {
-            use bevy::pbr::wireframe::WireframePlugin;
-
-            app.add_plugins((
-                WireframePlugin::default(),
-                InputManagerPlugin::<wireframe::Action>::default(),
-            ))
-            .add_systems(OnEnter(AppState::MainGame), wireframe::setup_actions)
-            .add_systems(
-                Update,
-                (wireframe::handle_actions).run_if(in_state(AppState::MainGame)),
-            );
-        }
+        app.add_plugins(wireframe::WireframePlugin);
     }
 }
