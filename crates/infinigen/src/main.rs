@@ -6,10 +6,6 @@ use bevy::DefaultPlugins;
 use bevy::app::TaskPoolThreadAssignmentPolicy;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
-#[cfg(all(feature = "remote", not(target_family = "wasm")))]
-use bevy::remote::RemotePlugin;
-#[cfg(all(feature = "remote", not(target_family = "wasm")))]
-use bevy::remote::http::RemoteHttpPlugin;
 use bevy::tasks::available_parallelism;
 use bevy::window::{Window, WindowPlugin};
 use clap::{Parser, command};
@@ -102,9 +98,7 @@ fn main() -> ExitCode {
                 }),
             bevy_framepace::FramepacePlugin,
             #[cfg(all(feature = "remote", not(target_family = "wasm")))]
-            RemotePlugin::default(),
-            #[cfg(all(feature = "remote", not(target_family = "wasm")))]
-            RemoteHttpPlugin::default(),
+            infinigen::remote::RemotePlugin,
         ))
         .add_plugins((AppPlugin::new(cfg),))
         .add_plugins(infinigen_extras::ExtrasPlugin)
