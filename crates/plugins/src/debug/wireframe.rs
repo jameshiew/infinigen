@@ -2,6 +2,23 @@ use bevy::pbr::wireframe::WireframeConfig;
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
 
+use crate::AppState;
+
+pub struct WireframePlugin;
+
+impl Plugin for WireframePlugin {
+    fn build(&self, app: &mut App) {
+        tracing::info!("Initializing wireframe plugin");
+
+        app.add_plugins((
+            bevy::pbr::wireframe::WireframePlugin::default(),
+            InputManagerPlugin::<Action>::default(),
+        ))
+        .add_systems(OnEnter(AppState::MainGame), setup_actions)
+        .add_systems(Update, handle_actions.run_if(in_state(AppState::MainGame)));
+    }
+}
+
 #[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
 pub enum Action {
     ToggleWireframes,
