@@ -38,7 +38,7 @@ clippy: clippy-wasm
         --feature-powerset \
         -- -D warnings
 
-lint: check-fmt clippy
+lint: fmt-check clippy
 
 fix:
     cargo fix \
