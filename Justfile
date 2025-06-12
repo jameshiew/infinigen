@@ -50,13 +50,26 @@ run-remote:
         --release \
         --features bevy/dynamic_linking,remote
 
-run-wasm:  # requires https://github.com/jakobhellermann/wasm-server-runner
-    CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUNNER=wasm-server-runner \
-    RUSTFLAGS='--cfg=web_sys_unstable_apis --cfg=getrandom_backend="wasm_js"' \
-    cargo run \
-        --profile wasm-release \
-        --target wasm32-unknown-unknown
+install-cargo-tools:
+    cargo install cargo-binstall
+    cargo binstall --no-confirm just
+    cargo binstall --no-confirm cargo-hack
+    cargo binstall --no-confirm cargo-nextest
+    cargo binstall --no-confirm cargo-machete
+    cargo binstall --no-confirm cargo-audit
 
+install-debian-deps:
+    sudo apt-get install -y \
+        g++ \
+        pkg-config \
+        libx11-dev \
+        libasound2-dev \
+        libudev-dev \
+        libxkbcommon-x11-0 \
+        libwayland-dev \
+        libxkbcommon-dev
+
+# extra
 tracy:
     cargo run \
         --profile profiling \
@@ -67,3 +80,10 @@ flamelens:
         --profile profiling \
         --post-process 'flamelens --echo' \
         --root
+
+run-wasm:  # requires https://github.com/jakobhellermann/wasm-server-runner
+    CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUNNER=wasm-server-runner \
+    RUSTFLAGS='--cfg=web_sys_unstable_apis --cfg=getrandom_backend="wasm_js"' \
+    cargo run \
+        --profile wasm-release \
+        --target wasm32-unknown-unknown

@@ -1,21 +1,37 @@
 name: CI
+permissions:
+  contents: read
 
 on:
+  workflow_dispatch:
   pull_request:
+    paths:
+      - "**/assets/**"
+      - Cargo.toml
+      - Cargo.lock
+      - "**.rs"
+      - .github/workflows/ci.yml
   push:
     branches:
       - main
-      - develop
+    paths:
+      - "**/assets/**"
+      - Cargo.toml
+      - Cargo.lock
+      - "**.rs"
+      - .github/workflows/ci.yml
 
 env:
   CARGO_TERM_COLOR: always
   CARGO_TERM_VERBOSE: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   fmt:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,104 +41,64 @@ jobs:
           components: rustfmt
           toolchain: nightly
       - uses: taiki-e/install-action@just
-      - run: just check-fmt
-  deps:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: taiki-e/install-action@just
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-machete
-      - run: just machete
-  audit:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: taiki-e/install-action@just
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-audit
-      - run: just audit
+      - run: just fmt-check
 
   test:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
+    runs-on: ubuntu-24.04-arm
     needs:
       - fmt
-      - deps
-      - audit
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Install system packages needed by Bevy
-        run: |
-          sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: taiki-e/install-action@just
       - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-nextest
+      - uses: taiki-e/install-action@just
+      - run: just install-debian-deps
+      - uses: taiki-e/install-action@cargo-nextest
       - run: just test
   doc:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
+    runs-on: ubuntu-24.04-arm
     needs:
       - fmt
-      - deps
-      - audit
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Install system packages needed by Bevy
-        run: |
-          sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: taiki-e/install-action@just
       - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: taiki-e/install-action@just
+      - run: just install-debian-deps
       - run: just doc
   clippy:
     runs-on: ${{ matrix.os }}
-    permissions:
-      contents: read
     strategy:
       matrix:
         os:
-          - windows-2022
-          - macos-15
-          - ubuntu-24.04
+          - windows-11-arm
+          - macos-latest
+          - ubuntu-24.04-arm
     needs:
       - fmt
-      - deps
-      - audit
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Install system packages needed by Bevy
-        if: matrix.os == 'ubuntu-24.04'
-        run: |
-          sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - uses: taiki-e/install-action@just
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy
           target: wasm32-unknown-unknown
-          rustflags: ""
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-hack
+      - uses: taiki-e/install-action@just
+      - if: matrix.os == 'ubuntu-24.04-arm'
+        run: just install-debian-deps
       - run: just clippy
+  bench:
+    runs-on: ubuntu-24.04-arm
+    needs:
+      - fmt
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: taiki-e/install-action@just
+      - run: just install-debian-deps
+      - run: just bench
