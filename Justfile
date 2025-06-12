@@ -24,7 +24,7 @@ doc:
         --document-private-items \
         --no-deps
 
-check-fmt:
+fmt-check:
     cargo +nightly fmt --all -- --check
 
 clippy-wasm:
