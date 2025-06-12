@@ -1,0 +1,14 @@
+{
+  "name": "infinigen",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["rust-lang.rust-analyzer"]
+    }
+  },
+  "remoteUser": "vscode",
+  "containerUser": "vscode",
+  "postStartCommand": "git config --global --add safe.directory /workspaces/infinigen"
+}
