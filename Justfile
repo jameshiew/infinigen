@@ -59,7 +59,7 @@ install-cargo-tools:
     cargo binstall --no-confirm cargo-audit
 
 install-debian-deps:
-    sudo apt-get install -y \
+    sudo apt update && sudo apt-get install -y \
         g++ \
         pkg-config \
         libx11-dev \
