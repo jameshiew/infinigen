@@ -90,15 +90,3 @@ jobs:
       - if: matrix.os == 'ubuntu-24.04-arm'
         run: just install-debian-deps
       - run: just clippy
-  bench:
-    runs-on: ubuntu-24.04-arm
-    needs:
-      - fmt
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: taiki-e/install-action@just
-      - run: just install-debian-deps
-      - run: just bench
