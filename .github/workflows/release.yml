@@ -4,25 +4,36 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "**/assets/**"
+      - "**.rs"
+      - Cargo.toml
+      - Cargo.lock
+      - .github/workflows/release.yml
 
 jobs:
   release:
     name: Release - ${{ matrix.platform.target }}
+    permissions:
+      contents: write
     strategy:
       matrix:
         platform:
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            features: jemalloc
-          - os: macos-15
+            features: ""
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            features: ""
+          - os: macos-latest
             target: aarch64-apple-darwin
-            features: jemalloc
-          - os: windows-2022
+            features: ""
+          - os: windows-latest
             target: x86_64-pc-windows-msvc
-            features: ''
-          - os: windows-2022
+            features: ""
+          - os: windows-11-arm
             target: aarch64-pc-windows-msvc
-            features: ''
+            features: ""
 
     runs-on: ${{ matrix.platform.os }}
     steps:
@@ -32,10 +43,8 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           target: ${{ matrix.platform.target }}
-      - name: Install system packages needed by Bevy
-        if: matrix.platform.os == 'ubuntu-24.04'
-        run: |
-          sudo apt-get install -y g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+      - uses: taiki-e/install-action@just
+      - run: just install-debian-deps
       - if: matrix.platform.features != ''
         uses: houseabsolute/actions-rust-cross@v1
         with:
@@ -49,5 +58,5 @@ jobs:
       - uses: houseabsolute/actions-rust-release@v0
         with:
           executable-name: infinigen
-          changes-file: ''
+          changes-file: ""
           target: ${{ matrix.platform.target }}
