@@ -24,6 +24,11 @@ doc:
         --document-private-items \
         --no-deps
 
+check:
+    cargo check \
+        --features bevy/dynamic_linking \
+        --all-targets
+
 fmt-check:
     cargo +nightly fmt --all -- --check
 
@@ -52,7 +57,6 @@ run-remote:
 
 install-cargo-tools:
     cargo install cargo-binstall
-    cargo binstall --no-confirm just
     cargo binstall --no-confirm cargo-hack
     cargo binstall --no-confirm cargo-nextest
     cargo binstall --no-confirm cargo-machete
