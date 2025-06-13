@@ -5,10 +5,15 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": ["rust-lang.rust-analyzer"]
+      "extensions": ["rust-lang.rust-analyzer", "tamasfe.even-better-toml"]
     }
   },
   "remoteUser": "vscode",
   "containerUser": "vscode",
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-target,target=/workspaces/infinigen/target,type=volume",
+    "source=${localWorkspaceFolderBasename}-cargo,target=/usr/local/cargo,type=volume"
+  ],
+  "postCreateCommand": ".devcontainer/postCreateCommand.sh",
   "postStartCommand": "git config --global --add safe.directory /workspaces/infinigen"
 }

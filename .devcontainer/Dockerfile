@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/devcontainers/rust:latest
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt update && apt-get install -y \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt update && apt-get install -y --no-install-recommends \
     g++ \
     pkg-config \
     libx11-dev \
@@ -10,14 +10,14 @@ RUN apt update && apt-get install -y \
     libudev-dev \
     libxkbcommon-x11-0 \
     libwayland-dev \
-    libxkbcommon-dev
+    libxkbcommon-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN rustup target add wasm32-unknown-unknown
+USER vscode
 
-RUN cargo install --locked cargo-binstall
-RUN cargo binstall --no-confirm just
+RUN rustup target add wasm32-unknown-unknown && \
+    rustup toolchain install nightly && \
+    rustup component add --toolchain nightly rustfmt
 
-RUN cargo binstall --no-confirm cargo-hack
-RUN cargo binstall --no-confirm cargo-nextest
-RUN cargo binstall --no-confirm cargo-machete
-RUN cargo binstall --no-confirm cargo-audit
+RUN cargo install --locked cargo-binstall && \
+    cargo binstall --no-confirm just

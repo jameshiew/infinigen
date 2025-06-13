@@ -56,14 +56,15 @@ run-remote:
         --features bevy/dynamic_linking,remote
 
 install-cargo-tools:
-    cargo install cargo-binstall
+    cargo install --locked cargo-binstall
     cargo binstall --no-confirm cargo-hack
     cargo binstall --no-confirm cargo-nextest
     cargo binstall --no-confirm cargo-machete
     cargo binstall --no-confirm cargo-audit
+    cargo binstall --no-confirm wasm-server-runner
 
 install-debian-deps:
-    sudo apt update && sudo apt-get install -y \
+    sudo apt update && sudo apt-get install -y --no-install-recommends \
         g++ \
         pkg-config \
         libx11-dev \
