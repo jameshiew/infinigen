@@ -89,4 +89,5 @@ jobs:
       - uses: taiki-e/install-action@just
       - if: matrix.os == 'ubuntu-24.04-arm'
         run: just install-debian-deps
+      - uses: taiki-e/install-action@cargo-hack
       - run: just clippy
