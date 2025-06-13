@@ -62,6 +62,7 @@ install-cargo-tools:
     cargo binstall --no-confirm cargo-machete
     cargo binstall --no-confirm cargo-audit
     cargo binstall --no-confirm wasm-server-runner
+    cargo install --git https://github.com/TheBevyFlock/bevy_cli --branch main --locked bevy_cli
 
 install-debian-deps:
     sudo apt update && sudo apt-get install -y --no-install-recommends \
