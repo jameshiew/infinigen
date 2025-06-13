@@ -1,0 +1,6 @@
+(
+    events: [
+        (50, Screenshot),
+        (75, AppExit)
+    ]
+)

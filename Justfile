@@ -92,3 +92,13 @@ run-wasm:  # requires https://github.com/jakobhellermann/wasm-server-runner
     cargo run \
         --profile wasm-release \
         --target wasm32-unknown-unknown
+
+xvfb-run := if os() == 'linux' {
+  'xvfb-run'
+} else {
+  ''
+}
+
+screenshot-and-exit:
+    {{xvfb-run}} cargo run \
+        --features bevy/bevy_ci_testing,bevy/dynamic_linking
