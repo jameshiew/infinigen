@@ -36,11 +36,13 @@ clippy-wasm:
     cargo clippy \
         --target wasm32-unknown-unknown
 
-clippy: clippy-wasm
+clippy-native:
     cargo hack clippy \
         --all-targets \
         --feature-powerset \
         -- -D warnings
+
+clippy: clippy-native clippy-wasm
 
 lint: fmt-check clippy
 
