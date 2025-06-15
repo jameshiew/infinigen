@@ -1,4 +1,3 @@
-use bevy::core_pipeline::contrast_adaptive_sharpening::ContrastAdaptiveSharpening;
 use bevy::core_pipeline::experimental::taa::TemporalAntiAliasing;
 use bevy::core_pipeline::prepass::DepthPrepass;
 use bevy::pbr::ScreenSpaceAmbientOcclusion;
@@ -44,7 +43,8 @@ pub fn setup(mut commands: Commands, settings: Res<CameraSettings>) {
             ..Camera::default()
         },
         Camera3d::default(),
-        ContrastAdaptiveSharpening::default(),
+        #[cfg(not(target_arch = "wasm32"))]
+        bevy::core_pipeline::contrast_adaptive_sharpening::ContrastAdaptiveSharpening::default(),
         DepthPrepass,
         OcclusionCulling,
         ScreenSpaceAmbientOcclusion::default(),

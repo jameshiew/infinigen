@@ -24,6 +24,7 @@ pub fn setup_lighting(mut commands: Commands) {
             ..default()
         },
         CascadeShadowConfigBuilder {
+            #[cfg(not(target_arch = "wasm32"))]
             num_cascades: 4,
             first_cascade_far_bound: CHUNK_SIZE_F32 * 8.,
             maximum_distance: FAR,
