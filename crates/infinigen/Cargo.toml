@@ -7,14 +7,14 @@ rust-version = "1.85.0"
 default-run = "infinigen"
 
 [dependencies]
-bevy = { workspace = true }
+bevy = { workspace = true, features = ["bevy_winit", "x11", "wayland"] }
 
 infinigen-plugins = { path = "../plugins" }
 infinigen-extras = { path = "../extras" }
 
-bevy_framepace = "0.19.1"
-clap = { version = "4.5.38", features = ["derive"] }
-config = { version = "0.15.11", default-features = false, features = ["yaml"] }
+bevy_framepace = "0.19"
+clap = { version = "4", features = ["derive"] }
+config = { version = "0.15", default-features = false, features = ["yaml"] }
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]
 tikv-jemallocator = { version = "0.6", optional = true }

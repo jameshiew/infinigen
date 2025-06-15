@@ -15,8 +15,8 @@ strum = { workspace = true, features = ["derive"] }
 infinigen-common = { path = "../common" }
 infinigen-plugins = { path = "../plugins" }
 
-noise = "0.9.0"
-splines = "5.0.0"
+noise = "0.9"
+splines = "5"
 
 [dev-dependencies]
 criterion = { workspace = true }
