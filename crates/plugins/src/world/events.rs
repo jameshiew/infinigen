@@ -11,7 +11,7 @@ use infinigen_common::world::{BlockPosition, ChunkPosition, MappedBlockID, World
 use infinigen_common::zoom::ZoomLevel;
 
 use super::{ChunkInfo, ChunkStatus};
-use crate::assets::blocks::BlockRegistry;
+use crate::registry::BlockRegistry;
 
 #[derive(Event)]
 pub struct GenerateChunkRequest {

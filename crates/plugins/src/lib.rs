@@ -4,6 +4,7 @@ pub mod assets;
 pub mod camera;
 pub mod debug;
 pub mod mesh;
+pub mod registry;
 pub mod scene;
 pub mod settings;
 pub mod window;
@@ -56,6 +57,7 @@ impl Plugin for AppPlugin {
                 seed: self.settings.seed as u32,
             })
             .add_plugins((
+                registry::RegistryPlugin,
                 assets::AssetsPlugin,
                 scene::ScenePlugin,
                 mesh::MeshPlugin,

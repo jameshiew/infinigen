@@ -5,9 +5,9 @@ use infinigen_common::world::WorldPosition;
 use infinigen_common::zoom::ZoomLevel;
 
 use super::{ChunkRequests, SceneChunkStatus, UnloadChunkOpEvent};
-use crate::assets::blocks::BlockRegistry;
 use crate::mesh::events::MeshChunkRequest;
 use crate::mesh::{MeshStatus, Meshes};
+use crate::registry::BlockRegistry;
 use crate::scene::LoadedChunk;
 
 // bigger chunks means go slower to prevent lag/stutter
