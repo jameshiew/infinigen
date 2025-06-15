@@ -1,10 +1,11 @@
+wasm_rustflags := '--cfg=web_sys_unstable_apis --cfg=getrandom_backend="wasm_js"'
+
 release:
     cargo run \
         --release
 
 debug:
-    cargo run \
-        --features bevy/dynamic_linking
+    cargo run
 
 machete:
     cargo machete
@@ -20,20 +21,18 @@ test:
 
 doc:
     RUSTDOCFLAGS="-Dwarnings" cargo doc \
-        --features bevy/dynamic_linking \
         --document-private-items \
         --no-deps
 
 check:
-    cargo check \
-        --features bevy/dynamic_linking \
+    cargo hack check \
         --all-targets
 
 fmt-check:
     cargo +nightly fmt --all -- --check
 
 clippy-wasm:
-    RUSTFLAGS='--cfg=web_sys_unstable_apis --cfg=getrandom_backend="wasm_js"' \
+    RUSTFLAGS='{{wasm_rustflags}}' \
     cargo clippy \
         --target wasm32-unknown-unknown
 
@@ -47,13 +46,12 @@ lint: fmt-check clippy
 
 fix:
     cargo fix \
-        --features bevy/dynamic_linking \
         --all-targets
 
 run-remote:
     cargo run \
         --release \
-        --features bevy/dynamic_linking,remote
+        --features remote
 
 install-cargo-tools:
     cargo install --locked cargo-binstall
@@ -89,8 +87,9 @@ flamelens:
 
 run-wasm:  # requires https://github.com/jakobhellermann/wasm-server-runner
     CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUNNER=wasm-server-runner \
-    RUSTFLAGS='--cfg=web_sys_unstable_apis --cfg=getrandom_backend="wasm_js"' \
+    RUSTFLAGS='{{wasm_rustflags}}' \
     cargo run \
+        --features bevy/webgpu \
         --profile wasm-release \
         --target wasm32-unknown-unknown
 
@@ -100,6 +99,7 @@ xvfb-run := if os() == 'linux' {
   ''
 }
 
-screenshot-and-exit:
+screenshot-and-exit *args:
     {{xvfb-run}} cargo run \
-        --features bevy/bevy_ci_testing,bevy/dynamic_linking
+        --features bevy/bevy_ci_testing,bevy/png \
+        {{args}}
