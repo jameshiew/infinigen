@@ -55,10 +55,12 @@ run-remote:
         --release \
         --features remote
 
-install-cargo-tools:
+install-cargo-tools-essential:
     cargo install --locked cargo-binstall
     cargo binstall --no-confirm cargo-hack
     cargo binstall --no-confirm cargo-nextest
+
+install-cargo-tools: install-cargo-tools-essential
     cargo binstall --no-confirm cargo-machete
     cargo binstall --no-confirm cargo-audit
     cargo binstall --no-confirm wasm-server-runner
