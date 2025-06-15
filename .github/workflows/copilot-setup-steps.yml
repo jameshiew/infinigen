@@ -30,4 +30,4 @@ jobs:
       - uses: taiki-e/install-action@just
       - run: just install-debian-deps
       - run: just install-cargo-tools-essential
-      - run: just check
+      - run: cargo check
