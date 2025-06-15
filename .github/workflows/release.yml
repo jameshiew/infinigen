@@ -44,7 +44,8 @@ jobs:
         with:
           target: ${{ matrix.platform.target }}
       - uses: taiki-e/install-action@just
-      - run: just install-debian-deps
+      - if: matrix.platform.os == 'ubuntu-latest' || matrix.platform.os == 'ubuntu-24.04-arm'
+        run: just install-debian-deps
       - if: matrix.platform.features != ''
         uses: houseabsolute/actions-rust-cross@v1
         with:
