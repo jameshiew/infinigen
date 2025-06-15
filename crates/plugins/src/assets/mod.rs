@@ -1,12 +1,11 @@
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
-use blocks::{BlockDefinition, BlockRegistry};
 use infinigen_common::blocks::BlockType;
 use loading::AssetFolders;
 
 use crate::AppState;
+use crate::registry::BlockDefinition;
 
-pub mod blocks;
 mod loading;
 mod setup;
 
@@ -20,7 +19,6 @@ impl Plugin for AssetsPlugin {
         tracing::info!("Initializing assets plugin");
         app.add_plugins((RonAssetPlugin::<BlockDefinition>::new(&["block.ron"]),))
             .init_resource::<AssetFolders>()
-            .init_resource::<BlockRegistry>()
             .add_systems(OnEnter(AppState::InitializingRegistry), setup::setup);
 
         #[cfg(not(target_family = "wasm"))]

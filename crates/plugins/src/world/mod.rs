@@ -12,7 +12,7 @@ use infinigen_common::zoom::ZoomLevel;
 use linearize::StaticCopyMap;
 
 use crate::AppState;
-use crate::assets::blocks::BlockRegistry;
+use crate::registry::BlockRegistry;
 
 pub mod events;
 
