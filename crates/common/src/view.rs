@@ -103,7 +103,7 @@ pub fn check_chunk_in_frustum(chunk: &ChunkPosition, frustum_planes: &[Plane; 6]
     true
 }
 
-#[allow(clippy::too_many_arguments)]
+// TODO: too many arguments
 pub fn compute_chunks_delta(
     current_cpos: ChunkPosition,
     hview_distance: usize,

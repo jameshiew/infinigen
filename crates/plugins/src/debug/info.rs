@@ -11,7 +11,6 @@ use smooth_bevy_cameras::controllers::fps::FpsCameraController;
 
 use crate::scene::{self, LoadedChunk};
 
-#[allow(clippy::too_many_arguments)]
 pub fn display_debug_info(
     mut egui: EguiContexts,
     diagnostics: Res<DiagnosticsStore>,

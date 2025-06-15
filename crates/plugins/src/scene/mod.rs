@@ -175,7 +175,6 @@ pub fn handle_update_scene_view(
 #[derive(Event)]
 pub struct UpdateSceneEvent;
 
-#[allow(clippy::too_many_arguments)]
 pub fn check_if_should_update_scene(
     mut commands: Commands,
     mut scene_camera: ResMut<SceneCamera>,
