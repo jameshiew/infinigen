@@ -11,7 +11,7 @@ use strum::IntoEnumIterator;
 
 use crate::AppState;
 use crate::assets::DefaultBlockTypes;
-use crate::assets::blocks::{BlockDefinition, BlockRegistry};
+use crate::registry::{BlockDefinition, BlockRegistry};
 use crate::assets::loading::AssetFolders;
 
 pub fn setup(

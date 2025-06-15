@@ -8,7 +8,7 @@ use infinigen_common::zoom::ZoomLevel;
 use strum::IntoEnumIterator;
 
 use super::{MeshInfo, MeshStatus, Meshes};
-use crate::assets::blocks::BlockRegistry;
+use crate::registry::BlockRegistry;
 use crate::mesh::utils::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces};
 use crate::world::events::GenerateChunkRequest;
 use crate::world::{ChunkStatus, World};

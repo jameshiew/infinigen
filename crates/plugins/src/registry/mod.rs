@@ -110,3 +110,12 @@ impl BlockRegistry {
         self.materials[visibility as usize].clone_weak()
     }
 }
+
+pub struct RegistryPlugin;
+
+impl Plugin for RegistryPlugin {
+    fn build(&self, app: &mut App) {
+        tracing::info!("Initializing registry plugin");
+        app.init_resource::<BlockRegistry>();
+    }
+}
