@@ -3,10 +3,12 @@ name: "Copilot Setup Steps"
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
-      - .github/workflows/copilot-setup-steps.yml
-  pull_request:
-    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - "**.rs"
       - .github/workflows/copilot-setup-steps.yml
 
 jobs:
@@ -25,9 +27,14 @@ jobs:
       # needed for developing
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          components: rustfmt,clippy
+          toolchain: nightly, stable
+          components: clippy, rustfmt
           target: wasm32-unknown-unknown
       - uses: taiki-e/install-action@just
       - run: just install-debian-deps
       - run: just install-cargo-tools-essential
+      # warm caches
       - run: cargo check
+      - run: cargo clippy
+      - run: cargo build
+      - run: cargo test --no-run
