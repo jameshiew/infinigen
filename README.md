@@ -23,12 +23,6 @@ cargo run --release # best performance
 cargo run --release --features jemalloc  # on macOS/Linux
 ```
 
-or
-
-```shell
-cargo run --features bevy/dynamic_linking  # compiles fastest
-```
-
 ### Controls
 
 - <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> - to move around
