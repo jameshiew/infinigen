@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::window::{CursorGrabMode, PrimaryWindow, Window};
 use bevy_egui::input::{egui_wants_any_keyboard_input, egui_wants_any_pointer_input};
+use leafwing_input_manager::prelude::*;
 
 use crate::camera::events::CameraEvent;
 
@@ -20,22 +21,25 @@ pub fn unfocus(window: &mut Window, camera_events: &mut EventWriter<CameraEvent>
     window.cursor_options.visible = true;
     camera_events.write(CameraEvent::DisableControls);
 }
-pub fn handle_mouse_input(
-    mut window: Single<&mut Window, With<PrimaryWindow>>,
-    mouse: Res<ButtonInput<MouseButton>>,
-    mut camera_events: EventWriter<CameraEvent>,
-) {
-    if mouse.just_pressed(MouseButton::Left) {
-        focus(&mut window, &mut camera_events);
-    }
+
+#[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
+pub enum Action {
+    ToggleFocus,
+    ForceFocus,
 }
 
-pub fn handle_keyboard_input(
+pub fn setup_actions(mut commands: Commands) {
+    let mut input_map = InputMap::new([(Action::ToggleFocus, KeyCode::Escape)]);
+    input_map.insert(Action::ForceFocus, MouseButton::Left);
+    commands.spawn(input_map);
+}
+
+pub fn handle_actions(
+    action_state: Single<&ActionState<Action>>,
     mut window: Single<&mut Window, With<PrimaryWindow>>,
-    keyboard: Res<ButtonInput<KeyCode>>,
     mut camera_events: EventWriter<CameraEvent>,
 ) {
-    if keyboard.just_pressed(KeyCode::Escape) {
+    if action_state.just_pressed(&Action::ToggleFocus) {
         match window.cursor_options.grab_mode {
             CursorGrabMode::None => {
                 focus(&mut window, &mut camera_events);
@@ -45,18 +49,22 @@ pub fn handle_keyboard_input(
             }
         }
     }
+    
+    if action_state.just_pressed(&Action::ForceFocus) {
+        focus(&mut window, &mut camera_events);
+    }
 }
-
 pub struct ControlsPlugin;
 
 impl Plugin for ControlsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup).add_systems(
-            Update,
-            (
-                handle_keyboard_input.run_if(not(egui_wants_any_keyboard_input)),
-                handle_mouse_input.run_if(not(egui_wants_any_pointer_input)),
-            ),
-        );
+        app.add_plugins(InputManagerPlugin::<Action>::default())
+            .add_systems(Startup, (setup, setup_actions))
+            .add_systems(
+                Update,
+                handle_actions.run_if(
+                    not(egui_wants_any_keyboard_input).and(not(egui_wants_any_pointer_input))
+                ),
+            );
     }
 }
