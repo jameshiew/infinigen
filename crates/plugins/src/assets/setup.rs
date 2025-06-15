@@ -14,7 +14,6 @@ use crate::assets::DefaultBlockTypes;
 use crate::assets::blocks::{BlockDefinition, BlockRegistry};
 use crate::assets::loading::AssetFolders;
 
-#[allow(clippy::too_many_arguments)]
 pub fn setup(
     mut next_state: ResMut<NextState<AppState>>,
     mut registry: ResMut<BlockRegistry>,
