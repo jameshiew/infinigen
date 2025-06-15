@@ -49,7 +49,7 @@ pub fn handle_actions(
             }
         }
     }
-    
+
     if action_state.just_pressed(&Action::ForceFocus) {
         focus(&mut window, &mut camera_events);
     }
@@ -63,7 +63,7 @@ impl Plugin for ControlsPlugin {
             .add_systems(
                 Update,
                 handle_actions.run_if(
-                    not(egui_wants_any_keyboard_input).and(not(egui_wants_any_pointer_input))
+                    not(egui_wants_any_keyboard_input).and(not(egui_wants_any_pointer_input)),
                 ),
             );
     }
