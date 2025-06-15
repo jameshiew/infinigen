@@ -28,5 +28,6 @@ jobs:
           components: rustfmt,clippy
           target: wasm32-unknown-unknown
       - uses: taiki-e/install-action@just
+      - uses: taiki-e/install-action@cargo-binstall
       - run: just install-cargo-tools-essential
       - run: cargo fetch
