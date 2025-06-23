@@ -3,12 +3,12 @@ members = ["crates/*"]
 resolver = "2"
 
 [workspace.dependencies]
-ahash = "0.8"
+ahash = "0.8.11"
 bevy = { version = "0.16", default-features = false }
-linearize = "0.1"
+linearize = "0.1.1"
 strum = "0.27"
-serde = "1"
-tracing = "0.1"
+serde = "1.0.166"
+tracing = "0.1.40"
 criterion = "0.6"
 
 [profile.dev]
