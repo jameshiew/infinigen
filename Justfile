@@ -28,6 +28,9 @@ check:
     cargo hack check \
         --all-targets
 
+minimal-versions:
+    cargo +nightly minimal-versions check --direct --workspace
+
 fmt-check:
     cargo +nightly fmt --all -- --check
 
@@ -63,6 +66,7 @@ install-cargo-tools-essential:
 install-cargo-tools: install-cargo-tools-essential
     cargo binstall --no-confirm cargo-machete
     cargo binstall --no-confirm cargo-audit
+    cargo binstall --no-confirm cargo-minimal-versions
     cargo binstall --no-confirm wasm-server-runner
     cargo install --git https://github.com/TheBevyFlock/bevy_cli --branch main --locked bevy_cli
 
