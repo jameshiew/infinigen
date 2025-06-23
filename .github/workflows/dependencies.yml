@@ -63,6 +63,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: taiki-e/install-action@just
+      - run: just install-debian-deps
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: nightly
