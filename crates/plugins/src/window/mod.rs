@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy::window::{CursorGrabMode, PrimaryWindow, Window};
-use bevy_egui::input::{egui_wants_any_keyboard_input, egui_wants_any_pointer_input};
+use bevy_inspector_egui::bevy_egui::input::{
+    egui_wants_any_keyboard_input, egui_wants_any_pointer_input,
+};
 use leafwing_input_manager::prelude::*;
 
 use crate::camera::events::CameraEvent;
