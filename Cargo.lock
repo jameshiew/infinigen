@@ -3013,7 +3013,6 @@ dependencies = [
  "bevy",
  "bevy-inspector-egui",
  "bevy_common_assets",
- "bevy_egui",
  "infinigen-common",
  "leafwing-input-manager",
  "linearize",
