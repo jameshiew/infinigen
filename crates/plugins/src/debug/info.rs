@@ -23,8 +23,8 @@ pub fn display_debug_info(
     mut update_evs: EventWriter<scene::UpdateSettingsEvent>,
     mut reload_evs: EventWriter<scene::ReloadAllChunksEvent>,
     loaded_chunks: Query<&LoadedChunk>,
-) {
-    egui::Window::new("Position").show(egui.ctx_mut(), |ui| {
+) -> Result {
+    egui::Window::new("Position").show(egui.ctx_mut()?, |ui| {
         egui::Grid::new("position").show(ui, |ui| {
             ui.label("");
             ui.label("x");
@@ -70,7 +70,7 @@ pub fn display_debug_info(
         });
     });
 
-    egui::Window::new("Controls").show(egui.ctx_mut(), |ui| {
+    egui::Window::new("Controls").show(egui.ctx_mut()?, |ui| {
         {
             let (mut hview_distance, mut vview_distance) =
                 (scene_view.hview_distance, scene_view.vview_distance);
@@ -114,7 +114,7 @@ pub fn display_debug_info(
         }
     });
 
-    egui::Window::new("Stats").show(egui.ctx_mut(), |ui| {
+    egui::Window::new("Stats").show(egui.ctx_mut()?, |ui| {
         egui::Grid::new("stats").num_columns(2).show(ui, |ui| {
             ui.label("FPS");
             ui.label(format!(
@@ -147,6 +147,7 @@ pub fn display_debug_info(
             ui.end_row();
         });
     });
+    Ok(())
 }
 
 #[derive(Debug, Resource, Eq, PartialEq)]

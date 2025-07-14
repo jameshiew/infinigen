@@ -28,7 +28,7 @@ anyhow = "1.0.58"
 bevy_common_assets = { version = "0.13", default-features = false, features = [
     "ron",
 ] }
-bevy-inspector-egui = { version = "0.31" }
+bevy-inspector-egui = { version = "0.32" }
 smooth-bevy-cameras = "0.14"
 leafwing-input-manager = { version = "0.17", default-features = false, features = [
     "keyboard",

@@ -1,15 +1,17 @@
 use bevy::diagnostic::{EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin};
 use bevy::prelude::*;
-use bevy_inspector_egui::bevy_egui::EguiPlugin;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_inspector_egui::DefaultInspectorConfigPlugin;
+use bevy_inspector_egui::bevy_egui::{EguiPlugin, EguiPrimaryContextPass};
 use leafwing_input_manager::prelude::*;
 
 use self::info::{UiState, display_debug_info};
+use self::world_inspector::world_inspector_ui;
 use crate::AppState;
 
 mod info;
 #[cfg(not(target_family = "wasm"))]
 mod wireframe;
+mod world_inspector;
 
 pub struct DebugPlugin;
 
@@ -19,23 +21,22 @@ impl Plugin for DebugPlugin {
         app.init_resource::<UiState>()
             .add_plugins((
                 InputManagerPlugin::<info::Action>::default(),
-                EguiPlugin {
-                    enable_multipass_for_primary_context: false,
-                },
+                EguiPlugin::default(),
                 FrameTimeDiagnosticsPlugin::default(),
                 EntityCountDiagnosticsPlugin,
-                WorldInspectorPlugin::default().run_if(resource_equals(UiState {
-                    show_debug_info: true,
-                })),
+                DefaultInspectorConfigPlugin,
             ))
             .add_systems(OnEnter(AppState::MainGame), info::setup_actions)
             .add_systems(
-                Update,
+                EguiPrimaryContextPass,
                 (
                     display_debug_info.run_if(resource_equals(UiState {
                         show_debug_info: true,
                     })),
                     info::handle_actions,
+                    world_inspector_ui.run_if(resource_equals(UiState {
+                        show_debug_info: true,
+                    })),
                 )
                     .run_if(in_state(AppState::MainGame)),
             );
