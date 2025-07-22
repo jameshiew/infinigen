@@ -6,6 +6,15 @@ use nalgebra::{Matrix4, Perspective3, Quaternion, Unit, UnitQuaternion, Vector3,
 use crate::chunks::CHUNK_SIZE_F32;
 use crate::world::ChunkPosition;
 
+/// Calculates the squared distance between two chunk positions.
+#[inline]
+const fn chunk_distance_squared(from: &ChunkPosition, to: &ChunkPosition) -> i32 {
+    let dx = to.x - from.x;
+    let dy = to.y - from.y;
+    let dz = to.z - from.z;
+    dx * dx + dy * dy + dz * dz
+}
+
 /// Returns an iterator over `ChunkPosition`s within a cylinder centred at `centre` that should be loaded and rendered.
 pub fn in_distance(
     centre: &ChunkPosition,
@@ -144,12 +153,7 @@ pub fn compute_chunks_delta(
         .collect();
 
     // nearest chunks first
-    to_load.sort_unstable_by_key(|c| {
-        let dx = c.x - current_cpos.x;
-        let dy = c.y - current_cpos.y;
-        let dz = c.z - current_cpos.z;
-        dx * dx + dy * dy + dz * dz
-    });
+    to_load.sort_unstable_by_key(|c| chunk_distance_squared(&current_cpos, c));
 
     // chunks within view frustum first
     to_load.sort_unstable_by(|c1, c2| {
@@ -161,16 +165,8 @@ pub fn compute_chunks_delta(
         } else if !in_frustum1 && in_frustum2 {
             Ordering::Greater
         } else {
-            let dx1 = c1.x - current_cpos.x;
-            let dy1 = c1.y - current_cpos.y;
-            let dz1 = c1.z - current_cpos.z;
-            let dist1 = dx1 * dx1 + dy1 * dy1 + dz1 * dz1;
-
-            let dx2 = c2.x - current_cpos.x;
-            let dy2 = c2.y - current_cpos.y;
-            let dz2 = c2.z - current_cpos.z;
-            let dist2 = dx2 * dx2 + dy2 * dy2 + dz2 * dz2;
-
+            let dist1 = chunk_distance_squared(&current_cpos, c1);
+            let dist2 = chunk_distance_squared(&current_cpos, c2);
             dist1.cmp(&dist2)
         }
     });
