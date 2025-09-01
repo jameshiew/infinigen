@@ -35,7 +35,7 @@ jobs:
   fmt:
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -50,7 +50,7 @@ jobs:
     needs:
       - fmt
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -63,7 +63,7 @@ jobs:
     needs:
       - fmt
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -81,7 +81,7 @@ jobs:
     needs:
       - fmt
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -97,7 +97,7 @@ jobs:
     needs:
       - fmt
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@v1
