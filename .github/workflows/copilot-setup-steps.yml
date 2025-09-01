@@ -17,7 +17,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # needed for MCP
       - uses: actions/setup-node@v4
       - uses: astral-sh/setup-uv@v6
