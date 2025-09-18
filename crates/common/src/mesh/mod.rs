@@ -224,10 +224,9 @@ pub fn mesh_chunk_greedy_quads(
                 }
             }
 
-            let mut color = [0., 0., 0., 1.];
-            if let Some(actual_color) = block_textures.to_color(&chunk_block_id, block_face) {
-                color = actual_color;
-            }
+            let color = block_textures
+                .to_color(&chunk_block_id, block_face)
+                .unwrap_or([0., 0., 0., 1.]);
             colors.extend_from_slice(&[color; 4]);
         }
     }
