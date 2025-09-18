@@ -1,6 +1,6 @@
 [workspace]
 members = ["crates/*"]
-resolver = "2"
+resolver = "3"
 
 [workspace.dependencies]
 ahash = "0.8.11"
