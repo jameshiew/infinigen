@@ -23,7 +23,7 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           ignore-nothing-to-cache: true
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
       # needed for developing
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
