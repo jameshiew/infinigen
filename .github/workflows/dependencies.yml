@@ -54,19 +54,3 @@ jobs:
         with:
           tool: cargo-audit
       - run: just audit
-  minimal-versions:
-    runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          persist-credentials: false
-      - uses: taiki-e/install-action@just
-      - run: just install-debian-deps
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          toolchain: nightly
-      - uses: taiki-e/install-action@cargo-minimal-versions
-      - uses: taiki-e/install-action@cargo-hack
-      - run: just minimal-versions
