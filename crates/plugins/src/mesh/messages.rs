@@ -10,7 +10,7 @@ use strum::IntoEnumIterator;
 use super::{MeshInfo, MeshStatus, Meshes};
 use crate::mesh::utils::{bevy_mesh_greedy_quads, bevy_mesh_visible_block_faces};
 use crate::registry::BlockRegistry;
-use crate::world::events::GenerateChunkRequest;
+use crate::world::messages::GenerateChunkRequest;
 use crate::world::{ChunkStatus, World};
 
 #[derive(Message)]

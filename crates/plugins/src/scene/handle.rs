@@ -4,8 +4,8 @@ use infinigen_common::chunks::CHUNK_SIZE_F32;
 use infinigen_common::world::WorldPosition;
 use infinigen_common::zoom::ZoomLevel;
 
-use super::{ChunkRequests, SceneChunkStatus, UnloadChunkOpEvent};
-use crate::mesh::events::MeshChunkRequest;
+use super::{ChunkRequests, SceneChunkStatus, UnloadChunkOpMessage};
+use crate::mesh::messages::MeshChunkRequest;
 use crate::mesh::{MeshStatus, Meshes};
 use crate::registry::BlockRegistry;
 use crate::scene::LoadedChunk;
@@ -16,10 +16,10 @@ const CHUNK_REQUEST_RATE: usize = MESH_SPAWN_RATE * 5;
 
 pub fn process_unload_chunk_ops(
     mut commands: Commands,
-    mut unload_evs: MessageReader<crate::scene::UnloadChunkOpEvent>,
+    mut unload_msgs: MessageReader<crate::scene::UnloadChunkOpMessage>,
     loaded: Query<(Entity, &LoadedChunk)>,
 ) {
-    for (UnloadChunkOpEvent(cpos), _) in unload_evs.par_read() {
+    for (UnloadChunkOpMessage(cpos), _) in unload_msgs.par_read() {
         for (eid, LoadedChunk { cpos: loaded_cpos }) in loaded.iter() {
             if loaded_cpos == cpos {
                 commands.entity(eid).despawn();

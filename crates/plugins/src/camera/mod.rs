@@ -5,7 +5,7 @@ use leafwing_input_manager::prelude::*;
 
 use crate::AppState;
 
-pub mod events;
+pub mod messages;
 pub mod setup;
 
 /// First-person camera controller component
@@ -77,12 +77,12 @@ impl Plugin for CameraPlugin {
                 (
                     update_camera_look,
                     update_camera_movement,
-                    events::handle_camera_events,
+                    messages::handle_camera_messages,
                 )
                     .chain()
                     .run_if(in_state(AppState::MainGame)),
             )
-            .add_message::<events::CameraEvent>();
+            .add_message::<messages::CameraMessage>();
     }
 }
 

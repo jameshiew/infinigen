@@ -2,13 +2,13 @@ use std::sync::Arc;
 
 use ahash::AHashMap;
 use bevy::prelude::*;
-use events::{MeshChunkRequest, MeshChunkRerequest};
 use infinigen_common::world::ChunkPosition;
 use infinigen_common::zoom::ZoomLevel;
+use messages::{MeshChunkRequest, MeshChunkRerequest};
 
 use crate::AppState;
 
-pub mod events;
+pub mod messages;
 mod utils;
 
 #[derive(Resource, Default)]
@@ -39,8 +39,8 @@ impl Plugin for MeshPlugin {
             .add_systems(
                 FixedUpdate,
                 (
-                    events::handle_mesh_chunk_requests.run_if(on_message::<MeshChunkRequest>),
-                    events::handle_mesh_chunk_rerequests.run_if(on_message::<MeshChunkRerequest>),
+                    messages::handle_mesh_chunk_requests.run_if(on_message::<MeshChunkRequest>),
+                    messages::handle_mesh_chunk_rerequests.run_if(on_message::<MeshChunkRerequest>),
                 )
                     .chain()
                     .run_if(in_state(AppState::MainGame)),

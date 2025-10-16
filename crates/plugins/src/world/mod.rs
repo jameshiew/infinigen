@@ -3,18 +3,18 @@ use std::sync::Arc;
 use ahash::AHashMap;
 use anyhow::Context;
 use bevy::prelude::*;
-use events::{GenerateChunkRequest, GenerateChunkTask};
 use infinigen_common::blocks::Palette;
 use infinigen_common::chunks::Array3Chunk;
 use infinigen_common::mesh::shapes::ChunkFace;
 use infinigen_common::world::{ChunkPosition, Direction, WorldGen};
 use infinigen_common::zoom::ZoomLevel;
 use linearize::StaticCopyMap;
+use messages::{GenerateChunkRequest, GenerateChunkTask};
 
 use crate::AppState;
 use crate::registry::BlockRegistry;
 
-pub mod events;
+pub mod messages;
 
 #[derive(Resource)]
 pub struct World {
@@ -67,9 +67,9 @@ impl Plugin for WorldPlugin {
             .add_systems(
                 FixedUpdate,
                 (
-                    events::handle_generate_chunk_request
+                    messages::handle_generate_chunk_request
                         .run_if(on_message::<GenerateChunkRequest>),
-                    events::handle_generate_chunk_task
+                    messages::handle_generate_chunk_task
                         .run_if(any_with_component::<GenerateChunkTask>),
                 )
                     .run_if(in_state(AppState::MainGame)),
