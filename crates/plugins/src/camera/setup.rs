@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use bevy::render::experimental::occlusion_culling::OcclusionCulling;
 use bevy::window::CursorGrabMode;
 
-use super::{CameraTarget, FpsController};
+use super::FpsController;
 
 #[derive(Resource)]
 pub struct CameraSettings {
@@ -49,7 +49,6 @@ pub fn setup(
     commands.spawn((
         Name::new("Camera"),
         controller,
-        CameraTarget { target: target_pos },
         Camera {
             hdr: true,
             ..Camera::default()
