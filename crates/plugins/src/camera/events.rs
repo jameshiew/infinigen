@@ -1,5 +1,7 @@
 use bevy::prelude::*;
-use smooth_bevy_cameras::controllers::fps::FpsCameraController;
+use bevy::window::CursorGrabMode;
+
+use super::FpsController;
 
 #[derive(Event)]
 pub enum CameraEvent {
@@ -9,12 +11,23 @@ pub enum CameraEvent {
 
 pub fn handle_camera_events(
     mut camera_events: EventReader<CameraEvent>,
-    mut fps_camera_controls: Single<&mut FpsCameraController>,
+    mut fps_controller: Single<&mut FpsController>,
+    mut windows: Single<&mut Window>,
 ) {
     for ev in camera_events.read() {
         match ev {
-            CameraEvent::EnableControls => fps_camera_controls.enabled = true,
-            CameraEvent::DisableControls => fps_camera_controls.enabled = false,
+            CameraEvent::EnableControls => {
+                fps_controller.enabled = true;
+                // Grab cursor when enabling controls
+                windows.cursor_options.grab_mode = CursorGrabMode::Locked;
+                windows.cursor_options.visible = false;
+            }
+            CameraEvent::DisableControls => {
+                fps_controller.enabled = false;
+                // Release cursor when disabling controls
+                windows.cursor_options.grab_mode = CursorGrabMode::None;
+                windows.cursor_options.visible = true;
+            }
         }
     }
 }

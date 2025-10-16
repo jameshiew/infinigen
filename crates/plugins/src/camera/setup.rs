@@ -3,7 +3,9 @@ use bevy::core_pipeline::prepass::DepthPrepass;
 use bevy::pbr::ScreenSpaceAmbientOcclusion;
 use bevy::prelude::*;
 use bevy::render::experimental::occlusion_culling::OcclusionCulling;
-use smooth_bevy_cameras::controllers::fps::{FpsCameraBundle, FpsCameraController};
+use bevy::window::CursorGrabMode;
+
+use super::{CameraTarget, FpsController};
 
 #[derive(Resource)]
 pub struct CameraSettings {
@@ -16,33 +18,44 @@ pub struct CameraSettings {
     pub target_z: f32,
 }
 
-pub fn setup(mut commands: Commands, settings: Res<CameraSettings>) {
+pub fn setup(
+    mut commands: Commands,
+    mut windows: Single<&mut Window>,
+    settings: Res<CameraSettings>,
+) {
     let zoom = (settings.zoom_level as f32).exp2();
 
-    let eye = Transform::from_xyz(settings.wx * zoom, settings.wy * zoom, settings.wz * zoom);
-    let target = Transform::from_xyz(
+    // Calculate initial position and rotation
+    let eye_pos = Vec3::new(settings.wx * zoom, settings.wy * zoom, settings.wz * zoom);
+    let target_pos = Vec3::new(
         settings.target_x * zoom,
         settings.target_y * zoom,
         settings.target_z * zoom,
     );
+
+    // Calculate initial yaw and pitch from eye to target
+    let direction = (target_pos - eye_pos).normalize();
+    let yaw = direction.z.atan2(direction.x) - std::f32::consts::FRAC_PI_2;
+    let pitch = direction.y.asin();
+
+    let controller = FpsController {
+        yaw,
+        pitch,
+        ..FpsController::default()
+    };
+
+    let rotation = Quat::from_euler(EulerRot::YXZ, yaw, pitch, 0.0);
+
     commands.spawn((
         Name::new("Camera"),
-        FpsCameraBundle::new(
-            FpsCameraController {
-                enabled: true,
-                mouse_rotate_sensitivity: Vec2::splat(0.2),
-                translate_sensitivity: 30.0,
-                smoothing_weight: 0.7,
-            },
-            eye.translation,
-            target.translation,
-            Vec3::Y,
-        ),
+        controller,
+        CameraTarget { target: target_pos },
         Camera {
             hdr: true,
             ..Camera::default()
         },
         Camera3d::default(),
+        Transform::from_translation(eye_pos).with_rotation(rotation),
         #[cfg(not(target_arch = "wasm32"))]
         bevy::core_pipeline::contrast_adaptive_sharpening::ContrastAdaptiveSharpening::default(),
         DepthPrepass,
@@ -51,4 +64,8 @@ pub fn setup(mut commands: Commands, settings: Res<CameraSettings>) {
         TemporalAntiAliasing::default(),
         Msaa::Off,
     ));
+
+    // Grab the cursor for FPS controls
+    windows.cursor_options.grab_mode = CursorGrabMode::Locked;
+    windows.cursor_options.visible = false;
 }
