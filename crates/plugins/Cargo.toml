@@ -7,7 +7,12 @@ publish = false
 [dependencies]
 ahash = { workspace = true }
 bevy = { workspace = true, features = [
+    "bevy_anti_alias",
+    "bevy_asset",
+    "bevy_light",
+    "bevy_mesh",
     "bevy_pbr",
+    "bevy_post_process",
     "bevy_state",
     "bevy_window",
     "hdr",
@@ -24,11 +29,11 @@ tracing = { workspace = true }
 infinigen-common = { path = "../common" }
 
 anyhow = "1.0.100"
-bevy_common_assets = { version = "0.13", default-features = false, features = [
+bevy_common_assets = { version = "0.14", default-features = false, features = [
     "ron",
 ] }
-bevy-inspector-egui = { version = "0.33" }
-leafwing-input-manager = { version = "0.17", default-features = false, features = [
+bevy-inspector-egui = { version = "0.34" }
+leafwing-input-manager = { version = "0.18", default-features = false, features = [
     "keyboard",
     "mouse",
 ] }

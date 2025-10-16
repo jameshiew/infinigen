@@ -71,6 +71,7 @@ fn main() -> ExitCode {
                     filter: DEFAULT_LOG_FILTER.into(),
                     level: bevy::log::Level::DEBUG,
                     custom_layer: |_| None,
+                    fmt_layer: |_| None,
                 })
                 .set(TaskPoolPlugin {
                     task_pool_options: TaskPoolOptions {

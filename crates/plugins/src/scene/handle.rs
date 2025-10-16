@@ -16,7 +16,7 @@ const CHUNK_REQUEST_RATE: usize = MESH_SPAWN_RATE * 5;
 
 pub fn process_unload_chunk_ops(
     mut commands: Commands,
-    mut unload_evs: EventReader<crate::scene::UnloadChunkOpEvent>,
+    mut unload_evs: MessageReader<crate::scene::UnloadChunkOpEvent>,
     loaded: Query<(Entity, &LoadedChunk)>,
 ) {
     for (UnloadChunkOpEvent(cpos), _) in unload_evs.par_read() {
@@ -32,7 +32,7 @@ pub fn process_load_requested(
     mut chunk_requests: ResMut<ChunkRequests>,
     scene_zoom: Res<crate::scene::SceneZoom>,
     meshes: Res<Meshes>,
-    mut mesh_chunk_reqs: EventWriter<MeshChunkRequest>,
+    mut mesh_chunk_reqs: MessageWriter<MeshChunkRequest>,
 ) {
     let zoom_level: ZoomLevel = scene_zoom.zoom_level.into();
 

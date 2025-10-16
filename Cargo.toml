@@ -4,7 +4,7 @@ resolver = "3"
 
 [workspace.dependencies]
 ahash = "0.8.11"
-bevy = { version = "0.16", default-features = false }
+bevy = { version = "0.17", default-features = false }
 linearize = "0.1.1"
 strum = "0.27"
 serde = "1.0.228"

@@ -2,14 +2,14 @@ use bevy::prelude::*;
 
 use super::FpsController;
 
-#[derive(Event)]
+#[derive(Message)]
 pub enum CameraEvent {
     EnableControls,
     DisableControls,
 }
 
 pub fn handle_camera_events(
-    mut camera_events: EventReader<CameraEvent>,
+    mut camera_events: MessageReader<CameraEvent>,
     mut fps_controller: Single<&mut FpsController>,
 ) {
     for ev in camera_events.read() {

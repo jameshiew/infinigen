@@ -113,18 +113,18 @@ pub struct SceneSettings {
     pub vview_distance: usize,
 }
 
-#[derive(Debug, Event)]
+#[derive(Debug, Message)]
 pub struct UnloadChunkOpEvent(ChunkPosition);
 
 pub const FAR: f32 = CHUNK_SIZE_F32 * 64.;
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct RefreshChunkOpsQueueEvent;
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct ReloadAllChunksEvent;
 
-#[derive(Event)]
+#[derive(Message)]
 pub enum UpdateSettingsEvent {
     HorizontalViewDistance(usize),
     VerticalViewDistance(usize),
@@ -134,9 +134,9 @@ pub enum UpdateSettingsEvent {
 pub fn handle_update_scene_view(
     mut scene_view: ResMut<SceneView>,
     mut scene_zoom: ResMut<SceneZoom>,
-    mut update_evs: EventReader<UpdateSettingsEvent>,
-    mut refresh_evs: EventWriter<RefreshChunkOpsQueueEvent>,
-    mut reload_evs: EventWriter<ReloadAllChunksEvent>,
+    mut update_evs: MessageReader<UpdateSettingsEvent>,
+    mut refresh_evs: MessageWriter<RefreshChunkOpsQueueEvent>,
+    mut reload_evs: MessageWriter<ReloadAllChunksEvent>,
 ) {
     for ev in update_evs.read() {
         match ev {
@@ -172,7 +172,7 @@ pub fn handle_update_scene_view(
     }
 }
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct UpdateSceneEvent;
 
 pub fn check_if_should_update_scene(
@@ -180,9 +180,9 @@ pub fn check_if_should_update_scene(
     mut scene_camera: ResMut<SceneCamera>,
     camera: Single<&Transform, With<Camera>>,
     mut chunk_requests: ResMut<ChunkRequests>,
-    mut reload_evs: EventReader<ReloadAllChunksEvent>,
-    mut refresh_evs: EventReader<RefreshChunkOpsQueueEvent>,
-    mut update_scene_evs: EventWriter<UpdateSceneEvent>,
+    mut reload_evs: MessageReader<ReloadAllChunksEvent>,
+    mut refresh_evs: MessageReader<RefreshChunkOpsQueueEvent>,
+    mut update_scene_evs: MessageWriter<UpdateSceneEvent>,
     loaded: Query<Entity, With<LoadedChunk>>,
 ) {
     let mut should_update = if refresh_evs.read().next().is_some() {
@@ -221,8 +221,8 @@ pub fn update_scene(
     scene_view: Res<SceneView>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
     mut chunk_requests: ResMut<ChunkRequests>,
-    mut unload_evs: EventWriter<UnloadChunkOpEvent>,
-    mut update_scene_evs: EventReader<UpdateSceneEvent>,
+    mut unload_evs: MessageWriter<UnloadChunkOpEvent>,
+    mut update_scene_evs: MessageReader<UpdateSceneEvent>,
     loaded: Query<&LoadedChunk>,
 ) -> Result {
     if update_scene_evs.read().next().is_none() {
@@ -294,11 +294,11 @@ impl Plugin for ScenePlugin {
                 OnEnter(AppState::MainGame),
                 (setup::setup_lighting, setup::setup),
             )
-            .add_event::<UpdateSettingsEvent>()
-            .add_event::<ReloadAllChunksEvent>()
-            .add_event::<RefreshChunkOpsQueueEvent>()
-            .add_event::<UnloadChunkOpEvent>()
-            .add_event::<UpdateSceneEvent>()
+            .add_message::<UpdateSettingsEvent>()
+            .add_message::<ReloadAllChunksEvent>()
+            .add_message::<RefreshChunkOpsQueueEvent>()
+            .add_message::<UnloadChunkOpEvent>()
+            .add_message::<UpdateSceneEvent>()
             .add_systems(
                 FixedUpdate,
                 ((
@@ -308,16 +308,16 @@ impl Plugin for ScenePlugin {
                         handle::process_spawn_requested,
                     )
                         .chain(),
-                    handle::process_unload_chunk_ops.run_if(on_event::<UnloadChunkOpEvent>),
+                    handle::process_unload_chunk_ops.run_if(on_message::<UnloadChunkOpEvent>),
                 )
                     .run_if(in_state(AppState::MainGame)),),
             )
             .add_systems(
                 Update,
                 ((
-                    handle_update_scene_view.run_if(on_event::<UpdateSettingsEvent>),
+                    handle_update_scene_view.run_if(on_message::<UpdateSettingsEvent>),
                     check_if_should_update_scene,
-                    update_scene.run_if(on_event::<UpdateSceneEvent>),
+                    update_scene.run_if(on_message::<UpdateSceneEvent>),
                 )
                     .chain())
                 .run_if(in_state(AppState::MainGame)),

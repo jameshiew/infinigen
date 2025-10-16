@@ -17,8 +17,8 @@ pub fn display_debug_info(
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
     chunk_requests: Res<scene::ChunkRequests>,
-    mut update_evs: EventWriter<scene::UpdateSettingsEvent>,
-    mut reload_evs: EventWriter<scene::ReloadAllChunksEvent>,
+    mut update_evs: MessageWriter<scene::UpdateSettingsEvent>,
+    mut reload_evs: MessageWriter<scene::ReloadAllChunksEvent>,
     loaded_chunks: Query<&LoadedChunk>,
 ) -> Result {
     let (camera_transform, mut fps_controller) = camera_query.into_inner();

@@ -107,7 +107,7 @@ pub struct BlockRegistry {
 
 impl BlockRegistry {
     pub fn get_material(&self, visibility: BlockVisibility) -> Handle<StandardMaterial> {
-        self.materials[visibility as usize].clone_weak()
+        self.materials[visibility as usize].clone()
     }
 }
 

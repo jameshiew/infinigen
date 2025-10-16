@@ -31,7 +31,7 @@ pub fn setup(
     let (atlas_sources, atlas_layout, texture_atlas) =
         if let Some(block_texture_folder) = loaded_folders.get(&folders.block_textures) {
             for handle in block_texture_folder.handles.iter() {
-                let handle = handle.clone_weak().typed();
+                let handle = handle.clone().typed();
                 let path = asset_server.get_path(handle.id());
                 if let Some(texture) = textures.get(&handle) {
                     tracing::debug!(?path, "Texture found");
@@ -39,7 +39,7 @@ pub fn setup(
                     let name = path.path().file_name().unwrap().to_str().unwrap();
                     let name = name.trim_end_matches(".png");
 
-                    block_texture_handles_by_name.insert(name.to_owned(), handle.clone_weak());
+                    block_texture_handles_by_name.insert(name.to_owned(), handle.clone());
                     block_tatlas_builder.add_texture(Some(handle.id()), texture);
                 } else {
                     return Err(BevyError::from(format!(
