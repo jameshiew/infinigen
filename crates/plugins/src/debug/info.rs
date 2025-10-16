@@ -7,13 +7,13 @@ use bevy_inspector_egui::bevy_egui::egui::{self, Slider};
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 use leafwing_input_manager::prelude::*;
 
-use crate::camera::{CameraTarget, FpsController};
+use crate::camera::FpsController;
 use crate::scene::{self, LoadedChunk};
 
 pub fn display_debug_info(
     mut egui: EguiContexts,
     diagnostics: Res<DiagnosticsStore>,
-    camera_query: Single<(&Transform, &CameraTarget, &mut FpsController), With<Camera>>,
+    camera_query: Single<(&Transform, &mut FpsController), With<Camera>>,
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
     chunk_requests: Res<scene::ChunkRequests>,
@@ -21,7 +21,7 @@ pub fn display_debug_info(
     mut reload_evs: EventWriter<scene::ReloadAllChunksEvent>,
     loaded_chunks: Query<&LoadedChunk>,
 ) -> Result {
-    let (camera_transform, camera_target, mut fps_controller) = camera_query.into_inner();
+    let (camera_transform, mut fps_controller) = camera_query.into_inner();
     egui::Window::new("Position").show(egui.ctx_mut()?, |ui| {
         egui::Grid::new("position").show(ui, |ui| {
             ui.label("");
@@ -52,18 +52,6 @@ pub fn display_debug_info(
             ui.label(format!("{}", chunk_pos[0]));
             ui.label(format!("{}", chunk_pos[1]));
             ui.label(format!("{}", chunk_pos[2]));
-            ui.end_row();
-
-            // Target position
-            let target = [
-                camera_target.target.x.floor() as i32,
-                camera_target.target.y.floor() as i32,
-                camera_target.target.z.floor() as i32,
-            ];
-            ui.label("Looking at:");
-            ui.label(format!("{}", target[0]));
-            ui.label(format!("{}", target[1]));
-            ui.label(format!("{}", target[2]));
             ui.end_row();
         });
     });

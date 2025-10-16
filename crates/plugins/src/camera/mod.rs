@@ -35,18 +35,6 @@ impl Default for FpsController {
     }
 }
 
-/// Component that tracks where the camera is looking at (for debug purposes)
-#[derive(Component, Debug)]
-pub struct CameraTarget {
-    pub target: Vec3,
-}
-
-impl Default for CameraTarget {
-    fn default() -> Self {
-        Self { target: Vec3::ZERO }
-    }
-}
-
 /// Camera movement and control actions
 #[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
 pub enum CameraAction {
@@ -89,7 +77,6 @@ impl Plugin for CameraPlugin {
                 (
                     update_camera_look,
                     update_camera_movement,
-                    update_camera_target,
                     events::handle_camera_events,
                 )
                     .chain()
@@ -185,15 +172,4 @@ fn update_camera_movement(
         velocity = velocity.normalize() * controller.movement_speed * time.delta_secs();
         transform.translation += velocity;
     }
-}
-
-/// System to update the camera target position (what the camera is looking at)
-fn update_camera_target(mut query: Query<(&Transform, &mut CameraTarget), With<Camera>>) {
-    let Some((transform, mut target)) = query.iter_mut().next() else {
-        return;
-    };
-
-    // Calculate a point some distance in front of the camera
-    const LOOK_DISTANCE: f32 = 10.0;
-    target.target = transform.translation + *transform.forward() * LOOK_DISTANCE;
 }
