@@ -3,7 +3,6 @@ use bevy::core_pipeline::prepass::DepthPrepass;
 use bevy::pbr::ScreenSpaceAmbientOcclusion;
 use bevy::prelude::*;
 use bevy::render::experimental::occlusion_culling::OcclusionCulling;
-use bevy::window::CursorGrabMode;
 
 use super::FpsController;
 
@@ -18,11 +17,7 @@ pub struct CameraSettings {
     pub target_z: f32,
 }
 
-pub fn setup(
-    mut commands: Commands,
-    mut windows: Single<&mut Window>,
-    settings: Res<CameraSettings>,
-) {
+pub fn setup(mut commands: Commands, settings: Res<CameraSettings>) {
     let zoom = (settings.zoom_level as f32).exp2();
 
     // Calculate initial position and rotation
@@ -63,8 +58,4 @@ pub fn setup(
         TemporalAntiAliasing::default(),
         Msaa::Off,
     ));
-
-    // Grab the cursor for FPS controls
-    windows.cursor_options.grab_mode = CursorGrabMode::Locked;
-    windows.cursor_options.visible = false;
 }
