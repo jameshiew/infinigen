@@ -11,6 +11,7 @@ Infinigen is a Minecraft-like procedural terrain generation project built with B
 Use `just` for all development tasks:
 
 ### Essential Commands
+
 - `just check` - Check compilation (use this often during development)
 - `just test` - Run tests with cargo nextest
 - `just clippy` - Run linting (must pass before committing)
@@ -20,11 +21,14 @@ Use `just` for all development tasks:
 - `just debug` - Build and run in debug mode
 
 ### Before Committing
+
 Always run in this order:
+
 1. `just clippy` - Fix all errors
 2. `just fmt` - Format code
 
 ### Other Useful Commands
+
 - `just doc` - Build documentation
 - `just run-wasm` - Run WebAssembly build
 - `just screenshot-and-exit` - Test with screenshot
@@ -34,16 +38,20 @@ Always run in this order:
 ## Architecture
 
 ### Crate Structure
+
 1. **`crates/common/`** - Core logic (no Bevy dependencies)
+
    - Block definitions and chunk management
    - Mesh generation algorithms
    - World generation traits
 
 2. **`crates/plugins/`** - Bevy plugin implementations
+
    - `AppPlugin` orchestrates all sub-plugins
    - Key plugins: Registry, Assets, Scene, Mesh, Camera, World, Debug
 
 3. **`crates/extras/`** - Default implementations
+
    - Concrete block types and textures
    - World generators (MountainIslands, Flat, SingleBlock)
 
@@ -52,22 +60,26 @@ Always run in this order:
 ### Key Architectural Patterns
 
 **State Flow:**
+
 ```
 LoadingAssets → InitializingRegistry → InitializingWorld → MainGame
 ```
 
 **Chunk Generation Pipeline:**
+
 ```
-Camera moves → Scene update → Generate chunk request → 
+Camera moves → Scene update → Generate chunk request →
 World generator creates data → Mesh generation → Spawn entities
 ```
 
-**Event System:**
-- `GenerateChunkRequest/Task` - World generation events
-- `MeshChunkRequest/Rerequest` - Mesh generation events
-- `UpdateSceneEvent` - Scene update triggers
+**Message System:**
+
+- `GenerateChunkRequest/Task` - World generation messages
+- `MeshChunkRequest/Rerequest` - Mesh generation messages
+- `UpdateSceneMessage` - Scene update triggers
 
 **Resource Management:**
+
 - `BlockRegistry` - Central block type registry
 - `World` - World generator and chunk cache
 - `Meshes` - Generated mesh cache
@@ -75,6 +87,7 @@ World generator creates data → Mesh generation → Spawn entities
 ## Rust Development Guidelines
 
 ### Code Style
+
 - Keep modules small
 - Use `format!("{var}")` over `format!("{}", var)`
 - Guard against numeric overflow with saturating operations
@@ -83,19 +96,22 @@ World generator creates data → Mesh generation → Spawn entities
 ### Adding Features
 
 **New Block Type:**
+
 1. Add RON file in `crates/extras/assets/blocks/types/`
 2. Add texture in `crates/extras/assets/blocks/textures/`
 3. Update block registry
 
 **New World Generator:**
+
 1. Implement `WorldGen` trait in `crates/extras/src/worldgen/`
 2. Add to `WorldInitializer` in `crates/extras/src/world_initializer.rs`
 3. Update config options
 
 **New Plugin:**
+
 1. Create in `crates/plugins/src/`
 2. Add to `AppPlugin` in `crates/plugins/src/app.rs`
-3. Follow existing plugin patterns for state and events
+3. Follow existing plugin patterns for state and messages
 
 ## Testing Approach
 
@@ -114,8 +130,9 @@ World generator creates data → Mesh generation → Spawn entities
 ## Configuration
 
 Config via YAML or environment variables:
+
 - `hview_distance` - Horizontal view distance in chunks
-- `vview_distance` - Vertical view distance in chunks  
+- `vview_distance` - Vertical view distance in chunks
 - `world` - World type (MountainIslands, Flat, SingleBlock)
 - `zoom_level` - Level of detail
 - `seed` - World generation seed

@@ -17,8 +17,8 @@ pub fn display_debug_info(
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
     chunk_requests: Res<scene::ChunkRequests>,
-    mut update_evs: MessageWriter<scene::UpdateSettingsEvent>,
-    mut reload_evs: MessageWriter<scene::ReloadAllChunksEvent>,
+    mut update_msgs: MessageWriter<scene::UpdateSettingsMessage>,
+    mut reload_msgs: MessageWriter<scene::ReloadAllChunksMessage>,
     loaded_chunks: Query<&LoadedChunk>,
 ) -> Result {
     let (camera_transform, mut fps_controller) = camera_query.into_inner();
@@ -65,7 +65,7 @@ pub fn display_debug_info(
             if ui.add(Slider::new(&mut hview_distance, 1..=64)).changed()
                 && hview_distance != scene_view.hview_distance
             {
-                update_evs.write(scene::UpdateSettingsEvent::HorizontalViewDistance(
+                update_msgs.write(scene::UpdateSettingsMessage::HorizontalViewDistance(
                     hview_distance,
                 ));
             };
@@ -74,7 +74,7 @@ pub fn display_debug_info(
             if ui.add(Slider::new(&mut vview_distance, 1..=64)).changed()
                 && vview_distance != scene_view.vview_distance
             {
-                update_evs.write(scene::UpdateSettingsEvent::VerticalViewDistance(
+                update_msgs.write(scene::UpdateSettingsMessage::VerticalViewDistance(
                     vview_distance,
                 ));
             };
@@ -86,14 +86,14 @@ pub fn display_debug_info(
             if ui.add(Slider::new(&mut zoom_level, -5..=5)).changed()
                 && scene_zoom.zoom_level != zoom_level
             {
-                update_evs.write(scene::UpdateSettingsEvent::ZoomLevel(zoom_level));
+                update_msgs.write(scene::UpdateSettingsMessage::ZoomLevel(zoom_level));
             };
         }
 
         ui.label("Camera speed");
         ui.add(Slider::new(&mut fps_controller.movement_speed, 1.0..=100.0));
         if ui.button("Clear and reload all chunks").clicked() {
-            reload_evs.write(scene::ReloadAllChunksEvent);
+            reload_msgs.write(scene::ReloadAllChunksMessage);
         }
     });
 

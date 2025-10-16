@@ -114,18 +114,18 @@ pub struct SceneSettings {
 }
 
 #[derive(Debug, Message)]
-pub struct UnloadChunkOpEvent(ChunkPosition);
+pub struct UnloadChunkOpMessage(ChunkPosition);
 
 pub const FAR: f32 = CHUNK_SIZE_F32 * 64.;
 
 #[derive(Message)]
-pub struct RefreshChunkOpsQueueEvent;
+pub struct RefreshChunkOpsQueueMessage;
 
 #[derive(Message)]
-pub struct ReloadAllChunksEvent;
+pub struct ReloadAllChunksMessage;
 
 #[derive(Message)]
-pub enum UpdateSettingsEvent {
+pub enum UpdateSettingsMessage {
     HorizontalViewDistance(usize),
     VerticalViewDistance(usize),
     ZoomLevel(i8),
@@ -134,31 +134,31 @@ pub enum UpdateSettingsEvent {
 pub fn handle_update_scene_view(
     mut scene_view: ResMut<SceneView>,
     mut scene_zoom: ResMut<SceneZoom>,
-    mut update_evs: MessageReader<UpdateSettingsEvent>,
-    mut refresh_evs: MessageWriter<RefreshChunkOpsQueueEvent>,
-    mut reload_evs: MessageWriter<ReloadAllChunksEvent>,
+    mut update_msgs: MessageReader<UpdateSettingsMessage>,
+    mut refresh_msgs: MessageWriter<RefreshChunkOpsQueueMessage>,
+    mut reload_msgs: MessageWriter<ReloadAllChunksMessage>,
 ) {
-    for ev in update_evs.read() {
-        match ev {
-            UpdateSettingsEvent::HorizontalViewDistance(hview_distance) => {
+    for msg in update_msgs.read() {
+        match msg {
+            UpdateSettingsMessage::HorizontalViewDistance(hview_distance) => {
                 tracing::info!(
                     "Updating horizontal view distance from {} to {}",
                     scene_view.hview_distance,
                     hview_distance
                 );
                 scene_view.hview_distance = *hview_distance;
-                refresh_evs.write(RefreshChunkOpsQueueEvent);
+                refresh_msgs.write(RefreshChunkOpsQueueMessage);
             }
-            UpdateSettingsEvent::VerticalViewDistance(vview_distance) => {
+            UpdateSettingsMessage::VerticalViewDistance(vview_distance) => {
                 tracing::info!(
                     "Updating vertical view distance from {} to {}",
                     scene_view.vview_distance,
                     vview_distance
                 );
                 scene_view.vview_distance = *vview_distance;
-                refresh_evs.write(RefreshChunkOpsQueueEvent);
+                refresh_msgs.write(RefreshChunkOpsQueueMessage);
             }
-            UpdateSettingsEvent::ZoomLevel(zoom_level) => {
+            UpdateSettingsMessage::ZoomLevel(zoom_level) => {
                 tracing::info!(
                     "Updating zoom level from {} to {}",
                     scene_zoom.zoom_level,
@@ -166,29 +166,29 @@ pub fn handle_update_scene_view(
                 );
                 scene_zoom.prev_zoom_level = scene_zoom.zoom_level;
                 scene_zoom.zoom_level = *zoom_level;
-                reload_evs.write(ReloadAllChunksEvent);
+                reload_msgs.write(ReloadAllChunksMessage);
             }
         }
     }
 }
 
 #[derive(Message)]
-pub struct UpdateSceneEvent;
+pub struct UpdateSceneMessage;
 
 pub fn check_if_should_update_scene(
     mut commands: Commands,
     mut scene_camera: ResMut<SceneCamera>,
     camera: Single<&Transform, With<Camera>>,
     mut chunk_requests: ResMut<ChunkRequests>,
-    mut reload_evs: MessageReader<ReloadAllChunksEvent>,
-    mut refresh_evs: MessageReader<RefreshChunkOpsQueueEvent>,
-    mut update_scene_evs: MessageWriter<UpdateSceneEvent>,
+    mut reload_msgs: MessageReader<ReloadAllChunksMessage>,
+    mut refresh_msgs: MessageReader<RefreshChunkOpsQueueMessage>,
+    mut update_scene_msgs: MessageWriter<UpdateSceneMessage>,
     loaded: Query<Entity, With<LoadedChunk>>,
 ) {
-    let mut should_update = if refresh_evs.read().next().is_some() {
+    let mut should_update = if refresh_msgs.read().next().is_some() {
         chunk_requests.clear();
         true
-    } else if reload_evs.read().next().is_some() {
+    } else if reload_msgs.read().next().is_some() {
         chunk_requests.clear();
         tracing::info!("Reloading all chunks");
         for loaded_chunk in loaded.iter() {
@@ -214,18 +214,18 @@ pub fn check_if_should_update_scene(
     if !should_update {
         return;
     }
-    update_scene_evs.write(UpdateSceneEvent);
+    update_scene_msgs.write(UpdateSceneMessage);
 }
 
 pub fn update_scene(
     scene_view: Res<SceneView>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
     mut chunk_requests: ResMut<ChunkRequests>,
-    mut unload_evs: MessageWriter<UnloadChunkOpEvent>,
-    mut update_scene_evs: MessageReader<UpdateSceneEvent>,
+    mut unload_msgs: MessageWriter<UnloadChunkOpMessage>,
+    mut update_scene_msgs: MessageReader<UpdateSceneMessage>,
     loaded: Query<&LoadedChunk>,
 ) -> Result {
-    if update_scene_evs.read().next().is_none() {
+    if update_scene_msgs.read().next().is_none() {
         return Ok(());
     }
     tracing::trace!("Updating scene");
@@ -277,7 +277,7 @@ pub fn update_scene(
         chunk_requests.request_load(cpos);
     }
 
-    unload_evs.write_batch(to_unload.into_iter().map(UnloadChunkOpEvent));
+    unload_msgs.write_batch(to_unload.into_iter().map(UnloadChunkOpMessage));
     Ok(())
 }
 
@@ -294,11 +294,11 @@ impl Plugin for ScenePlugin {
                 OnEnter(AppState::MainGame),
                 (setup::setup_lighting, setup::setup),
             )
-            .add_message::<UpdateSettingsEvent>()
-            .add_message::<ReloadAllChunksEvent>()
-            .add_message::<RefreshChunkOpsQueueEvent>()
-            .add_message::<UnloadChunkOpEvent>()
-            .add_message::<UpdateSceneEvent>()
+            .add_message::<UpdateSettingsMessage>()
+            .add_message::<ReloadAllChunksMessage>()
+            .add_message::<RefreshChunkOpsQueueMessage>()
+            .add_message::<UnloadChunkOpMessage>()
+            .add_message::<UpdateSceneMessage>()
             .add_systems(
                 FixedUpdate,
                 ((
@@ -308,16 +308,16 @@ impl Plugin for ScenePlugin {
                         handle::process_spawn_requested,
                     )
                         .chain(),
-                    handle::process_unload_chunk_ops.run_if(on_message::<UnloadChunkOpEvent>),
+                    handle::process_unload_chunk_ops.run_if(on_message::<UnloadChunkOpMessage>),
                 )
                     .run_if(in_state(AppState::MainGame)),),
             )
             .add_systems(
                 Update,
                 ((
-                    handle_update_scene_view.run_if(on_message::<UpdateSettingsEvent>),
+                    handle_update_scene_view.run_if(on_message::<UpdateSettingsMessage>),
                     check_if_should_update_scene,
-                    update_scene.run_if(on_message::<UpdateSceneEvent>),
+                    update_scene.run_if(on_message::<UpdateSceneMessage>),
                 )
                     .chain())
                 .run_if(in_state(AppState::MainGame)),
