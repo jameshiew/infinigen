@@ -9,7 +9,7 @@ linearize = "0.1.1"
 strum = "0.27"
 serde = "1.0.228"
 tracing = "0.1.40"
-criterion = "0.6"
+criterion = "0.7"
 
 [profile.dev]
 opt-level = 1
