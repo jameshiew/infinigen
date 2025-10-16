@@ -13,7 +13,7 @@ use infinigen_common::zoom::ZoomLevel;
 use super::{ChunkInfo, ChunkStatus};
 use crate::registry::BlockRegistry;
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct GenerateChunkRequest {
     pub chunk_position: ChunkPosition,
     pub zoom_level: ZoomLevel,
@@ -24,7 +24,7 @@ pub struct GenerateChunkTask(pub Task<(ZoomLevel, ChunkPosition, Option<ChunkInf
 
 pub fn handle_generate_chunk_request(
     mut commands: Commands,
-    mut generate_chunk_reqs: EventReader<GenerateChunkRequest>,
+    mut generate_chunk_reqs: MessageReader<GenerateChunkRequest>,
     mut world: ResMut<crate::world::World>,
     registry: Res<BlockRegistry>,
 ) {

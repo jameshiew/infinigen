@@ -62,12 +62,13 @@ impl Plugin for WorldPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing world plugin");
         app.init_resource::<World>()
-            .add_event::<GenerateChunkRequest>()
+            .add_message::<GenerateChunkRequest>()
             .add_systems(OnEnter(AppState::InitializingWorld), init_world)
             .add_systems(
                 FixedUpdate,
                 (
-                    events::handle_generate_chunk_request.run_if(on_event::<GenerateChunkRequest>),
+                    events::handle_generate_chunk_request
+                        .run_if(on_message::<GenerateChunkRequest>),
                     events::handle_generate_chunk_task
                         .run_if(any_with_component::<GenerateChunkTask>),
                 )

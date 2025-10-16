@@ -1,8 +1,11 @@
-use bevy::core_pipeline::experimental::taa::TemporalAntiAliasing;
+#[cfg(not(target_arch = "wasm32"))]
+use bevy::anti_alias::contrast_adaptive_sharpening::ContrastAdaptiveSharpening;
+use bevy::anti_alias::taa::TemporalAntiAliasing;
 use bevy::core_pipeline::prepass::DepthPrepass;
 use bevy::pbr::ScreenSpaceAmbientOcclusion;
 use bevy::prelude::*;
 use bevy::render::experimental::occlusion_culling::OcclusionCulling;
+use bevy::render::view::Hdr;
 
 use super::FpsController;
 
@@ -44,14 +47,12 @@ pub fn setup(mut commands: Commands, settings: Res<CameraSettings>) {
     commands.spawn((
         Name::new("Camera"),
         controller,
-        Camera {
-            hdr: true,
-            ..Camera::default()
-        },
+        Camera::default(),
+        Hdr,
         Camera3d::default(),
         Transform::from_translation(eye_pos).with_rotation(rotation),
         #[cfg(not(target_arch = "wasm32"))]
-        bevy::core_pipeline::contrast_adaptive_sharpening::ContrastAdaptiveSharpening::default(),
+        ContrastAdaptiveSharpening::default(),
         DepthPrepass,
         OcclusionCulling,
         ScreenSpaceAmbientOcclusion::default(),

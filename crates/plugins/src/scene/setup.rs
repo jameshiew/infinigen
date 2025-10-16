@@ -1,6 +1,6 @@
 use std::f32::consts::PI;
 
-use bevy::pbr::CascadeShadowConfigBuilder;
+use bevy::light::CascadeShadowConfigBuilder;
 use bevy::prelude::*;
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 

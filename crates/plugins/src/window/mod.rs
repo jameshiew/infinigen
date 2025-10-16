@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy::window::{CursorGrabMode, PrimaryWindow, Window};
+use bevy::window::{CursorGrabMode, CursorOptions, PrimaryWindow};
 use bevy_inspector_egui::bevy_egui::input::{
     egui_wants_any_keyboard_input, egui_wants_any_pointer_input,
 };
@@ -7,20 +7,26 @@ use leafwing_input_manager::prelude::*;
 
 use crate::camera::events::CameraEvent;
 
-pub fn setup(mut window: Single<&mut Window, With<PrimaryWindow>>) {
-    window.cursor_options.grab_mode = CursorGrabMode::Locked;
-    window.cursor_options.visible = false;
+pub fn setup(mut primary_cursor_options: Single<&mut CursorOptions, With<PrimaryWindow>>) {
+    primary_cursor_options.grab_mode = CursorGrabMode::Locked;
+    primary_cursor_options.visible = false;
 }
 
-pub fn focus(window: &mut Window, camera_events: &mut EventWriter<CameraEvent>) {
-    window.cursor_options.grab_mode = CursorGrabMode::Locked;
-    window.cursor_options.visible = false;
+pub fn focus(
+    primary_cursor_options: &mut CursorOptions,
+    camera_events: &mut MessageWriter<CameraEvent>,
+) {
+    primary_cursor_options.grab_mode = CursorGrabMode::Locked;
+    primary_cursor_options.visible = false;
     camera_events.write(CameraEvent::EnableControls);
 }
 
-pub fn unfocus(window: &mut Window, camera_events: &mut EventWriter<CameraEvent>) {
-    window.cursor_options.grab_mode = CursorGrabMode::None;
-    window.cursor_options.visible = true;
+pub fn unfocus(
+    primary_cursor_options: &mut CursorOptions,
+    camera_events: &mut MessageWriter<CameraEvent>,
+) {
+    primary_cursor_options.grab_mode = CursorGrabMode::None;
+    primary_cursor_options.visible = true;
     camera_events.write(CameraEvent::DisableControls);
 }
 
@@ -38,22 +44,22 @@ pub fn setup_actions(mut commands: Commands) {
 
 pub fn handle_actions(
     action_state: Single<&ActionState<Action>>,
-    mut window: Single<&mut Window, With<PrimaryWindow>>,
-    mut camera_events: EventWriter<CameraEvent>,
+    mut primary_cursor_options: Single<&mut CursorOptions, With<PrimaryWindow>>,
+    mut camera_events: MessageWriter<CameraEvent>,
 ) {
     if action_state.just_pressed(&Action::ToggleFocus) {
-        match window.cursor_options.grab_mode {
+        match primary_cursor_options.grab_mode {
             CursorGrabMode::None => {
-                focus(&mut window, &mut camera_events);
+                focus(&mut primary_cursor_options, &mut camera_events);
             }
             _ => {
-                unfocus(&mut window, &mut camera_events);
+                unfocus(&mut primary_cursor_options, &mut camera_events);
             }
         }
     }
 
     if action_state.just_pressed(&Action::ForceFocus) {
-        focus(&mut window, &mut camera_events);
+        focus(&mut primary_cursor_options, &mut camera_events);
     }
 }
 pub struct ControlsPlugin;

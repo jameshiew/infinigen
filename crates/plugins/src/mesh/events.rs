@@ -13,21 +13,21 @@ use crate::registry::BlockRegistry;
 use crate::world::events::GenerateChunkRequest;
 use crate::world::{ChunkStatus, World};
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct MeshChunkRequest {
     pub chunk_position: ChunkPosition,
     pub zoom_level: ZoomLevel,
 }
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct MeshChunkRerequest {
     pub chunk_position: ChunkPosition,
     pub zoom_level: ZoomLevel,
 }
 
 pub fn handle_mesh_chunk_rerequests(
-    mut mesh_chunk_rerequests: EventReader<MeshChunkRerequest>,
-    mut mesh_chunk_requests: EventWriter<MeshChunkRequest>,
+    mut mesh_chunk_rerequests: MessageReader<MeshChunkRerequest>,
+    mut mesh_chunk_requests: MessageWriter<MeshChunkRequest>,
 ) {
     for (
         MeshChunkRerequest {
@@ -45,9 +45,9 @@ pub fn handle_mesh_chunk_rerequests(
 }
 
 pub fn handle_mesh_chunk_requests(
-    mut mesh_chunk_requests: EventReader<MeshChunkRequest>,
-    mut mesh_chunk_rerequests: EventWriter<MeshChunkRerequest>,
-    mut generate_chunk_reqs: EventWriter<GenerateChunkRequest>,
+    mut mesh_chunk_requests: MessageReader<MeshChunkRequest>,
+    mut mesh_chunk_rerequests: MessageWriter<MeshChunkRerequest>,
+    mut generate_chunk_reqs: MessageWriter<GenerateChunkRequest>,
     world: Res<World>,
     mut meshes: ResMut<Meshes>,
     registry: Res<BlockRegistry>,

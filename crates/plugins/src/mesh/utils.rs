@@ -1,8 +1,8 @@
 //! Converts from our native mesh types to Bevy meshes
 
+use bevy::asset::RenderAssetUsages;
+use bevy::mesh::{Indices, VertexAttributeValues};
 use bevy::prelude::*;
-use bevy::render::mesh::{Indices, VertexAttributeValues};
-use bevy::render::render_asset::RenderAssetUsages;
 use bevy::render::render_resource::PrimitiveTopology;
 use infinigen_common::chunks::Array3Chunk;
 use infinigen_common::mesh::faces::{BlockVisibilityChecker, prepare_padded_chunk};

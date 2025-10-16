@@ -1,6 +1,6 @@
 use bevy::input::mouse::MouseMotion;
 use bevy::prelude::*;
-use bevy::window::CursorGrabMode;
+use bevy::window::{CursorGrabMode, CursorOptions, PrimaryWindow};
 use leafwing_input_manager::prelude::*;
 
 use crate::AppState;
@@ -82,15 +82,15 @@ impl Plugin for CameraPlugin {
                     .chain()
                     .run_if(in_state(AppState::MainGame)),
             )
-            .add_event::<events::CameraEvent>();
+            .add_message::<events::CameraEvent>();
     }
 }
 
 /// System to handle mouse look for the camera
 fn update_camera_look(
-    mut mouse_motion: EventReader<MouseMotion>,
+    mut mouse_motion: MessageReader<MouseMotion>,
     mut query: Query<(&mut FpsController, &mut Transform), With<Camera>>,
-    windows: Single<&Window>,
+    primary_cursor_options: Single<&mut CursorOptions, With<PrimaryWindow>>,
 ) {
     let Some((mut controller, mut transform)) = query.iter_mut().next() else {
         return;
@@ -101,7 +101,7 @@ fn update_camera_look(
     }
 
     // Check if cursor is grabbed
-    if windows.cursor_options.grab_mode != CursorGrabMode::Locked {
+    if primary_cursor_options.grab_mode != CursorGrabMode::Locked {
         return;
     }
 

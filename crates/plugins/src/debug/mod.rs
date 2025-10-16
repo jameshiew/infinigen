@@ -23,7 +23,7 @@ impl Plugin for DebugPlugin {
                 InputManagerPlugin::<info::Action>::default(),
                 EguiPlugin::default(),
                 FrameTimeDiagnosticsPlugin::default(),
-                EntityCountDiagnosticsPlugin,
+                EntityCountDiagnosticsPlugin::default(),
                 DefaultInspectorConfigPlugin,
             ))
             .add_systems(OnEnter(AppState::MainGame), info::setup_actions)

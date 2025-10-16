@@ -34,13 +34,13 @@ impl Plugin for MeshPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing mesh plugin");
         app.init_resource::<Meshes>()
-            .add_event::<MeshChunkRequest>()
-            .add_event::<MeshChunkRerequest>()
+            .add_message::<MeshChunkRequest>()
+            .add_message::<MeshChunkRerequest>()
             .add_systems(
                 FixedUpdate,
                 (
-                    events::handle_mesh_chunk_requests.run_if(on_event::<MeshChunkRequest>),
-                    events::handle_mesh_chunk_rerequests.run_if(on_event::<MeshChunkRerequest>),
+                    events::handle_mesh_chunk_requests.run_if(on_message::<MeshChunkRequest>),
+                    events::handle_mesh_chunk_rerequests.run_if(on_message::<MeshChunkRerequest>),
                 )
                     .chain()
                     .run_if(in_state(AppState::MainGame)),
