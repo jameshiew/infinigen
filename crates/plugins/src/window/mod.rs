@@ -13,7 +13,7 @@ pub fn setup(mut window: Single<&mut Window, With<PrimaryWindow>>) {
 }
 
 pub fn focus(window: &mut Window, camera_events: &mut EventWriter<CameraEvent>) {
-    window.cursor_options.grab_mode = CursorGrabMode::Confined;
+    window.cursor_options.grab_mode = CursorGrabMode::Locked;
     window.cursor_options.visible = false;
     camera_events.write(CameraEvent::EnableControls);
 }
