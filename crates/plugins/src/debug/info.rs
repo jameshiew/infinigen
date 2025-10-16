@@ -6,17 +6,14 @@ use bevy_inspector_egui::bevy_egui::EguiContexts;
 use bevy_inspector_egui::bevy_egui::egui::{self, Slider};
 use infinigen_common::chunks::CHUNK_SIZE_F32;
 use leafwing_input_manager::prelude::*;
-use smooth_bevy_cameras::LookTransform;
-use smooth_bevy_cameras::controllers::fps::FpsCameraController;
 
+use crate::camera::{CameraTarget, FpsController};
 use crate::scene::{self, LoadedChunk};
 
 pub fn display_debug_info(
     mut egui: EguiContexts,
     diagnostics: Res<DiagnosticsStore>,
-    camera_wpos: Single<&Transform, With<Camera>>,
-    mut fps_camera_controller: Single<&mut FpsCameraController>,
-    look_transform: Single<&LookTransform>,
+    camera_query: Single<(&Transform, &CameraTarget, &mut FpsController), With<Camera>>,
     scene_view: Res<scene::SceneView>,
     scene_zoom: Res<scene::SceneZoom>,
     chunk_requests: Res<scene::ChunkRequests>,
@@ -24,6 +21,7 @@ pub fn display_debug_info(
     mut reload_evs: EventWriter<scene::ReloadAllChunksEvent>,
     loaded_chunks: Query<&LoadedChunk>,
 ) -> Result {
+    let (camera_transform, camera_target, mut fps_controller) = camera_query.into_inner();
     egui::Window::new("Position").show(egui.ctx_mut()?, |ui| {
         egui::Grid::new("position").show(ui, |ui| {
             ui.label("");
@@ -34,9 +32,9 @@ pub fn display_debug_info(
 
             // Block position
             let block_pos = [
-                camera_wpos.translation.x.floor() as i32,
-                camera_wpos.translation.y.floor() as i32,
-                camera_wpos.translation.z.floor() as i32,
+                camera_transform.translation.x.floor() as i32,
+                camera_transform.translation.y.floor() as i32,
+                camera_transform.translation.z.floor() as i32,
             ];
             ui.label("Block:");
             ui.label(format!("{}", block_pos[0]));
@@ -46,9 +44,9 @@ pub fn display_debug_info(
 
             // Chunk position
             let chunk_pos = [
-                (camera_wpos.translation.x / CHUNK_SIZE_F32).floor() as i32,
-                (camera_wpos.translation.y / CHUNK_SIZE_F32).floor() as i32,
-                (camera_wpos.translation.z / CHUNK_SIZE_F32).floor() as i32,
+                (camera_transform.translation.x / CHUNK_SIZE_F32).floor() as i32,
+                (camera_transform.translation.y / CHUNK_SIZE_F32).floor() as i32,
+                (camera_transform.translation.z / CHUNK_SIZE_F32).floor() as i32,
             ];
             ui.label("Chunk:");
             ui.label(format!("{}", chunk_pos[0]));
@@ -58,9 +56,9 @@ pub fn display_debug_info(
 
             // Target position
             let target = [
-                look_transform.target.x.floor() as i32,
-                look_transform.target.y.floor() as i32,
-                look_transform.target.z.floor() as i32,
+                camera_target.target.x.floor() as i32,
+                camera_target.target.y.floor() as i32,
+                camera_target.target.z.floor() as i32,
             ];
             ui.label("Looking at:");
             ui.label(format!("{}", target[0]));
@@ -105,10 +103,7 @@ pub fn display_debug_info(
         }
 
         ui.label("Camera speed");
-        ui.add(Slider::new(
-            &mut fps_camera_controller.translate_sensitivity,
-            1.0..=100.0,
-        ));
+        ui.add(Slider::new(&mut fps_controller.movement_speed, 1.0..=100.0));
         if ui.button("Clear and reload all chunks").clicked() {
             reload_evs.write(scene::ReloadAllChunksEvent);
         }
