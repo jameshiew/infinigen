@@ -1,6 +1,7 @@
 use bevy::input::mouse::MouseMotion;
 use bevy::prelude::*;
 use bevy::window::CursorGrabMode;
+use leafwing_input_manager::prelude::*;
 
 use crate::AppState;
 
@@ -46,12 +47,43 @@ impl Default for CameraTarget {
     }
 }
 
+/// Camera movement and control actions
+#[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
+pub enum CameraAction {
+    MoveForward,
+    MoveBackward,
+    MoveLeft,
+    MoveRight,
+    MoveUp,
+    MoveDown,
+}
+
+/// Set up camera input actions
+fn setup_actions(mut commands: Commands) {
+    let mut input_map = InputMap::new([
+        (CameraAction::MoveForward, KeyCode::KeyW),
+        (CameraAction::MoveBackward, KeyCode::KeyS),
+        (CameraAction::MoveLeft, KeyCode::KeyA),
+        (CameraAction::MoveRight, KeyCode::KeyD),
+        (CameraAction::MoveUp, KeyCode::Space),
+    ]);
+    // Support both shift keys for moving down
+    input_map.insert(CameraAction::MoveDown, KeyCode::ShiftLeft);
+    input_map.insert(CameraAction::MoveDown, KeyCode::ShiftRight);
+
+    commands.spawn(input_map);
+}
+
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing camera plugin");
-        app.add_systems(OnEnter(AppState::InitializingWorld), setup::setup)
+        app.add_plugins(InputManagerPlugin::<CameraAction>::default())
+            .add_systems(
+                OnEnter(AppState::InitializingWorld),
+                (setup::setup, setup_actions),
+            )
             .add_systems(
                 Update,
                 (
@@ -111,7 +143,7 @@ fn update_camera_look(
 /// System to handle WASD + space/shift movement
 fn update_camera_movement(
     time: Res<Time>,
-    keyboard: Res<ButtonInput<KeyCode>>,
+    action_state: Single<&ActionState<CameraAction>>,
     mut query: Query<(&FpsController, &mut Transform), With<Camera>>,
 ) {
     let Some((controller, mut transform)) = query.iter_mut().next() else {
@@ -127,24 +159,24 @@ fn update_camera_movement(
     let right = transform.right();
 
     // WASD movement (horizontal plane for forward/back, actual right vector for strafing)
-    if keyboard.pressed(KeyCode::KeyW) {
+    if action_state.pressed(&CameraAction::MoveForward) {
         velocity += *forward;
     }
-    if keyboard.pressed(KeyCode::KeyS) {
+    if action_state.pressed(&CameraAction::MoveBackward) {
         velocity -= *forward;
     }
-    if keyboard.pressed(KeyCode::KeyA) {
+    if action_state.pressed(&CameraAction::MoveLeft) {
         velocity -= *right;
     }
-    if keyboard.pressed(KeyCode::KeyD) {
+    if action_state.pressed(&CameraAction::MoveRight) {
         velocity += *right;
     }
 
     // Vertical movement (fly up/down)
-    if keyboard.pressed(KeyCode::Space) {
+    if action_state.pressed(&CameraAction::MoveUp) {
         velocity += Vec3::Y;
     }
-    if keyboard.pressed(KeyCode::ShiftLeft) || keyboard.pressed(KeyCode::ShiftRight) {
+    if action_state.pressed(&CameraAction::MoveDown) {
         velocity -= Vec3::Y;
     }
 
