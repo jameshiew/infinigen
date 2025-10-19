@@ -11,6 +11,8 @@ use crate::AppState;
 mod handle;
 pub mod setup;
 
+const MAX_CHUNKS_TO_QUEUE_PER_FRAME: usize = 200;
+
 #[derive(Component)]
 pub struct LoadedChunk {
     pub cpos: ChunkPosition,
@@ -19,6 +21,11 @@ pub struct LoadedChunk {
 #[derive(Default, Resource)]
 pub struct ChunkRequests {
     requests: AHashMap<ChunkPosition, SceneChunkStatus>,
+}
+
+#[derive(Default, Resource)]
+pub struct PendingChunkLoads {
+    chunks: Vec<ChunkPosition>,
 }
 
 #[derive(Clone, Copy)]
@@ -180,6 +187,7 @@ pub fn check_if_should_update_scene(
     mut scene_camera: ResMut<SceneCamera>,
     camera: Single<&Transform, With<Camera>>,
     mut chunk_requests: ResMut<ChunkRequests>,
+    mut pending_loads: ResMut<PendingChunkLoads>,
     mut reload_msgs: MessageReader<ReloadAllChunksMessage>,
     mut refresh_msgs: MessageReader<RefreshChunkOpsQueueMessage>,
     mut update_scene_msgs: MessageWriter<UpdateSceneMessage>,
@@ -187,9 +195,11 @@ pub fn check_if_should_update_scene(
 ) {
     let mut should_update = if refresh_msgs.read().next().is_some() {
         chunk_requests.clear();
+        pending_loads.chunks.clear();
         true
     } else if reload_msgs.read().next().is_some() {
         chunk_requests.clear();
+        pending_loads.chunks.clear();
         tracing::info!("Reloading all chunks");
         for loaded_chunk in loaded.iter() {
             commands.entity(loaded_chunk).despawn();
@@ -220,7 +230,7 @@ pub fn check_if_should_update_scene(
 pub fn update_scene(
     scene_view: Res<SceneView>,
     camera: Query<(&Transform, &Projection), With<Camera>>,
-    mut chunk_requests: ResMut<ChunkRequests>,
+    mut pending_loads: ResMut<PendingChunkLoads>,
     mut unload_msgs: MessageWriter<UnloadChunkOpMessage>,
     mut update_scene_msgs: MessageReader<UpdateSceneMessage>,
     loaded: Query<&LoadedChunk>,
@@ -273,12 +283,27 @@ pub fn update_scene(
     );
     tracing::debug!(load = ?to_load.len(), unload = ?to_unload.len(), "Chunks to load/unload");
 
-    for cpos in to_load.into_iter() {
-        chunk_requests.request_load(cpos);
-    }
+    pending_loads.chunks = to_load;
 
     unload_msgs.write_batch(to_unload.into_iter().map(UnloadChunkOpMessage));
     Ok(())
+}
+
+/// Process pending chunk loads in batches to prevent freezing.
+pub fn process_pending_chunk_loads(
+    mut chunk_requests: ResMut<ChunkRequests>,
+    mut pending_loads: ResMut<PendingChunkLoads>,
+) {
+    if pending_loads.chunks.is_empty() {
+        return;
+    }
+
+    let batch_size = MAX_CHUNKS_TO_QUEUE_PER_FRAME.min(pending_loads.chunks.len());
+    let to_add: Vec<_> = pending_loads.chunks.drain(..batch_size).collect();
+
+    for cpos in to_add {
+        chunk_requests.request_load(cpos);
+    }
 }
 
 pub struct ScenePlugin;
@@ -290,6 +315,7 @@ impl Plugin for ScenePlugin {
             .init_resource::<SceneCamera>()
             .init_resource::<SceneZoom>()
             .init_resource::<ChunkRequests>()
+            .init_resource::<PendingChunkLoads>()
             .add_systems(
                 OnEnter(AppState::MainGame),
                 (setup::setup_lighting, setup::setup),
@@ -318,6 +344,7 @@ impl Plugin for ScenePlugin {
                     handle_update_scene_view.run_if(on_message::<UpdateSettingsMessage>),
                     check_if_should_update_scene,
                     update_scene.run_if(on_message::<UpdateSceneMessage>),
+                    process_pending_chunk_loads,
                 )
                     .chain())
                 .run_if(in_state(AppState::MainGame)),
