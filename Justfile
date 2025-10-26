@@ -1,11 +1,7 @@
 wasm_rustflags := '--cfg=web_sys_unstable_apis --cfg=getrandom_backend="wasm_js"'
 
-release:
-    cargo run \
-        --release
-
-debug:
-    cargo run
+run *args:
+    cargo run {{args}}
 
 machete:
     cargo machete
