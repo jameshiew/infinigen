@@ -4,25 +4,23 @@ version = "0.0.0"
 edition = "2024"
 publish = false
 
+[[bench]]
+harness = false
+name = "benchmark"
+
 [dependencies]
 ahash = { workspace = true }
 bevy = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-tracing = { workspace = true }
-strum = { workspace = true, features = ["derive"] }
-
 infinigen-common = { path = "../common" }
 infinigen-plugins = { path = "../plugins" }
-
 noise = "0.9"
+serde = { workspace = true, features = ["derive"] }
 splines = "5"
+strum = { workspace = true, features = ["derive"] }
+tracing = { workspace = true }
 
 [dev-dependencies]
 criterion = { workspace = true }
-
-[[bench]]
-name = "benchmark"
-harness = false
 
 [lints]
 workspace = true

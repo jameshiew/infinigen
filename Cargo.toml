@@ -1,15 +1,23 @@
 [workspace]
-members = ["crates/*"]
 resolver = "3"
+members = ["crates/*"]
 
 [workspace.dependencies]
 ahash = "0.8.11"
 bevy = { version = "0.17", default-features = false }
-linearize = "0.1.1"
-strum = "0.27"
-serde = "1.0.228"
-tracing = "0.1.40"
 criterion = "0.7"
+linearize = "0.1.1"
+serde = "1.0.228"
+strum = "0.27"
+tracing = "0.1.40"
+
+[workspace.lints.clippy]
+nursery = { level = "warn", priority = -1 }
+# Bevy supplies arguments to systems via dependency injection, so it's natural for systems to
+# request more than 7 arguments -- which triggers this lint.
+too_many_arguments = "allow"
+# Queries that access many components may trigger this lint.
+type_complexity = "allow"
 
 [profile.dev]
 opt-level = 1
@@ -20,19 +28,11 @@ opt-level = 3
 [profile.dev.package.wgpu-types]
 debug-assertions = false
 
-[profile.wasm-release]
-inherits = "release"
-opt-level = "s"
-strip = "debuginfo"
-
 [profile.profiling]
 inherits = "release"
 debug = "line-tables-only"
 
-[workspace.lints.clippy]
-nursery = { level = "warn", priority = -1 }
-# Bevy supplies arguments to systems via dependency injection, so it's natural for systems to
-# request more than 7 arguments -- which triggers this lint.
-too_many_arguments = "allow"
-# Queries that access many components may trigger this lint.
-type_complexity = "allow"
+[profile.wasm-release]
+inherits = "release"
+opt-level = "s"
+strip = "debuginfo"

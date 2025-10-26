@@ -6,37 +6,35 @@ publish = false
 
 [dependencies]
 ahash = { workspace = true }
+anyhow = "1.0.100"
 bevy = { workspace = true, features = [
-    "bevy_anti_alias",
-    "bevy_asset",
-    "bevy_light",
-    "bevy_mesh",
-    "bevy_pbr",
-    "bevy_post_process",
-    "bevy_state",
-    "bevy_window",
-    "hdr",
-    "png",
-    "tonemapping_luts",
-    "smaa_luts",
-    "multi_threaded",
+  "bevy_anti_alias",
+  "bevy_asset",
+  "bevy_light",
+  "bevy_mesh",
+  "bevy_pbr",
+  "bevy_post_process",
+  "bevy_state",
+  "bevy_window",
+  "hdr",
+  "multi_threaded",
+  "png",
+  "smaa_luts",
+  "tonemapping_luts",
+] }
+bevy_common_assets = { version = "0.14", default-features = false, features = [
+  "ron",
+] }
+bevy-inspector-egui = { version = "0.34" }
+infinigen-common = { path = "../common" }
+leafwing-input-manager = { version = "0.18", default-features = false, features = [
+  "keyboard",
+  "mouse",
 ] }
 linearize = { workspace = true }
 serde = { workspace = true }
 strum = { workspace = true }
 tracing = { workspace = true }
-
-infinigen-common = { path = "../common" }
-
-anyhow = "1.0.100"
-bevy_common_assets = { version = "0.14", default-features = false, features = [
-    "ron",
-] }
-bevy-inspector-egui = { version = "0.34" }
-leafwing-input-manager = { version = "0.18", default-features = false, features = [
-    "keyboard",
-    "mouse",
-] }
 
 [lints]
 workspace = true

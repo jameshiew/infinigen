@@ -6,14 +6,12 @@ publish = false
 default-run = "infinigen"
 
 [dependencies]
-bevy = { workspace = true, features = ["bevy_winit", "x11", "wayland"] }
-
-infinigen-plugins = { path = "../plugins" }
-infinigen-extras = { path = "../extras" }
-
+bevy = { workspace = true, features = ["bevy_winit", "wayland", "x11"] }
 bevy_framepace = { version = "0.20", default-features = false }
 clap = { version = "4", features = ["derive"] }
 config = { version = "0.15", default-features = false, features = ["yaml"] }
+infinigen-extras = { path = "../extras" }
+infinigen-plugins = { path = "../plugins" }
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_family = "wasm")))'.dependencies]
 tikv-jemallocator = { version = "0.6", optional = true }
@@ -22,8 +20,8 @@ tikv-jemallocator = { version = "0.6", optional = true }
 getrandom = { version = "0.3", features = ["wasm_js"] }
 
 [features]
-remote = ["bevy/bevy_remote"]
 jemalloc = ["dep:tikv-jemallocator"]
+remote = ["bevy/bevy_remote"]
 
 [lints]
 workspace = true
