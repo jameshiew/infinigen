@@ -13,6 +13,7 @@ bevy = { workspace = true, features = [
   "bevy_light",
   "bevy_mesh",
   "bevy_pbr",
+  "bevy_picking",  # for bevy-inspector-egui
   "bevy_post_process",
   "bevy_state",
   "bevy_window",
