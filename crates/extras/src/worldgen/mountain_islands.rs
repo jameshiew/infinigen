@@ -106,7 +106,7 @@ impl WorldGen for MountainIslands {
         ];
 
         // needed for every column
-        let mut wheights = [[0.; CHUNK_USIZE]; CHUNK_USIZE];
+        let mut world_heights = [[0.; CHUNK_USIZE]; CHUNK_USIZE];
         let mut nxzs = [[(0., 0.); CHUNK_USIZE]; CHUNK_USIZE];
 
         let mut is_empty = true;
@@ -119,17 +119,17 @@ impl WorldGen for MountainIslands {
                 let nx = wx / (self.horizontal_smoothness * self.vertical_scale);
                 let nz = wz / (self.horizontal_smoothness * self.vertical_scale);
 
-                let mut wheight = self.heightmap.get([nx, nz]);
+                let mut world_height = self.heightmap.get([nx, nz]);
                 let verticality = self.verticality.get([nx, nz]);
-                wheight *= self.vertical_scale * self.vspline.sample(verticality).unwrap();
+                world_height *= self.vertical_scale * self.vspline.sample(verticality).unwrap();
 
                 // short circuit if bottom-most layer (y=0) is empty as this world doesn't have things in the sky
                 let wy = zoomed_offset[1];
-                if wy <= wheight || wy <= SEA_LEVEL {
+                if wy <= world_height || wy <= SEA_LEVEL {
                     is_empty = false;
                 }
 
-                wheights[x as usize][z as usize] = wheight;
+                world_heights[x as usize][z as usize] = world_height;
                 nxzs[x as usize][z as usize] = (nx, nz);
             }
         }
@@ -143,19 +143,19 @@ impl WorldGen for MountainIslands {
             let _span = tracing::debug_span!("worldgen{stage = terrain}").entered();
             for x in 0..CHUNK_SIZE {
                 for z in 0..CHUNK_SIZE {
-                    let wheight = wheights[x as usize][z as usize];
+                    let world_height = world_heights[x as usize][z as usize];
                     for y in 0..CHUNK_SIZE {
                         let wy = y as f64 / zoom + zoomed_offset[1];
 
-                        // wheight is sunken, so we're in a body of water
-                        if wheight <= wy && wy <= SEA_LEVEL {
+                        // world_height is sunken, so we're in a body of water
+                        if world_height <= wy && wy <= SEA_LEVEL {
                             is_empty = false;
                             chunk.insert(&BlockPosition { x, y, z }, self.water);
                             continue;
                         }
 
-                        // ensure we fill blocks up to the wheight
-                        if wy <= wheight {
+                        // ensure we fill blocks up to the world_height
+                        if wy <= world_height {
                             is_empty = false;
                             if wy < SEA_LEVEL {
                                 // always gravel under sea

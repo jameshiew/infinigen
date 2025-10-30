@@ -39,8 +39,8 @@ pub fn setup(
     mut scene_zoom: ResMut<SceneZoom>,
     settings: Res<SceneSettings>,
 ) {
-    scene_view.hview_distance = settings.hview_distance;
-    scene_view.vview_distance = settings.vview_distance;
+    scene_view.horizontal_view_distance = settings.horizontal_view_distance;
+    scene_view.vertical_view_distance = settings.vertical_view_distance;
     scene_zoom.prev_zoom_level = settings.zoom_level;
     scene_zoom.zoom_level = settings.zoom_level;
 }

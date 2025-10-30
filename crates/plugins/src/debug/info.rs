@@ -58,24 +58,30 @@ pub fn display_debug_info(
 
     egui::Window::new("Controls").show(egui.ctx_mut()?, |ui| {
         {
-            let (mut hview_distance, mut vview_distance) =
-                (scene_view.hview_distance, scene_view.vview_distance);
+            let (mut horizontal_view_distance, mut vertical_view_distance) = (
+                scene_view.horizontal_view_distance,
+                scene_view.vertical_view_distance,
+            );
 
             ui.label("Horizontal view distance");
-            if ui.add(Slider::new(&mut hview_distance, 1..=64)).changed()
-                && hview_distance != scene_view.hview_distance
+            if ui
+                .add(Slider::new(&mut horizontal_view_distance, 1..=64))
+                .changed()
+                && horizontal_view_distance != scene_view.horizontal_view_distance
             {
                 update_msgs.write(scene::UpdateSettingsMessage::HorizontalViewDistance(
-                    hview_distance,
+                    horizontal_view_distance,
                 ));
             };
 
             ui.label("Vertical view distance");
-            if ui.add(Slider::new(&mut vview_distance, 1..=64)).changed()
-                && vview_distance != scene_view.vview_distance
+            if ui
+                .add(Slider::new(&mut vertical_view_distance, 1..=64))
+                .changed()
+                && vertical_view_distance != scene_view.vertical_view_distance
             {
                 update_msgs.write(scene::UpdateSettingsMessage::VerticalViewDistance(
-                    vview_distance,
+                    vertical_view_distance,
                 ));
             };
         }

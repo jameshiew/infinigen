@@ -48,8 +48,8 @@ impl Plugin for AppPlugin {
                 wz: self.settings.wz as f32,
             })
             .insert_resource(SceneSettings {
-                hview_distance: self.settings.hview_distance as usize,
-                vview_distance: self.settings.vview_distance as usize,
+                horizontal_view_distance: self.settings.horizontal_view_distance as usize,
+                vertical_view_distance: self.settings.vertical_view_distance as usize,
                 zoom_level: self.settings.zoom_level,
             })
             .insert_resource(WorldSettings {

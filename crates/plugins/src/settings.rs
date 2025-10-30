@@ -39,9 +39,9 @@ const fn default_target_z() -> f64 {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppSettings {
     #[serde(default = "default_horizontal_view_distance")]
-    pub hview_distance: u64,
+    pub horizontal_view_distance: u64,
     #[serde(default = "default_vertical_view_distance")]
-    pub vview_distance: u64,
+    pub vertical_view_distance: u64,
     #[serde(default = "default_world")]
     pub world: String,
 

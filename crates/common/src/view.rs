@@ -18,16 +18,19 @@ const fn chunk_distance_squared(from: &ChunkPosition, to: &ChunkPosition) -> i32
 /// Returns an iterator over `ChunkPosition`s within a cylinder centred at `centre` that should be loaded and rendered.
 pub fn in_distance(
     centre: &ChunkPosition,
-    hview_distance: usize,
-    vview_distance: usize,
+    horizontal_view_distance: usize,
+    vertical_view_distance: usize,
 ) -> impl Iterator<Item = ChunkPosition> {
     let mut chunks = Vec::new();
-    let (hview_distance, vview_distance) = (hview_distance as i32, vview_distance as i32);
-    let hview_distance_squared = hview_distance * hview_distance;
-    for x in -hview_distance..=hview_distance {
-        for y in -vview_distance..=vview_distance {
-            for z in -hview_distance..=hview_distance {
-                if x * x + z * z <= hview_distance_squared {
+    let (horizontal_view_distance, vertical_view_distance) = (
+        horizontal_view_distance as i32,
+        vertical_view_distance as i32,
+    );
+    let horizontal_view_distance_squared = horizontal_view_distance * horizontal_view_distance;
+    for x in -horizontal_view_distance..=horizontal_view_distance {
+        for y in -vertical_view_distance..=vertical_view_distance {
+            for z in -horizontal_view_distance..=horizontal_view_distance {
+                if x * x + z * z <= horizontal_view_distance_squared {
                     chunks.push(ChunkPosition {
                         x: centre.x + x,
                         y: centre.y + y,
@@ -115,8 +118,8 @@ pub fn check_chunk_in_frustum(chunk: &ChunkPosition, frustum_planes: &[Plane; 6]
 // TODO: too many arguments
 pub fn compute_chunks_delta(
     current_cpos: ChunkPosition,
-    hview_distance: usize,
-    vview_distance: usize,
+    horizontal_view_distance: usize,
+    vertical_view_distance: usize,
     camera_translation: [f32; 3],
     camera_rotation: [f32; 4], // w,x,y,z
     aspect_ratio: f32,
@@ -144,8 +147,12 @@ pub fn compute_chunks_delta(
     let combined_matrix = projection_matrix * view_matrix;
     let frustum_planes = compute_frustum_planes(&combined_matrix);
 
-    let chunks_within_render_distance: AHashSet<_> =
-        in_distance(&current_cpos, hview_distance, vview_distance).collect();
+    let chunks_within_render_distance: AHashSet<_> = in_distance(
+        &current_cpos,
+        horizontal_view_distance,
+        vertical_view_distance,
+    )
+    .collect();
 
     let mut to_load: Vec<_> = chunks_within_render_distance
         .difference(already_loaded_or_loading)

@@ -93,15 +93,15 @@ pub struct SceneCamera {
 
 #[derive(Debug, Resource)]
 pub struct SceneView {
-    pub hview_distance: usize,
-    pub vview_distance: usize,
+    pub horizontal_view_distance: usize,
+    pub vertical_view_distance: usize,
 }
 
 impl Default for SceneView {
     fn default() -> Self {
         Self {
-            hview_distance: 4,
-            vview_distance: 4,
+            horizontal_view_distance: 4,
+            vertical_view_distance: 4,
         }
     }
 }
@@ -116,8 +116,8 @@ pub struct SceneZoom {
 #[derive(Resource)]
 pub struct SceneSettings {
     pub zoom_level: i8,
-    pub hview_distance: usize,
-    pub vview_distance: usize,
+    pub horizontal_view_distance: usize,
+    pub vertical_view_distance: usize,
 }
 
 #[derive(Debug, Message)]
@@ -147,22 +147,22 @@ pub fn handle_update_scene_view(
 ) {
     for msg in update_msgs.read() {
         match msg {
-            UpdateSettingsMessage::HorizontalViewDistance(hview_distance) => {
+            UpdateSettingsMessage::HorizontalViewDistance(horizontal_view_distance) => {
                 tracing::info!(
                     "Updating horizontal view distance from {} to {}",
-                    scene_view.hview_distance,
-                    hview_distance
+                    scene_view.horizontal_view_distance,
+                    horizontal_view_distance
                 );
-                scene_view.hview_distance = *hview_distance;
+                scene_view.horizontal_view_distance = *horizontal_view_distance;
                 refresh_msgs.write(RefreshChunkOpsQueueMessage);
             }
-            UpdateSettingsMessage::VerticalViewDistance(vview_distance) => {
+            UpdateSettingsMessage::VerticalViewDistance(vertical_view_distance) => {
                 tracing::info!(
                     "Updating vertical view distance from {} to {}",
-                    scene_view.vview_distance,
-                    vview_distance
+                    scene_view.vertical_view_distance,
+                    vertical_view_distance
                 );
-                scene_view.vview_distance = *vview_distance;
+                scene_view.vertical_view_distance = *vertical_view_distance;
                 refresh_msgs.write(RefreshChunkOpsQueueMessage);
             }
             UpdateSettingsMessage::ZoomLevel(zoom_level) => {
@@ -262,8 +262,8 @@ pub fn update_scene(
 
     let (to_load, to_unload) = view::compute_chunks_delta(
         current_cpos,
-        scene_view.hview_distance,
-        scene_view.vview_distance,
+        scene_view.horizontal_view_distance,
+        scene_view.vertical_view_distance,
         [
             camera.translation.x,
             camera.translation.y,

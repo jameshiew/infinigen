@@ -1,5 +1,5 @@
-hview_distance: 16
-vview_distance: 16
+horizontal_view_distance: 16
+vertical_view_distance: 16
 world: "MountainIslands"
 zoom_level: 0
 wx: -1283.0
