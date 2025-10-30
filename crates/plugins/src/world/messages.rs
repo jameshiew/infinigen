@@ -46,8 +46,8 @@ pub fn handle_generate_chunk_request(
                 );
                 continue;
             }
-            Entry::Vacant(enty) => {
-                enty.insert(ChunkStatus::Generating);
+            Entry::Vacant(entry) => {
+                entry.insert(ChunkStatus::Generating);
             }
         };
         let task = generate_chunk_async(
