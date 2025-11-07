@@ -1,3 +1,5 @@
+#![deny(unstable_features)]
+#![deny(unused_features)]
 #![allow(clippy::tuple_array_conversions)] // gives false positives
 
 //! Default world generators and block definitions.

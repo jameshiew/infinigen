@@ -1,3 +1,5 @@
+#![deny(unstable_features)]
+#![deny(unused_features)]
 use bevy::prelude::*;
 
 pub mod assets;
