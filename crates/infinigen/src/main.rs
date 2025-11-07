@@ -8,7 +8,7 @@ use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy::tasks::available_parallelism;
 use bevy::window::{Window, WindowPlugin};
-use clap::{Parser, command};
+use clap::Parser;
 use config::Config;
 use infinigen_plugins::AppPlugin;
 #[cfg(all(
