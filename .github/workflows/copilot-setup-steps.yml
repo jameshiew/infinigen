@@ -33,8 +33,4 @@ jobs:
       - uses: taiki-e/install-action@just
       - run: just install-debian-deps
       - run: just install-cargo-tools-essential
-      # warm caches
-      - run: cargo check
-      - run: cargo clippy
-      - run: cargo build
-      - run: cargo test --no-run
+      - run: cargo fetch
