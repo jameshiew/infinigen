@@ -82,10 +82,10 @@ pub fn setup(
         tracing::debug!(?block_definition, "Block definition found");
         // default to color in case texture is missing
         let color = FaceAppearance::Color {
-            r: block_definition.0.color[0] as f32 / 256.,
-            g: block_definition.0.color[1] as f32 / 256.,
-            b: block_definition.0.color[2] as f32 / 256.,
-            a: block_definition.0.color[3] as f32 / 256.,
+            r: block_definition.0.color[0] as f32 / 255.,
+            g: block_definition.0.color[1] as f32 / 255.,
+            b: block_definition.0.color[2] as f32 / 255.,
+            a: block_definition.0.color[3] as f32 / 255.,
         };
         let mut appearances = static_copy_map! {
             Face::Top => color,
