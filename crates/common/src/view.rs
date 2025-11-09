@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 
 use ahash::AHashSet;
-use nalgebra::{Matrix4, Perspective3, Quaternion, Unit, UnitQuaternion, Vector3, Vector4};
+use glam::{Mat4, Quat, Vec3, Vec4};
 
 use crate::chunks::CHUNK_SIZE_F32;
 use crate::world::ChunkPosition;
@@ -45,68 +45,57 @@ pub fn in_distance(
 
 #[derive(Debug)]
 pub struct Plane {
-    normal: Unit<Vector4<f32>>,
+    normal: Vec4,
     constant: f32,
 }
 
-pub fn normalize_plane(plane: Vector4<f32>) -> Plane {
-    let magnitude = plane
-        .z
-        .mul_add(plane.z, plane.x.mul_add(plane.x, plane.y * plane.y))
-        .sqrt();
+pub fn normalize_plane(plane: Vec4) -> Plane {
+    let normal = plane.truncate();
+    let magnitude = normal.length();
+
+    if magnitude == 0.0 {
+        // Degenerate plane; fall back to zero normal to avoid NaNs.
+        return Plane {
+            normal: Vec4::ZERO,
+            constant: 0.0,
+        };
+    }
+
+    let normalized = Vec4::new(
+        normal.x / magnitude,
+        normal.y / magnitude,
+        normal.z / magnitude,
+        0.0,
+    );
     Plane {
-        normal: Unit::new_normalize(Vector4::new(plane.x, plane.y, plane.z, 0.0)),
+        normal: normalized,
         constant: plane.w / magnitude,
     }
 }
 
-pub fn compute_frustum_planes(combined_matrix: &Matrix4<f32>) -> [Plane; 6] {
-    let m = combined_matrix;
+pub fn compute_frustum_planes(combined_matrix: &Mat4) -> [Plane; 6] {
+    let cols = combined_matrix.to_cols_array();
+    let row = |r: usize| -> Vec4 { Vec4::new(cols[r], cols[4 + r], cols[8 + r], cols[12 + r]) };
+
+    let row0 = row(0);
+    let row1 = row(1);
+    let row2 = row(2);
+    let row3 = row(3);
 
     [
-        normalize_plane(Vector4::new(
-            m[(3, 0)] + m[(0, 0)],
-            m[(3, 1)] + m[(0, 1)],
-            m[(3, 2)] + m[(0, 2)],
-            m[(3, 3)] + m[(0, 3)],
-        )), // Left
-        normalize_plane(Vector4::new(
-            m[(3, 0)] - m[(0, 0)],
-            m[(3, 1)] - m[(0, 1)],
-            m[(3, 2)] - m[(0, 2)],
-            m[(3, 3)] - m[(0, 3)],
-        )), // Right
-        normalize_plane(Vector4::new(
-            m[(3, 0)] - m[(1, 0)],
-            m[(3, 1)] - m[(1, 1)],
-            m[(3, 2)] - m[(1, 2)],
-            m[(3, 3)] - m[(1, 3)],
-        )), // Top
-        normalize_plane(Vector4::new(
-            m[(3, 0)] + m[(1, 0)],
-            m[(3, 1)] + m[(1, 1)],
-            m[(3, 2)] + m[(1, 2)],
-            m[(3, 3)] + m[(1, 3)],
-        )), // Bottom
-        normalize_plane(Vector4::new(
-            m[(3, 0)] + m[(2, 0)],
-            m[(3, 1)] + m[(2, 1)],
-            m[(3, 2)] + m[(2, 2)],
-            m[(3, 3)] + m[(2, 3)],
-        )), // Near
-        normalize_plane(Vector4::new(
-            m[(3, 0)] - m[(2, 0)],
-            m[(3, 1)] - m[(2, 1)],
-            m[(3, 2)] - m[(2, 2)],
-            m[(3, 3)] - m[(2, 3)],
-        )), // Far
+        normalize_plane(row3 + row0), // Left
+        normalize_plane(row3 - row0), // Right
+        normalize_plane(row3 - row1), // Top
+        normalize_plane(row3 + row1), // Bottom
+        normalize_plane(row3 + row2), // Near
+        normalize_plane(row3 - row2), // Far
     ]
 }
 
 pub fn check_chunk_in_frustum(chunk: &ChunkPosition, frustum_planes: &[Plane; 6]) -> bool {
     for plane in frustum_planes {
-        let chunk_center = Vector4::new(chunk.x as f32, chunk.y as f32, chunk.z as f32, 1.0);
-        let distance = plane.normal.dot(&chunk_center) + plane.constant;
+        let chunk_center = Vec4::new(chunk.x as f32, chunk.y as f32, chunk.z as f32, 1.0);
+        let distance = plane.normal.dot(chunk_center) + plane.constant;
         // TODO: it would be better to check against corners of chunks
         if distance < -CHUNK_SIZE_F32 / 2. {
             return false;
@@ -128,22 +117,21 @@ pub fn compute_chunks_delta(
     far: f32,
     already_loaded_or_loading: &AHashSet<ChunkPosition>,
 ) -> (Vec<ChunkPosition>, Vec<ChunkPosition>) {
-    let rotation = UnitQuaternion::from_quaternion(Quaternion::new(
-        camera_rotation[0],
+    let rotation = Quat::from_xyzw(
         camera_rotation[1],
         camera_rotation[2],
         camera_rotation[3],
-    ));
-    let translation = Vector3::new(
+        camera_rotation[0],
+    )
+    .normalize();
+    let translation = Vec3::new(
         camera_translation[0],
         camera_translation[1],
         camera_translation[2],
     );
 
-    let persp_proj = Perspective3::new(aspect_ratio, fov, near, far);
-    let projection_matrix: Matrix4<f32> = *persp_proj.as_matrix();
-    let view_matrix: Matrix4<f32> =
-        Matrix4::from(rotation.to_rotation_matrix()).append_translation(&-translation);
+    let projection_matrix = Mat4::perspective_rh_gl(fov, aspect_ratio, near, far);
+    let view_matrix = Mat4::from_quat(rotation) * Mat4::from_translation(-translation);
     let combined_matrix = projection_matrix * view_matrix;
     let frustum_planes = compute_frustum_planes(&combined_matrix);
 
