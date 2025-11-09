@@ -3110,7 +3110,7 @@ dependencies = [
 
 [[package]]
 name = "infinigen"
-version = "0.0.0"
+version = "0.1.0-dev"
 dependencies = [
  "bevy",
  "bevy_framepace",
@@ -3124,7 +3124,7 @@ dependencies = [
 
 [[package]]
 name = "infinigen-common"
-version = "0.0.0"
+version = "0.1.0-dev"
 dependencies = [
  "ahash",
  "block-mesh",
@@ -3140,7 +3140,7 @@ dependencies = [
 
 [[package]]
 name = "infinigen-extras"
-version = "0.0.0"
+version = "0.1.0-dev"
 dependencies = [
  "ahash",
  "bevy",
@@ -3156,7 +3156,7 @@ dependencies = [
 
 [[package]]
 name = "infinigen-plugins"
-version = "0.0.0"
+version = "0.1.0-dev"
 dependencies = [
  "ahash",
  "anyhow",
