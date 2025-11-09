@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use bevy::window::{CursorGrabMode, CursorOptions, PrimaryWindow};
 use leafwing_input_manager::prelude::*;
 
-use crate::AppState;
+use crate::{AppState, RuntimeOptions};
 
 pub mod messages;
 pub mod setup;
@@ -75,7 +75,8 @@ impl Plugin for CameraPlugin {
             .add_systems(
                 Update,
                 (
-                    update_camera_look,
+                    update_camera_look
+                        .run_if(not(resource_equals(RuntimeOptions { headless: true }))),
                     update_camera_movement,
                     messages::handle_camera_messages,
                 )

@@ -1,16 +1,18 @@
 #![deny(unstable_features)]
 #![deny(unused_features)]
 use std::process::ExitCode;
+use std::time::Duration;
 
 use bevy::DefaultPlugins;
-use bevy::app::TaskPoolThreadAssignmentPolicy;
+use bevy::app::{ScheduleRunnerPlugin, TaskPoolThreadAssignmentPolicy};
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy::tasks::available_parallelism;
-use bevy::window::{Window, WindowPlugin};
+use bevy::window::{ExitCondition, Window, WindowPlugin};
+use bevy::winit::WinitPlugin;
 use clap::Parser;
 use config::Config;
-use infinigen_plugins::AppPlugin;
+use infinigen_plugins::{AppPlugin, RuntimeOptions};
 #[cfg(all(
     feature = "jemalloc",
     not(target_env = "msvc"),
@@ -36,6 +38,11 @@ const DEFAULT_LOG_FILTER: &str = "info,wgpu_core=warn,wgpu_hal=warn,naga=info";
 struct Cli {
     #[arg(long, help = "Path to a configuration file")]
     config: Option<String>,
+    #[arg(
+        long,
+        help = "Run without creating a window or requiring a display server"
+    )]
+    headless: bool,
 }
 
 fn main() -> ExitCode {
@@ -64,47 +71,67 @@ fn main() -> ExitCode {
             return ExitCode::from(78);
         }
     };
-    match App::new()
-        .add_plugins((
-            DefaultPlugins
-                .set(LogPlugin {
-                    filter: DEFAULT_LOG_FILTER.into(),
-                    level: bevy::log::Level::DEBUG,
-                    custom_layer: |_| None,
-                    fmt_layer: |_| None,
-                })
-                .set(TaskPoolPlugin {
-                    task_pool_options: TaskPoolOptions {
-                        compute: TaskPoolThreadAssignmentPolicy {
-                            min_threads: available_parallelism(),
-                            max_threads: usize::MAX,
-                            percent: 1.0,
-                            on_thread_spawn: None,
-                            on_thread_destroy: None,
-                        },
-                        ..default()
-                    },
-                })
-                .set(ImagePlugin::default_nearest())
-                .set(WindowPlugin {
-                    primary_window: Some(Window {
-                        title: APP_NAME.into(),
-                        ..default()
-                    }),
-                    ..default()
-                })
-                .set(AssetPlugin {
-                    file_path: "../extras/assets".into(),
-                    ..default()
-                }),
-            bevy_framepace::FramepacePlugin,
-            #[cfg(all(feature = "remote", not(target_family = "wasm")))]
-            infinigen::remote::RemotePlugin,
-        ))
-        .add_plugins((AppPlugin::new(cfg),))
-        .add_plugins(infinigen_extras::ExtrasPlugin)
-        .run()
-    {
+    let runtime = RuntimeOptions {
+        headless: cli.headless,
+    };
+
+    let mut default_plugins = DefaultPlugins
+        .set(LogPlugin {
+            filter: DEFAULT_LOG_FILTER.into(),
+            level: bevy::log::Level::DEBUG,
+            custom_layer: |_| None,
+            fmt_layer: |_| None,
+        })
+        .set(TaskPoolPlugin {
+            task_pool_options: TaskPoolOptions {
+                compute: TaskPoolThreadAssignmentPolicy {
+                    min_threads: available_parallelism(),
+                    max_threads: usize::MAX,
+                    percent: 1.0,
+                    on_thread_spawn: None,
+                    on_thread_destroy: None,
+                },
+                ..default()
+            },
+        })
+        .set(ImagePlugin::default_nearest());
+
+    if runtime.headless {
+        default_plugins = default_plugins
+            .set(WindowPlugin {
+                primary_window: None,
+                exit_condition: ExitCondition::DontExit,
+                ..default()
+            })
+            .disable::<WinitPlugin>();
+    } else {
+        default_plugins = default_plugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: APP_NAME.into(),
+                ..default()
+            }),
+            ..default()
+        });
+    }
+
+    let mut app = App::new();
+    app.add_plugins(default_plugins);
+
+    if runtime.headless {
+        app.add_plugins(ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(
+            1.0 / 60.0,
+        )));
+    } else {
+        app.add_plugins(bevy_framepace::FramepacePlugin);
+    }
+
+    #[cfg(all(feature = "remote", not(target_family = "wasm")))]
+    app.add_plugins(infinigen::remote::RemotePlugin);
+
+    app.add_plugins((AppPlugin::new(cfg, runtime),))
+        .add_plugins(infinigen_extras::ExtrasPlugin);
+
+    match app.run() {
         AppExit::Success => ExitCode::SUCCESS,
         AppExit::Error(code) => ExitCode::from(code.get()),
     }

@@ -16,6 +16,11 @@ use crate::camera::setup::CameraSettings;
 use crate::scene::SceneSettings;
 use crate::world::WorldSettings;
 
+#[derive(Resource, Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct RuntimeOptions {
+    pub headless: bool,
+}
+
 #[derive(States, Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub enum AppState {
     #[default]
@@ -28,18 +33,24 @@ pub enum AppState {
 
 pub struct AppPlugin {
     settings: settings::AppSettings,
+    runtime: RuntimeOptions,
 }
 
 impl AppPlugin {
-    pub const fn new(settings: settings::AppSettings) -> Self {
-        Self { settings }
+    pub const fn new(settings: settings::AppSettings, runtime: RuntimeOptions) -> Self {
+        Self { settings, runtime }
     }
 }
 
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
-        tracing::info!("Initializing app plugin with config: {:#?}", self.settings);
-        app.init_state::<AppState>()
+        tracing::info!(
+            "Initializing app plugin with config: {:#?}, runtime: {:?}",
+            self.settings,
+            self.runtime
+        );
+        app.insert_resource(self.runtime)
+            .init_state::<AppState>()
             .insert_resource(CameraSettings {
                 zoom_level: self.settings.zoom_level,
                 target_x: self.settings.target_x as f32,
@@ -65,8 +76,10 @@ impl Plugin for AppPlugin {
                 mesh::MeshPlugin,
                 camera::CameraPlugin,
                 world::WorldPlugin,
-                debug::DebugPlugin,
-                window::ControlsPlugin,
             ));
+
+        if !self.runtime.headless {
+            app.add_plugins((debug::DebugPlugin, window::ControlsPlugin));
+        }
     }
 }
