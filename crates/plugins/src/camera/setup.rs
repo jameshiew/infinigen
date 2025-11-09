@@ -9,7 +9,8 @@ use bevy::render::view::Hdr;
 
 use super::FpsController;
 
-#[derive(Resource)]
+#[derive(Resource, Reflect)]
+#[reflect(Resource)]
 pub struct CameraSettings {
     pub zoom_level: i8,
     pub wx: f32,

@@ -13,7 +13,7 @@ pub mod window;
 pub mod world;
 
 use crate::camera::setup::CameraSettings;
-use crate::scene::SceneSettings;
+use crate::scene::{SceneSettings, SceneView, SceneZoom};
 use crate::world::WorldSettings;
 
 #[derive(Resource, Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -49,7 +49,12 @@ impl Plugin for AppPlugin {
             self.settings,
             self.runtime
         );
-        app.insert_resource(self.runtime)
+        app.register_type::<SceneSettings>()
+            .register_type::<SceneView>()
+            .register_type::<SceneZoom>()
+            .register_type::<CameraSettings>()
+            .register_type::<WorldSettings>()
+            .insert_resource(self.runtime)
             .init_state::<AppState>()
             .insert_resource(CameraSettings {
                 zoom_level: self.settings.zoom_level,

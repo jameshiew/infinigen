@@ -91,7 +91,8 @@ pub struct SceneCamera {
     cpos: Option<ChunkPosition>,
 }
 
-#[derive(Debug, Resource)]
+#[derive(Debug, Resource, Reflect)]
+#[reflect(Resource)]
 pub struct SceneView {
     pub horizontal_view_distance: usize,
     pub vertical_view_distance: usize,
@@ -106,14 +107,16 @@ impl Default for SceneView {
     }
 }
 
-#[derive(Debug, Default, Resource)]
+#[derive(Debug, Default, Resource, Reflect)]
+#[reflect(Resource)]
 pub struct SceneZoom {
     // Zoom as a power of 2. e.g. if this is 0, then there will be no zoom.
     pub prev_zoom_level: i8,
     pub zoom_level: i8,
 }
 
-#[derive(Resource)]
+#[derive(Resource, Reflect)]
+#[reflect(Resource)]
 pub struct SceneSettings {
     pub zoom_level: i8,
     pub horizontal_view_distance: usize,

@@ -84,7 +84,8 @@ pub type WorldInitializerFn = Box<
 #[derive(Resource)]
 pub struct WorldInitializer(pub WorldInitializerFn);
 
-#[derive(Resource)]
+#[derive(Resource, Reflect)]
+#[reflect(Resource)]
 pub struct WorldSettings {
     pub world_gen_name: String,
     pub seed: u32,

@@ -5,6 +5,7 @@ members = ["crates/*"]
 [workspace.dependencies]
 ahash = "0.8.11"
 bevy = { version = "0.17", default-features = false }
+bevy_reflect = "0.17"
 config = { version = "0.15", default-features = false, features = ["yaml"] }
 criterion = "0.7"
 linearize = "0.1.1"
