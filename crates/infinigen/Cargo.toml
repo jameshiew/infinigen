@@ -9,7 +9,7 @@ default-run = "infinigen"
 bevy = { workspace = true, features = ["bevy_winit", "wayland", "x11"] }
 bevy_framepace = { version = "0.20", default-features = false }
 clap = { version = "4", features = ["derive"] }
-config = { version = "0.15", default-features = false, features = ["yaml"] }
+config = { workspace = true }
 infinigen-extras = { path = "../extras" }
 infinigen-plugins = { path = "../plugins" }
 

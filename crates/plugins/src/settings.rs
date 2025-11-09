@@ -64,3 +64,19 @@ pub struct AppSettings {
     #[serde(default)]
     pub seed: u64,
 }
+
+#[cfg(test)]
+mod tests {
+    use anyhow::Result;
+
+    use super::*;
+
+    #[test]
+    fn test_config_parse() -> Result<()> {
+        let _settings: AppSettings = config::Config::builder()
+            .add_source(config::File::with_name("../../infinigen.config.yml"))
+            .build()?
+            .try_deserialize()?;
+        Ok(())
+    }
+}

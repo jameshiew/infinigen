@@ -33,10 +33,10 @@ cargo run --release --features jemalloc  # on macOS/Linux
 
 ### Configuration
 
-See `config.example.yml` for what can be configured. Pass the path to a configuration file when launching.
+See [infinigen.config.yml](./infinigen.config.yml) for what can be configured. Pass the path to a configuration file when launching.
 
 ```shell
-cargo run --release -- --config config.example.yml
+cargo run --release -- --config infinigen.config.yml
 ```
 
 Specific settings can also be overridden via environment variables.
