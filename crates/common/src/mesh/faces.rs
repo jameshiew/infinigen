@@ -12,6 +12,96 @@ use crate::world::{BlockPosition, Direction, MappedBlockID};
 
 pub const RHS_FACES: [OrientedBlockFace; 6] = RIGHT_HANDED_Y_UP_CONFIG.faces;
 
+const PADDED_BOUNDARY_MIN: u32 = 0;
+const PADDED_BOUNDARY_MAX: u32 = CHUNK_SIZE_U32 + 1;
+
+// Encodes the orientation of a face within the chunk and its matching padded boundary.
+#[derive(Clone, Copy)]
+struct FaceSpec {
+    fixed_axis: usize,
+    fixed_value: u8,
+    iter_axes: [usize; 2],
+    padded_boundary_index: u32,
+}
+
+const fn face_spec(direction: Direction) -> FaceSpec {
+    match direction {
+        Direction::Up => FaceSpec {
+            fixed_axis: 1,
+            fixed_value: BlockPosition::MAX_IDX,
+            iter_axes: [0, 2],
+            padded_boundary_index: PADDED_BOUNDARY_MAX,
+        },
+        Direction::Down => FaceSpec {
+            fixed_axis: 1,
+            fixed_value: BlockPosition::MIN_IDX,
+            iter_axes: [0, 2],
+            padded_boundary_index: PADDED_BOUNDARY_MIN,
+        },
+        Direction::North => FaceSpec {
+            fixed_axis: 2,
+            fixed_value: BlockPosition::MIN_IDX,
+            iter_axes: [0, 1],
+            padded_boundary_index: PADDED_BOUNDARY_MIN,
+        },
+        Direction::South => FaceSpec {
+            fixed_axis: 2,
+            fixed_value: BlockPosition::MAX_IDX,
+            iter_axes: [0, 1],
+            padded_boundary_index: PADDED_BOUNDARY_MAX,
+        },
+        Direction::East => FaceSpec {
+            fixed_axis: 0,
+            fixed_value: BlockPosition::MAX_IDX,
+            iter_axes: [1, 2],
+            padded_boundary_index: PADDED_BOUNDARY_MAX,
+        },
+        Direction::West => FaceSpec {
+            fixed_axis: 0,
+            fixed_value: BlockPosition::MIN_IDX,
+            iter_axes: [1, 2],
+            padded_boundary_index: PADDED_BOUNDARY_MIN,
+        },
+    }
+}
+
+fn chunk_face_index(u: u8, v: u8) -> usize {
+    ChunkFaceShape::linearize([u as u32, v as u32]) as usize
+}
+
+const fn face_block_position(spec: FaceSpec, u: u8, v: u8) -> BlockPosition {
+    let mut coords = [0u8; 3];
+    coords[spec.iter_axes[0]] = u;
+    coords[spec.iter_axes[1]] = v;
+    coords[spec.fixed_axis] = spec.fixed_value;
+    BlockPosition {
+        x: coords[0],
+        y: coords[1],
+        z: coords[2],
+    }
+}
+
+const fn padded_coords(spec: FaceSpec, u: u8, v: u8) -> [u32; 3] {
+    let mut coords = [1u32; 3];
+    coords[spec.iter_axes[0]] = u as u32 + 1;
+    coords[spec.iter_axes[1]] = v as u32 + 1;
+    coords[spec.fixed_axis] = spec.padded_boundary_index;
+    coords
+}
+
+fn map_block(block: Option<MappedBlockID>, checker: &impl BlockVisibilityChecker) -> VoxelBlock {
+    block.map_or(VoxelBlock::Empty, |mapped_id| {
+        map_non_empty(mapped_id, checker)
+    })
+}
+
+fn map_non_empty(mapped_id: MappedBlockID, checker: &impl BlockVisibilityChecker) -> VoxelBlock {
+    match checker.get_visibility(&mapped_id) {
+        BlockVisibility::Opaque => VoxelBlock::Opaque(mapped_id),
+        BlockVisibility::Translucent => VoxelBlock::Translucent(mapped_id),
+    }
+}
+
 pub trait BlockVisibilityChecker: Clone + Send + Sync {
     fn get_visibility(&self, mapped_id: &MappedBlockID) -> BlockVisibility;
 }
@@ -30,145 +120,15 @@ pub fn extract_faces(
     visibility_checker: impl BlockVisibilityChecker,
 ) -> StaticCopyMap<Direction, ChunkFace> {
     let mut faces = EMPTY_CHUNK_FACES;
+    let checker = &visibility_checker;
     for dir in Direction::iter() {
-        match dir {
-            Direction::Up => {
-                for x in 0..CHUNK_SIZE {
-                    for z in 0..CHUNK_SIZE {
-                        let block = chunk.get(&BlockPosition {
-                            x,
-                            y: BlockPosition::MAX_IDX,
-                            z,
-                        });
-                        let j = ChunkFaceShape::linearize([x as u32, z as u32]) as usize;
-                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
-                            match visibility_checker.get_visibility(&chunk_block_id) {
-                                crate::blocks::BlockVisibility::Opaque => {
-                                    VoxelBlock::Opaque(chunk_block_id)
-                                }
-                                crate::blocks::BlockVisibility::Translucent => {
-                                    VoxelBlock::Translucent(chunk_block_id)
-                                }
-                            }
-                        });
-                        faces[dir][j] = block;
-                    }
-                }
-            }
-            Direction::Down => {
-                for x in 0..CHUNK_SIZE {
-                    for z in 0..CHUNK_SIZE {
-                        let block = chunk.get(&BlockPosition {
-                            x,
-                            y: BlockPosition::MIN_IDX,
-                            z,
-                        });
-                        let j = ChunkFaceShape::linearize([x as u32, z as u32]) as usize;
-                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
-                            match visibility_checker.get_visibility(&chunk_block_id) {
-                                crate::blocks::BlockVisibility::Opaque => {
-                                    VoxelBlock::Opaque(chunk_block_id)
-                                }
-                                crate::blocks::BlockVisibility::Translucent => {
-                                    VoxelBlock::Translucent(chunk_block_id)
-                                }
-                            }
-                        });
-                        faces[dir][j] = block;
-                    }
-                }
-            }
-            Direction::North => {
-                for x in 0..CHUNK_SIZE {
-                    for y in 0..CHUNK_SIZE {
-                        let block = chunk.get(&BlockPosition {
-                            x,
-                            y,
-                            z: BlockPosition::MIN_IDX,
-                        });
-                        let j = ChunkFaceShape::linearize([x as u32, y as u32]) as usize;
-                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
-                            match visibility_checker.get_visibility(&chunk_block_id) {
-                                crate::blocks::BlockVisibility::Opaque => {
-                                    VoxelBlock::Opaque(chunk_block_id)
-                                }
-                                crate::blocks::BlockVisibility::Translucent => {
-                                    VoxelBlock::Translucent(chunk_block_id)
-                                }
-                            }
-                        });
-                        faces[dir][j] = block;
-                    }
-                }
-            }
-            Direction::South => {
-                for x in 0..CHUNK_SIZE {
-                    for y in 0..CHUNK_SIZE {
-                        let block = chunk.get(&BlockPosition {
-                            x,
-                            y,
-                            z: BlockPosition::MAX_IDX,
-                        });
-                        let j = ChunkFaceShape::linearize([x as u32, y as u32]) as usize;
-                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
-                            match visibility_checker.get_visibility(&chunk_block_id) {
-                                crate::blocks::BlockVisibility::Opaque => {
-                                    VoxelBlock::Opaque(chunk_block_id)
-                                }
-                                crate::blocks::BlockVisibility::Translucent => {
-                                    VoxelBlock::Translucent(chunk_block_id)
-                                }
-                            }
-                        });
-                        faces[dir][j] = block;
-                    }
-                }
-            }
-            Direction::East => {
-                for y in 0..CHUNK_SIZE {
-                    for z in 0..CHUNK_SIZE {
-                        let block = chunk.get(&BlockPosition {
-                            x: BlockPosition::MAX_IDX,
-                            y,
-                            z,
-                        });
-                        let j = ChunkFaceShape::linearize([y as u32, z as u32]) as usize;
-                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
-                            match visibility_checker.get_visibility(&chunk_block_id) {
-                                crate::blocks::BlockVisibility::Opaque => {
-                                    VoxelBlock::Opaque(chunk_block_id)
-                                }
-                                crate::blocks::BlockVisibility::Translucent => {
-                                    VoxelBlock::Translucent(chunk_block_id)
-                                }
-                            }
-                        });
-                        faces[dir][j] = block;
-                    }
-                }
-            }
-            Direction::West => {
-                for y in 0..CHUNK_SIZE {
-                    for z in 0..CHUNK_SIZE {
-                        let block = chunk.get(&BlockPosition {
-                            x: BlockPosition::MIN_IDX,
-                            y,
-                            z,
-                        });
-                        let j = ChunkFaceShape::linearize([y as u32, z as u32]) as usize;
-                        let block = block.map_or(VoxelBlock::Empty, |chunk_block_id| {
-                            match visibility_checker.get_visibility(&chunk_block_id) {
-                                crate::blocks::BlockVisibility::Opaque => {
-                                    VoxelBlock::Opaque(chunk_block_id)
-                                }
-                                crate::blocks::BlockVisibility::Translucent => {
-                                    VoxelBlock::Translucent(chunk_block_id)
-                                }
-                            }
-                        });
-                        faces[dir][j] = block;
-                    }
-                }
+        let spec = face_spec(dir);
+        for u in 0..CHUNK_SIZE {
+            for v in 0..CHUNK_SIZE {
+                let position = face_block_position(spec, u, v);
+                let index = chunk_face_index(u, v);
+                let block = chunk.get(&position);
+                faces[dir][index] = map_block(block, checker);
             }
         }
     }
@@ -182,98 +142,16 @@ pub fn prepare_padded_chunk(
     visibility_checker: impl BlockVisibilityChecker,
 ) -> PaddedChunk {
     let mut padded = [VoxelBlock::Empty; PaddedChunkShape::SIZE as usize];
-    const MIN_PADDED_IDX: u32 = 0;
-    const MAX_PADDED_IDX: u32 = CHUNK_SIZE_U32 + 1;
+    let checker = &visibility_checker;
 
     for dir in Direction::iter() {
+        let spec = face_spec(dir);
         let neighboring_face = neighbor_faces[dir];
-        match dir {
-            // bottom face of above chunk
-            Direction::Up => {
-                for x in 0..CHUNK_SIZE {
-                    for z in 0..CHUNK_SIZE {
-                        let block = neighboring_face
-                            [ChunkFaceShape::linearize([x as u32, z as u32]) as usize];
-                        let i = PaddedChunkShape::linearize([
-                            x as u32 + 1,
-                            MAX_PADDED_IDX,
-                            z as u32 + 1,
-                        ]);
-                        padded[i as usize] = block;
-                    }
-                }
-            }
-            // top face of below chunk
-            Direction::Down => {
-                for x in 0..CHUNK_SIZE {
-                    for z in 0..CHUNK_SIZE {
-                        let block = neighboring_face
-                            [ChunkFaceShape::linearize([x as u32, z as u32]) as usize];
-                        let i = PaddedChunkShape::linearize([
-                            x as u32 + 1,
-                            MIN_PADDED_IDX,
-                            z as u32 + 1,
-                        ]);
-                        padded[i as usize] = block;
-                    }
-                }
-            }
-            // south face of chunk to the north, etc.
-            Direction::North => {
-                for x in 0..CHUNK_SIZE {
-                    for y in 0..CHUNK_SIZE {
-                        let block = neighboring_face
-                            [ChunkFaceShape::linearize([x as u32, y as u32]) as usize];
-                        let i = PaddedChunkShape::linearize([
-                            x as u32 + 1,
-                            y as u32 + 1,
-                            MIN_PADDED_IDX,
-                        ]);
-                        padded[i as usize] = block;
-                    }
-                }
-            }
-            Direction::South => {
-                for x in 0..CHUNK_SIZE {
-                    for y in 0..CHUNK_SIZE {
-                        let block = neighboring_face
-                            [ChunkFaceShape::linearize([x as u32, y as u32]) as usize];
-                        let i = PaddedChunkShape::linearize([
-                            x as u32 + 1,
-                            y as u32 + 1,
-                            MAX_PADDED_IDX,
-                        ]);
-                        padded[i as usize] = block;
-                    }
-                }
-            }
-            Direction::East => {
-                for y in 0..CHUNK_SIZE {
-                    for z in 0..CHUNK_SIZE {
-                        let block = neighboring_face
-                            [ChunkFaceShape::linearize([y as u32, z as u32]) as usize];
-                        let i = PaddedChunkShape::linearize([
-                            MAX_PADDED_IDX,
-                            y as u32 + 1,
-                            z as u32 + 1,
-                        ]);
-                        padded[i as usize] = block;
-                    }
-                }
-            }
-            Direction::West => {
-                for y in 0..CHUNK_SIZE {
-                    for z in 0..CHUNK_SIZE {
-                        let block = neighboring_face
-                            [ChunkFaceShape::linearize([y as u32, z as u32]) as usize];
-                        let i = PaddedChunkShape::linearize([
-                            MIN_PADDED_IDX,
-                            y as u32 + 1,
-                            z as u32 + 1,
-                        ]);
-                        padded[i as usize] = block;
-                    }
-                }
+        for u in 0..CHUNK_SIZE {
+            for v in 0..CHUNK_SIZE {
+                let face_index = chunk_face_index(u, v);
+                let padded_index = PaddedChunkShape::linearize(padded_coords(spec, u, v)) as usize;
+                padded[padded_index] = neighboring_face[face_index];
             }
         }
     }
@@ -286,21 +164,10 @@ pub fn prepare_padded_chunk(
                     y: by,
                     z: bz,
                 });
-                if block.is_some() {
+                if let Some(mapped_id) = block {
                     let i =
                         PaddedChunkShape::linearize([bx as u32 + 1, by as u32 + 1, bz as u32 + 1]);
-                    let block =
-                        block.map_or(VoxelBlock::Empty, |chunk_block_id| match visibility_checker
-                            .get_visibility(&chunk_block_id)
-                        {
-                            crate::blocks::BlockVisibility::Opaque => {
-                                VoxelBlock::Opaque(chunk_block_id)
-                            }
-                            crate::blocks::BlockVisibility::Translucent => {
-                                VoxelBlock::Translucent(chunk_block_id)
-                            }
-                        });
-                    padded[i as usize] = block;
+                    padded[i as usize] = map_non_empty(mapped_id, checker);
                 }
             }
         }
