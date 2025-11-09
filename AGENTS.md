@@ -7,8 +7,7 @@
 
 ## When finishing a task
 
-- `just clippy` – fix errors
-- `just fmt`
+- Run `just clippy` first – fix errors - then `just fmt`
 - Update docs as needed
 - Persist new knowledge to memory (if available)
 - Suggest improvements to AGENTS.md
