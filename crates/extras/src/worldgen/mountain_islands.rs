@@ -137,7 +137,7 @@ impl WorldGen for MountainIslands {
             return None;
         }
 
-        let mut terrain_variances = [[0.; CHUNK_USIZE]; CHUNK_USIZE];
+        let mut terrain_variances = [[None::<f64>; CHUNK_USIZE]; CHUNK_USIZE];
 
         {
             let _span = tracing::debug_span!("worldgen{stage = terrain}").entered();
@@ -168,13 +168,12 @@ impl WorldGen for MountainIslands {
                             }
 
                             let next_band_chance = {
-                                let val = &mut terrain_variances[x as usize][z as usize];
-                                // exactly float zero means it (probably?) wasn't calculated before
-                                if *val == 0. {
+                                let slot = &mut terrain_variances[x as usize][z as usize];
+                                let value = slot.get_or_insert_with(|| {
                                     let (nx, nz) = nxzs[x as usize][z as usize];
-                                    *val = self.terrain_variance.get([nx, nz]) / 2.0;
-                                }
-                                *val
+                                    self.terrain_variance.get([nx, nz]) / 2.0
+                                });
+                                *value
                             };
 
                             // Assign block type based on the height and noise.
