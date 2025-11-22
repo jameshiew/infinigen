@@ -5,6 +5,7 @@ use std::time::Duration;
 
 use bevy::DefaultPlugins;
 use bevy::app::{ScheduleRunnerPlugin, TaskPoolThreadAssignmentPolicy};
+use bevy::asset::AssetPlugin;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy::tasks::available_parallelism;
@@ -81,6 +82,10 @@ fn main() -> ExitCode {
             level: bevy::log::Level::DEBUG,
             custom_layer: |_| None,
             fmt_layer: |_| None,
+        })
+        .set(AssetPlugin {
+            file_path: "../extras/assets".into(),
+            ..default()
         })
         .set(TaskPoolPlugin {
             task_pool_options: TaskPoolOptions {
