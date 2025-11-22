@@ -26,7 +26,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  machete:
+  check-dependencies:
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
@@ -39,18 +39,11 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-machete
-      - run: just machete
-  audit:
-    runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          persist-credentials: false
-      - uses: taiki-e/install-action@just
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-audit
-      - run: just audit
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
+      - run: just dep-check

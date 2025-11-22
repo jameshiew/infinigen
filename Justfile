@@ -3,10 +3,9 @@ wasm_rustflags := '--cfg=web_sys_unstable_apis --cfg=getrandom_backend="wasm_js"
 run *args:
     cargo run {{args}}
 
-machete:
+dep-check:
     cargo machete
-
-audit:
+    cargo deny check
     cargo audit
 
 fmt:
@@ -59,6 +58,7 @@ install-cargo-tools-essential:
 install-cargo-tools: install-cargo-tools-essential
     cargo binstall --no-confirm cargo-machete
     cargo binstall --no-confirm cargo-audit
+    cargo binstall --no-confirm cargo-deny
     cargo binstall --no-confirm wasm-server-runner
     cargo install --git https://github.com/TheBevyFlock/bevy_cli --branch main --locked bevy_cli
 
