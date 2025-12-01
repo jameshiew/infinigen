@@ -6,11 +6,11 @@ members = ["crates/*"]
 ahash = "0.8.11"
 bevy = { version = "0.17", default-features = false }
 config = { version = "0.15", default-features = false, features = ["yaml"] }
-criterion = "0.7"
+criterion = "0.8"
 linearize = "0.1.1"
 serde = "1.0.228"
 strum = "0.27"
-tracing = "0.1.40"
+tracing = "0.1.43"
 
 [workspace.lints.clippy]
 nursery = { level = "warn", priority = -1 }
