@@ -29,7 +29,7 @@ bevy_common_assets = { version = "0.14", default-features = false, features = [
 ] }
 bevy-inspector-egui = { version = "0.35" }
 infinigen-common = { path = "../common" }
-leafwing-input-manager = { version = "0.18", default-features = false, features = [
+leafwing-input-manager = { version = "0.19", default-features = false, features = [
   "keyboard",
   "mouse",
 ] }
