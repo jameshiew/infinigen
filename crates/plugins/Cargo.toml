@@ -23,7 +23,7 @@ bevy = { workspace = true, features = [
   "smaa_luts",
   "tonemapping_luts",
 ] }
-bevy_asset_loader = { git = "https://github.com/NiklasEi/bevy_asset_loader.git", rev = "430fbbe0a0208090a4a94d7037595958c50c3383", default-features = false }
+bevy_asset_loader = { version = "0.24", default-features = false }
 bevy_common_assets = { version = "0.14", default-features = false, features = [
   "ron",
 ] }
