@@ -23,3 +23,5 @@
 - Propose next steps
 
 ## Learnings
+- (gpt-5) 2026-01-22 - Register `GizmoConfigStore` before `DefaultInspectorConfigPlugin` to avoid a bevy-inspector-egui type registry panic on Bevy 0.18.
+- (gpt-5) 2026-01-22 - Register bevy light/render/camera types in the type registry before `DefaultInspectorConfigPlugin` to suppress missing inspector option warnings.

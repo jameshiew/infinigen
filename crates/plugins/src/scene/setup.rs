@@ -9,7 +9,7 @@ use super::{FAR, SceneSettings, SceneView, SceneZoom};
 pub const SKY_COLOR: Color = Color::srgb(0.47, 0.66, 1.);
 
 pub fn setup_lighting(mut commands: Commands) {
-    commands.insert_resource(AmbientLight::default());
+    commands.insert_resource(GlobalAmbientLight::default());
     commands.insert_resource(ClearColor(SKY_COLOR));
 
     commands.spawn((

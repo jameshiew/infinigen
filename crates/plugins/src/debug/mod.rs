@@ -1,5 +1,10 @@
+use bevy::camera::Camera3dDepthLoadOp;
 use bevy::diagnostic::{EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin};
+use bevy::gizmos::config::GizmoConfigStore;
+use bevy::light::cluster::ClusterConfig;
+use bevy::light::{AmbientLight, DirectionalLight, PointLight};
 use bevy::prelude::*;
+use bevy::render::view::{ColorGradingGlobal, ColorGradingSection};
 use bevy_inspector_egui::DefaultInspectorConfigPlugin;
 use bevy_inspector_egui::bevy_egui::{EguiPlugin, EguiPrimaryContextPass};
 use leafwing_input_manager::prelude::*;
@@ -18,6 +23,14 @@ pub struct DebugPlugin;
 impl Plugin for DebugPlugin {
     fn build(&self, app: &mut App) {
         tracing::info!("Initializing debug UI plugin");
+        app.register_type::<GizmoConfigStore>();
+        app.register_type::<ColorGradingSection>();
+        app.register_type::<ColorGradingGlobal>();
+        app.register_type::<AmbientLight>();
+        app.register_type::<PointLight>();
+        app.register_type::<DirectionalLight>();
+        app.register_type::<ClusterConfig>();
+        app.register_type::<Camera3dDepthLoadOp>();
         app.init_resource::<UiState>()
             .add_plugins((
                 InputManagerPlugin::<info::Action>::default(),
