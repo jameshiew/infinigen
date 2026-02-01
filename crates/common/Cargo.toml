@@ -11,7 +11,7 @@ name = "benchmark"
 [dependencies]
 ahash = { workspace = true }
 block-mesh = { git = "https://github.com/bonsairobo/block-mesh-rs", rev = "793c53e82c12b3f7e9502006664c6e81f8b1c78a" }
-glam = "0.30.9"
+glam = "0.31.0"
 linearize = { workspace = true, features = ["derive"] }
 ndarray = { version = "0.17", default-features = false, features = ["std"] }
 serde = { workspace = true, features = ["derive"] }
