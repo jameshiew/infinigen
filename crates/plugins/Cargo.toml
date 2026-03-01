@@ -6,7 +6,7 @@ publish = false
 
 [dependencies]
 ahash = { workspace = true }
-anyhow = "1.0.100"
+anyhow = "1.0.102"
 bevy = { workspace = true, features = [
   "bevy_anti_alias",
   "bevy_asset",

@@ -9,7 +9,7 @@ config = { version = "0.15", default-features = false, features = ["yaml"] }
 criterion = "0.8"
 linearize = "0.1.5"
 serde = "1.0.228"
-strum = "0.27"
+strum = "0.28"
 tracing = "0.1.44"
 
 [workspace.lints.clippy]

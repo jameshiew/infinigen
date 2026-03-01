@@ -17,7 +17,7 @@ infinigen-plugins = { path = "../plugins" }
 tikv-jemallocator = { version = "0.6", optional = true }
 
 [target.'cfg(target_family = "wasm")'.dependencies]
-getrandom = { version = "0.3", features = ["wasm_js"] }
+getrandom = { version = "0.4", features = ["wasm_js"] }
 
 [features]
 jemalloc = ["dep:tikv-jemallocator"]
