@@ -7,7 +7,7 @@ default-run = "infinigen"
 
 [dependencies]
 bevy = { workspace = true, features = ["bevy_winit", "wayland", "x11"] }
-bevy_framepace = { git = "https://github.com/aevyrie/bevy_framepace", rev = "9be8f16210c341550e0593d57d12e54e7c9c1ee5", version = "0.21" }
+bevy_framepace = "0.21"
 clap = { version = "4", features = ["derive"] }
 config = { workspace = true }
 infinigen-extras = { path = "../extras" }
