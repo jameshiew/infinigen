@@ -8,7 +8,7 @@ use infinigen_common::mesh::textures::BlockAppearances;
 use infinigen_common::mesh::{mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces};
 use infinigen_common::world::MappedBlockID;
 use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 
 fn random_padded_chunk<F>(block_constructor: F, fill_prob: f32) -> PaddedChunk
 where
