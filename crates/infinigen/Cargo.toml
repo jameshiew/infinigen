@@ -6,7 +6,7 @@ publish = false
 default-run = "infinigen"
 
 [dependencies]
-bevy = { workspace = true, features = ["bevy_winit", "wayland", "x11"] }
+bevy = { workspace = true, features = ["wayland", "x11"] }
 bevy_framepace = "0.21"
 clap = { version = "4", features = ["derive"] }
 config = { workspace = true }

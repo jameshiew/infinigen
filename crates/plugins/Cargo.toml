@@ -8,16 +8,7 @@ publish = false
 ahash = { workspace = true }
 anyhow = "1.0.102"
 bevy = { workspace = true, features = [
-  "bevy_anti_alias",
-  "bevy_asset",
-  "bevy_gizmos",
-  "bevy_light",
-  "bevy_mesh",
-  "bevy_pbr",
-  "bevy_picking",  # for bevy-inspector-egui
-  "bevy_post_process",
-  "bevy_state",
-  "bevy_window",
+  "3d",
   "hdr",
   "multi_threaded",
   "png",
