@@ -17,20 +17,22 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
-      # needed for MCP
-      - uses: actions/setup-node@v6
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+      # needed for MCP
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
         with:
           ignore-nothing-to-cache: true
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
       # needed for developing
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1
         with:
           toolchain: nightly, stable
           components: clippy, rustfmt
           target: wasm32-unknown-unknown
-      - uses: taiki-e/install-action@just
+      - uses: taiki-e/install-action@871e75bd8ff92b14f2a3fcbf6d156970dce9e218 # just
       - run: just install-debian-deps
       - run: just install-cargo-tools-essential
       - run: cargo fetch

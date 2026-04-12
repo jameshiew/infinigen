@@ -31,19 +31,19 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - uses: taiki-e/install-action@just
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@871e75bd8ff92b14f2a3fcbf6d156970dce9e218 # just
+      - uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1
+      - uses: taiki-e/install-action@0abfcd587b70a713fdaa7fb502c885e2112acb15 # v2
         with:
           tool: cargo-machete
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@0abfcd587b70a713fdaa7fb502c885e2112acb15 # v2
         with:
           tool: cargo-audit
 
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@0abfcd587b70a713fdaa7fb502c885e2112acb15 # v2
         with:
           tool: cargo-deny
       - run: just dep-check
