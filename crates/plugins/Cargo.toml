@@ -24,8 +24,8 @@ bevy = { workspace = true, features = [
   "smaa_luts",
   "tonemapping_luts",
 ] }
-bevy_asset_loader = { version = "0.25", default-features = false }
-bevy_common_assets = { version = "0.15", default-features = false, features = [
+bevy_asset_loader = { version = "0.26", default-features = false }
+bevy_common_assets = { version = "0.16", default-features = false, features = [
   "ron",
 ] }
 bevy-inspector-egui = { version = "0.36" }
