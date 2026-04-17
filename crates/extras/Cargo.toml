@@ -13,7 +13,6 @@ ahash = { workspace = true }
 bevy = { workspace = true }
 infinigen-common = { path = "../common" }
 infinigen-plugins = { path = "../plugins" }
-noise = "0.9"
 serde = { workspace = true, features = ["derive"] }
 splines = "5"
 strum = { workspace = true, features = ["derive"] }

@@ -111,7 +111,8 @@ fn greedy_quads_for_face(padded: &PaddedChunk, face: FaceDir, out: &mut Vec<Quad
         // Populate the mask.
         for vi in 0..v_size {
             for ui in 0..u_size {
-                let coord = coord_from_axes(normal_axis, u_axis, v_axis, n_coord, min + ui, min + vi);
+                let coord =
+                    coord_from_axes(normal_axis, u_axis, v_axis, n_coord, min + ui, min + vi);
                 let voxel = padded[padded_linearize(coord)];
                 let vis = voxel.visibility();
                 if matches!(vis, VoxelVisibility::Empty) {
@@ -144,9 +145,7 @@ fn greedy_quads_for_face(padded: &PaddedChunk, face: FaceDir, out: &mut Vec<Quad
 
                 // Extend width along u.
                 let mut w = 1u32;
-                while ui + w < u_size
-                    && mask[((ui + w) + vi * u_size) as usize] == Some(current)
-                {
+                while ui + w < u_size && mask[((ui + w) + vi * u_size) as usize] == Some(current) {
                     w += 1;
                 }
 
@@ -162,14 +161,8 @@ fn greedy_quads_for_face(padded: &PaddedChunk, face: FaceDir, out: &mut Vec<Quad
                     h += 1;
                 }
 
-                let voxel = coord_from_axes(
-                    normal_axis,
-                    u_axis,
-                    v_axis,
-                    n_coord,
-                    min + ui,
-                    min + vi,
-                );
+                let voxel =
+                    coord_from_axes(normal_axis, u_axis, v_axis, n_coord, min + ui, min + vi);
                 out.push(Quad {
                     voxel,
                     width: w,
@@ -268,11 +261,7 @@ fn build_mesh_info(
             // visible grass capping it).
             let mut block_face = face.block_face();
             if is_side {
-                let above_idx = padded_linearize([
-                    quad.voxel[0],
-                    quad.voxel[1] + 1,
-                    quad.voxel[2],
-                ]);
+                let above_idx = padded_linearize([quad.voxel[0], quad.voxel[1] + 1, quad.voxel[2]]);
                 if matches!(padded[above_idx].visibility(), VoxelVisibility::Opaque) {
                     block_face = Face::Bottom;
                 }

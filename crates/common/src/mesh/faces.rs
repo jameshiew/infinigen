@@ -5,7 +5,7 @@ use super::shapes::{EMPTY_CHUNK_FACES, chunk_face_linearize};
 use crate::blocks::BlockVisibility;
 use crate::chunks::{Array3Chunk, CHUNK_SIZE, CHUNK_SIZE_U32};
 use crate::mesh::block::VoxelBlock;
-use crate::mesh::shapes::{ChunkFace, PaddedChunk, PADDED_CHUNK_VOLUME, padded_linearize};
+use crate::mesh::shapes::{ChunkFace, PADDED_CHUNK_VOLUME, PaddedChunk, padded_linearize};
 use crate::world::{BlockPosition, Direction, MappedBlockID};
 
 const PADDED_BOUNDARY_MIN: u32 = 0;
@@ -161,8 +161,7 @@ pub fn prepare_padded_chunk(
                     z: bz,
                 });
                 if let Some(mapped_id) = block {
-                    let i =
-                        padded_linearize([bx as u32 + 1, by as u32 + 1, bz as u32 + 1]);
+                    let i = padded_linearize([bx as u32 + 1, by as u32 + 1, bz as u32 + 1]);
                     padded[i] = map_non_empty(mapped_id, checker);
                 }
             }
@@ -177,9 +176,7 @@ mod tests {
 
     use crate::blocks::BlockVisibility;
     use crate::chunks::{CHUNK_SIZE_U32, filled_chunk};
-    use crate::mesh::shapes::{
-        CHUNK_FACE_VOLUME, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
-    };
+    use crate::mesh::shapes::{CHUNK_FACE_VOLUME, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE};
     use crate::mesh::visible_block_faces_quads;
 
     #[derive(Clone)]

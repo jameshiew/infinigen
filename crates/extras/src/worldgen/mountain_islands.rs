@@ -1,10 +1,10 @@
 use infinigen_common::blocks::Palette;
 use infinigen_common::chunks::{Array3Chunk, CHUNK_SIZE, CHUNK_SIZE_F64, CHUNK_USIZE};
+use infinigen_common::noise::{Fbm, Perlin};
 use infinigen_common::world::{
     BlockPosition, ChunkPosition, MappedBlockID, WorldGen, WorldPosition,
 };
 use infinigen_common::zoom::ZoomLevel;
-use noise::{Fbm, MultiFractal, NoiseFn, Perlin};
 use splines::{Interpolation, Key, Spline};
 
 use crate::blocks::{
@@ -15,9 +15,9 @@ use crate::blocks::{
 #[derive(Debug, Clone)]
 pub struct MountainIslands {
     /// The world height at any given (x, z)
-    heightmap: Fbm<Perlin>,
+    heightmap: Fbm,
     verticality: Perlin,
-    terrain_variance: Fbm<Perlin>,
+    terrain_variance: Fbm,
     vspline: Spline<f64, f64>,
     /// max mountain size without zoom is roughly double this value
     vertical_scale: f64,
@@ -65,12 +65,12 @@ impl MountainIslands {
     }
 }
 
-fn default_heightmap(seed: u32) -> Fbm<Perlin> {
-    Fbm::<Perlin>::new(seed).set_octaves(6)
+fn default_heightmap(seed: u32) -> Fbm {
+    Fbm::new(seed).set_octaves(6)
 }
 
-pub fn default_terrain_variance(seed: u32) -> Fbm<Perlin> {
-    Fbm::<Perlin>::new(seed).set_octaves(8).set_persistence(0.7)
+pub fn default_terrain_variance(seed: u32) -> Fbm {
+    Fbm::new(seed).set_octaves(8).set_persistence(0.7)
 }
 
 const SEA_LEVEL: f64 = 0.;

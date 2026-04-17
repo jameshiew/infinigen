@@ -149,10 +149,7 @@ impl Quad {
         // Which faces wind counter-clockwise was chosen to match
         // block-mesh-rs's output so Bevy's default backface culling keeps the
         // same set of visible triangles as before.
-        let ccw = matches!(
-            face,
-            FaceDir::XNeg | FaceDir::YPos | FaceDir::ZPos
-        );
+        let ccw = matches!(face, FaceDir::XNeg | FaceDir::YPos | FaceDir::ZPos);
         if ccw {
             [
                 base_index,

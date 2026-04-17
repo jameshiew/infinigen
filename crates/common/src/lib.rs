@@ -4,6 +4,7 @@
 pub mod blocks;
 pub mod chunks;
 pub mod mesh;
+pub mod noise;
 pub mod view;
 pub mod world;
 pub mod zoom;
