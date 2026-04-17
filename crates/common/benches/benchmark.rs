@@ -1,9 +1,8 @@
 use std::hint::black_box;
 
-use block_mesh::ndshape::ConstShape;
 use criterion::{Criterion, criterion_group, criterion_main};
 use infinigen_common::mesh::block::VoxelBlock;
-use infinigen_common::mesh::shapes::{PaddedChunk, PaddedChunkShape};
+use infinigen_common::mesh::shapes::{PADDED_CHUNK_VOLUME, PaddedChunk};
 use infinigen_common::mesh::textures::BlockAppearances;
 use infinigen_common::mesh::{mesh_chunk_greedy_quads, mesh_chunk_visible_block_faces};
 use infinigen_common::world::MappedBlockID;
@@ -15,7 +14,7 @@ where
     F: Fn(MappedBlockID) -> VoxelBlock,
 {
     let mut rng = StdRng::seed_from_u64(42);
-    let mut padded = [VoxelBlock::Empty; PaddedChunkShape::USIZE];
+    let mut padded = [VoxelBlock::Empty; PADDED_CHUNK_VOLUME];
 
     for voxel in padded.iter_mut() {
         let roll: f32 = rng.random();

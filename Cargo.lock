@@ -1283,7 +1283,7 @@ dependencies = [
  "arrayvec",
  "bevy_reflect",
  "derive_more",
- "glam 0.30.10",
+ "glam",
  "itertools 0.14.0",
  "libm",
  "rand 0.9.3",
@@ -1458,7 +1458,7 @@ dependencies = [
  "downcast-rs 2.0.2",
  "erased-serde",
  "foldhash 0.2.0",
- "glam 0.30.10",
+ "glam",
  "indexmap",
  "inventory",
  "petgraph",
@@ -1543,7 +1543,7 @@ dependencies = [
  "downcast-rs 2.0.2",
  "encase",
  "fixedbitset",
- "glam 0.30.10",
+ "glam",
  "image",
  "indexmap",
  "js-sys",
@@ -1992,16 +1992,6 @@ name = "block"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
-
-[[package]]
-name = "block-mesh"
-version = "0.2.0"
-source = "git+https://github.com/bonsairobo/block-mesh-rs?rev=793c53e82c12b3f7e9502006664c6e81f8b1c78a#793c53e82c12b3f7e9502006664c6e81f8b1c78a"
-dependencies = [
- "ilattice",
- "ndcopy",
- "ndshape",
-]
 
 [[package]]
 name = "block2"
@@ -3208,12 +3198,6 @@ dependencies = [
 
 [[package]]
 name = "glam"
-version = "0.19.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b8509e6791516e81c1a630d0bd7fbac36d2fa8712a9da8662e716b52d5051ca"
-
-[[package]]
-name = "glam"
 version = "0.30.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "19fc433e8437a212d1b6f1e68c7824af3aed907da60afa994e7f542d18d12aa9"
@@ -3455,7 +3439,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "29a164ceff4500f2a72b1d21beaa8aa8ad83aec2b641844c659b190cb3ea2e0b"
 dependencies = [
  "constgebra",
- "glam 0.30.10",
+ "glam",
  "tinyvec",
 ]
 
@@ -3537,15 +3521,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d3067d79b975e8844ca9eb072e16b31c3c1c36928edf9c6789548c524d0d954"
 
 [[package]]
-name = "ilattice"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3db9046391c0e0658a18e23877706d16e48cc8b4711702b9f703776410c2b84"
-dependencies = [
- "glam 0.19.0",
-]
-
-[[package]]
 name = "image"
 version = "0.25.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3590,9 +3565,8 @@ name = "infinigen-common"
 version = "0.1.0-dev"
 dependencies = [
  "ahash",
- "block-mesh",
  "criterion",
- "glam 0.30.10",
+ "glam",
  "linearize",
  "ndarray",
  "rand 0.9.3",
@@ -4134,15 +4108,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ndcopy"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24f4e41b81e3f7a4b742755be1bb368a6faafc43af555fe135c36b0efe095c59"
-dependencies = [
- "ndshape",
-]
-
-[[package]]
 name = "ndk"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4193,15 +4158,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee6cda3051665f1fb8d9e08fc35c96d5a244fb1be711a03b71118828afc9a873"
 dependencies = [
  "jni-sys 0.3.1",
-]
-
-[[package]]
-name = "ndshape"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "975bce586ad637e27f6dc26ee907c07050686a588695bfd64b7873a9d48a700c"
-dependencies = [
- "static_assertions",
 ]
 
 [[package]]

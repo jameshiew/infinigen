@@ -1,16 +1,12 @@
-use block_mesh::ndshape::ConstShape;
-use block_mesh::{OrientedBlockFace, RIGHT_HANDED_Y_UP_CONFIG};
 use linearize::StaticCopyMap;
 use strum::IntoEnumIterator;
 
-use super::shapes::EMPTY_CHUNK_FACES;
+use super::shapes::{EMPTY_CHUNK_FACES, chunk_face_linearize};
 use crate::blocks::BlockVisibility;
 use crate::chunks::{Array3Chunk, CHUNK_SIZE, CHUNK_SIZE_U32};
 use crate::mesh::block::VoxelBlock;
-use crate::mesh::shapes::{ChunkFace, ChunkFaceShape, PaddedChunk, PaddedChunkShape};
+use crate::mesh::shapes::{ChunkFace, PaddedChunk, PADDED_CHUNK_VOLUME, padded_linearize};
 use crate::world::{BlockPosition, Direction, MappedBlockID};
-
-pub const RHS_FACES: [OrientedBlockFace; 6] = RIGHT_HANDED_Y_UP_CONFIG.faces;
 
 const PADDED_BOUNDARY_MIN: u32 = 0;
 const PADDED_BOUNDARY_MAX: u32 = CHUNK_SIZE_U32 + 1;
@@ -65,8 +61,8 @@ const fn face_spec(direction: Direction) -> FaceSpec {
     }
 }
 
-fn chunk_face_index(u: u8, v: u8) -> usize {
-    ChunkFaceShape::linearize([u as u32, v as u32]) as usize
+const fn chunk_face_index(u: u8, v: u8) -> usize {
+    chunk_face_linearize([u as u32, v as u32])
 }
 
 const fn face_block_position(spec: FaceSpec, u: u8, v: u8) -> BlockPosition {
@@ -141,7 +137,7 @@ pub fn prepare_padded_chunk(
     neighbor_faces: &StaticCopyMap<Direction, ChunkFace>,
     visibility_checker: impl BlockVisibilityChecker,
 ) -> PaddedChunk {
-    let mut padded = [VoxelBlock::Empty; PaddedChunkShape::SIZE as usize];
+    let mut padded = [VoxelBlock::Empty; PADDED_CHUNK_VOLUME];
     let checker = &visibility_checker;
 
     for dir in Direction::iter() {
@@ -150,7 +146,7 @@ pub fn prepare_padded_chunk(
         for u in 0..CHUNK_SIZE {
             for v in 0..CHUNK_SIZE {
                 let face_index = chunk_face_index(u, v);
-                let padded_index = PaddedChunkShape::linearize(padded_coords(spec, u, v)) as usize;
+                let padded_index = padded_linearize(padded_coords(spec, u, v));
                 padded[padded_index] = neighboring_face[face_index];
             }
         }
@@ -166,8 +162,8 @@ pub fn prepare_padded_chunk(
                 });
                 if let Some(mapped_id) = block {
                     let i =
-                        PaddedChunkShape::linearize([bx as u32 + 1, by as u32 + 1, bz as u32 + 1]);
-                    padded[i as usize] = map_non_empty(mapped_id, checker);
+                        padded_linearize([bx as u32 + 1, by as u32 + 1, bz as u32 + 1]);
+                    padded[i] = map_non_empty(mapped_id, checker);
                 }
             }
         }
@@ -177,14 +173,14 @@ pub fn prepare_padded_chunk(
 
 #[cfg(test)]
 mod tests {
-    use block_mesh::{UnitQuadBuffer, visible_block_faces};
     use linearize::static_copy_map;
 
     use crate::blocks::BlockVisibility;
     use crate::chunks::{CHUNK_SIZE_U32, filled_chunk};
     use crate::mesh::shapes::{
-        ChunkFace, ChunkFaceShape, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
+        CHUNK_FACE_VOLUME, PADDED_CHUNK_MAX_INDEX, PADDED_CHUNK_SIZE,
     };
+    use crate::mesh::visible_block_faces_quads;
 
     #[derive(Clone)]
     struct AllOpaque;
@@ -200,7 +196,7 @@ mod tests {
     const PADDED_CHUNK_MIN_INDEX: u32 = 0;
 
     pub fn full_chunk_face() -> ChunkFace {
-        [VoxelBlock::Opaque(MappedBlockID::default()); ChunkFaceShape::SIZE as usize]
+        [VoxelBlock::Opaque(MappedBlockID::default()); CHUNK_FACE_VOLUME]
     }
 
     #[test]
@@ -212,7 +208,7 @@ mod tests {
         for x in 0..CHUNK_SIZE_U32 + 2 {
             for y in 0..CHUNK_SIZE_U32 + 2 {
                 for z in 0..CHUNK_SIZE_U32 + 2 {
-                    let i = PaddedChunkShape::linearize([x, y, z]);
+                    let i = padded_linearize([x, y, z]);
                     if x == 0
                         || x == CHUNK_SIZE_U32 + 1
                         || y == 0
@@ -220,32 +216,19 @@ mod tests {
                         || z == 0
                         || z == CHUNK_SIZE_U32 + 1
                     {
-                        assert!(matches!(padded[i as usize], VoxelBlock::Empty))
+                        assert!(matches!(padded[i], VoxelBlock::Empty))
                     } else {
-                        assert!(matches!(padded[i as usize], VoxelBlock::Opaque(_)))
+                        assert!(matches!(padded[i], VoxelBlock::Opaque(_)))
                     }
                 }
             }
         }
 
-        let mut buffer = UnitQuadBuffer::new();
-        visible_block_faces(
-            &padded,
-            &PaddedChunkShape {},
-            [0; 3],
-            [PADDED_CHUNK_MAX_INDEX; 3],
-            &RHS_FACES,
-            &mut buffer,
-        );
-        assert_eq!(buffer.groups.len(), 6);
-        let mut quads = 0;
-        for group in buffer.groups {
-            for _ in group {
-                quads += 1;
-            }
-        }
+        let groups = visible_block_faces_quads(&padded);
+        assert_eq!(groups.len(), 6);
+        let quads: usize = groups.iter().map(Vec::len).sum();
         assert_eq!(
-            quads,
+            quads as u32,
             6 * CHUNK_SIZE_U32 * CHUNK_SIZE_U32,
             "all blocks on the faces of the chunk are exposed, but none within"
         );
@@ -270,8 +253,8 @@ mod tests {
         for x in 0..PADDED_CHUNK_SIZE {
             for y in 0..PADDED_CHUNK_SIZE {
                 for z in 0..PADDED_CHUNK_SIZE {
-                    let i = PaddedChunkShape::linearize([x, y, z]);
-                    if matches!(padded[i as usize], VoxelBlock::Empty) {
+                    let i = padded_linearize([x, y, z]);
+                    if matches!(padded[i], VoxelBlock::Empty) {
                         empty += 1;
                     } else {
                         full += 1;
@@ -295,10 +278,10 @@ mod tests {
                     }
 
                     if on_n_outer_faces >= 2 {
-                        assert!(matches!(padded[i as usize], VoxelBlock::Empty))
+                        assert!(matches!(padded[i], VoxelBlock::Empty))
                     } else {
                         assert!(
-                            matches!(padded[i as usize], VoxelBlock::Opaque(_)),
+                            matches!(padded[i], VoxelBlock::Opaque(_)),
                             "at {:?}",
                             [x, y, z]
                         )
@@ -319,22 +302,9 @@ mod tests {
                 + (CHUNK_SIZE_U32 * CHUNK_SIZE_U32 * CHUNK_SIZE_U32)
         );
 
-        let mut buffer = UnitQuadBuffer::new();
-        visible_block_faces(
-            &padded,
-            &PaddedChunkShape {},
-            [0; 3],
-            [PADDED_CHUNK_MAX_INDEX; 3],
-            &RHS_FACES,
-            &mut buffer,
-        );
-        assert_eq!(buffer.groups.len(), 6);
-        let mut quads = 0;
-        for group in buffer.groups {
-            for _ in group {
-                quads += 1;
-            }
-        }
+        let groups = visible_block_faces_quads(&padded);
+        assert_eq!(groups.len(), 6);
+        let quads: usize = groups.iter().map(Vec::len).sum();
         assert_eq!(
             quads, 0,
             "all blocks on the faces of the chunk are occluded by neighboring chunks"
