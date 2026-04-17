@@ -1,5 +1,3 @@
-wasm_rustflags := '--cfg=web_sys_unstable_apis --cfg=getrandom_backend="wasm_js"'
-
 run *args:
     cargo run {{args}}
 
@@ -27,7 +25,6 @@ fmt-check:
     cargo +nightly fmt --all -- --check
 
 clippy-wasm:
-    RUSTFLAGS='{{wasm_rustflags}}' \
     cargo clippy \
         --target wasm32-unknown-unknown
 
@@ -59,7 +56,6 @@ install-cargo-tools: install-cargo-tools-essential
     cargo binstall --no-confirm cargo-machete
     cargo binstall --no-confirm cargo-audit
     cargo binstall --no-confirm cargo-deny
-    cargo binstall --no-confirm wasm-server-runner
     cargo install --git https://github.com/TheBevyFlock/bevy_cli --branch main --locked bevy_cli
 
 install-debian-deps:
@@ -84,14 +80,6 @@ flamelens:
         --profile profiling \
         --post-process 'flamelens --echo' \
         --root
-
-run-wasm:  # requires https://github.com/jakobhellermann/wasm-server-runner
-    CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUNNER=wasm-server-runner \
-    RUSTFLAGS='{{wasm_rustflags}}' \
-    cargo run \
-        --features bevy/webgpu \
-        --profile wasm-release \
-        --target wasm32-unknown-unknown
 
 xvfb-run := if os() == 'linux' {
   'xvfb-run'
