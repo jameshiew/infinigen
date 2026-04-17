@@ -7,7 +7,9 @@ ahash = "0.8.11"
 bevy = { version = "0.18", default-features = false }
 config = { version = "0.15", default-features = false, features = ["yaml"] }
 criterion = "0.8"
+glam = "0.30"  # should match bevy's version
 linearize = "0.1.5"
+rand = "0.9"  # should match bevy's version
 serde = "1.0.228"
 strum = "0.28"
 tracing = "0.1.44"

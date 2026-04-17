@@ -52,7 +52,7 @@ pub fn mesh_chunk_visible_block_faces(
     let mut normals = Vec::with_capacity(num_vertices);
     let mut colors = Vec::with_capacity(num_vertices);
     let mut uvs = Vec::with_capacity(num_vertices);
-    for (group, face) in buffer.groups.into_iter().zip(RHS_FACES.into_iter()) {
+    for (group, face) in buffer.groups.into_iter().zip(RHS_FACES) {
         for quad in group.into_iter() {
             let uq: UnorientedQuad = quad.into();
             indices.extend_from_slice(&face.quad_mesh_indices(positions.len() as u32));
@@ -168,7 +168,7 @@ pub fn mesh_chunk_greedy_quads(
     let mut normals = Vec::with_capacity(num_vertices);
     let mut colors = Vec::with_capacity(num_vertices);
     let mut uvs = Vec::with_capacity(num_vertices);
-    for (group, face) in buffer.quads.groups.into_iter().zip(RHS_FACES.into_iter()) {
+    for (group, face) in buffer.quads.groups.into_iter().zip(RHS_FACES) {
         for quad in group.into_iter() {
             indices.extend_from_slice(&face.quad_mesh_indices(positions.len() as u32));
             let pstns = face.quad_mesh_positions(&quad, 1.0);
