@@ -103,8 +103,8 @@ impl FaceDir {
 /// A face quad covering `width × height` voxels on one face of the voxel at
 /// [`voxel`](Quad::voxel).
 ///
-/// Width extends along [`Self::u_axis`]; height extends along
-/// [`Self::v_axis`]. Unit quads have `width == height == 1`.
+/// Width extends along [`FaceDir::u_axis`]; height extends along
+/// [`FaceDir::v_axis`]. Unit quads have `width == height == 1`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Quad {
     /// Minimum-corner voxel in the quad, in padded chunk coordinates.
