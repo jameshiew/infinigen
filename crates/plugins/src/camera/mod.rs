@@ -114,8 +114,12 @@ fn update_camera_look(
 
     if delta.length_squared() > 0.0 {
         // Update yaw (left/right) and pitch (up/down)
-        controller.yaw -= delta.x * controller.mouse_sensitivity;
-        controller.pitch -= delta.y * controller.mouse_sensitivity;
+        controller.yaw = delta
+            .x
+            .mul_add(-controller.mouse_sensitivity, controller.yaw);
+        controller.pitch = delta
+            .y
+            .mul_add(-controller.mouse_sensitivity, controller.pitch);
 
         // Clamp pitch to prevent camera flipping
         controller.pitch = controller.pitch.clamp(

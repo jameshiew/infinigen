@@ -114,7 +114,7 @@ impl Fbm {
         let mut amplitude = 1.0;
         for source in &self.sources {
             let p = [point[0] * frequency, point[1] * frequency];
-            result += source.get(p) * amplitude;
+            result = source.get(p).mul_add(amplitude, result);
             frequency *= self.lacunarity;
             amplitude *= self.persistence;
         }
