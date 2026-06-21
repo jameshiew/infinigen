@@ -5,6 +5,9 @@ edition = "2024"
 publish = false
 default-run = "infinigen"
 
+[package.metadata.bevy_cli.web]
+features = ["bevy/webgpu"]
+
 [dependencies]
 bevy = { workspace = true, features = ["wayland", "x11"] }
 bevy_framepace = "0.21"
@@ -22,9 +25,6 @@ getrandom = { version = "0.3", features = ["wasm_js"] }
 [features]
 jemalloc = ["dep:tikv-jemallocator"]
 remote = ["bevy/bevy_remote"]
-
-[package.metadata.bevy_cli.web]
-features = ["bevy/webgpu"]
 
 [lints]
 workspace = true
